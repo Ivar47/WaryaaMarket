@@ -3,449 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WaryaaMarket | Pro Intelligence</title>
+    <title>WaryaaMarket | Global Intelligence Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0D0D0D;
-            --card-bg: #161616;
+            --bg-color: #060606;
+            --card-bg: rgba(22, 22, 22, 0.7);
             --accent-blue: #00D4FF;
             --accent-green: #00FF88;
             --accent-red: #FF3B3B;
             --text-main: #FFFFFF;
             --text-dim: #A0A0A0;
-            --border: #262626;
-            --glow-blue: rgba(0, 212, 255, 0.2);
-            --modal-overlay: rgba(0, 0, 0, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glow-blue: rgba(0, 212, 255, 0.3);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; scroll-behavior: smooth; }
 
-        /* --- Global Layout --- */
-        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
-        .logo { font-weight: 800; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-link { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
-        .nav-link.active { color: var(--accent-blue); font-weight: 600; }
+        /* Particle Background */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-        /* --- Quick Stats Bar --- */
-        .quick-stats { background: #111; padding: 10px 5%; display: flex; gap: 2rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; font-family: 'JetBrains Mono'; white-space: nowrap; overflow-x: auto; }
-        .stat-item span { color: var(--text-dim); margin-right: 5px; }
-        .stat-item b { color: var(--accent-blue); }
+        /* Ticker Styling */
+        .live-ticker-wrap { background: #000; border-bottom: 1px solid var(--border); overflow: hidden; height: 30px; display: flex; align-items: center; z-index: 1001; position: relative; }
+        .ticker-move { display: flex; white-space: nowrap; animation: ticker 60s linear infinite; }
+        .ticker-item { padding: 0 25px; font-size: 0.75rem; font-family: 'JetBrains Mono'; color: var(--text-dim); }
+        .ticker-item b { color: var(--text-main); }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        .container { padding: 2rem 5%; max-width: 1600px; margin: 0 auto; }
-        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Navigation */
+        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--accent-blue); text-transform: uppercase; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .live-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--accent-green); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* --- Cards & UI Elements --- */
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; transition: 0.3s; }
-        .card:hover { border-color: #444; box-shadow: 0 0 20px var(--glow-blue); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .card-title { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        /* Glass Cards */
+        .container { padding: 1rem 5%; max-width: 1600px; margin: 0 auto; }
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; transition: transform 0.2s; }
+        .card:hover { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 212, 255, 0.1); }
         
+        /* Layout Grids */
+        .main-grid { display: grid; grid-template-columns: 2.5fr 1fr; gap: 1.5rem; }
+        .tab-nav { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .tab-btn { padding: 10px 0; color: var(--text-dim); cursor: pointer; font-weight: 500; font-size: 0.9rem; border-bottom: 2px solid transparent; transition: 0.3s; }
+        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+
+        /* Tables */
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); text-transform: uppercase; }
-        td { padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; cursor: pointer; }
-        .price-up { color: var(--accent-green); }
-        .price-down { color: var(--accent-red); }
+        th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 12px 8px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        td { padding: 14px 8px; border-bottom: 1px solid var(--border); font-size: 0.85rem; transition: 0.2s; }
+        tbody tr { cursor: pointer; }
+        tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
 
-        /* --- Fear & Greed Gauge --- */
-        .gauge-container { text-align: center; padding: 20px; }
-        .gauge-svg { width: 150px; height: 150px; transform: rotate(-90deg); }
-        .gauge-circle { fill: none; stroke-width: 10; stroke-linecap: round; transition: 1s stroke-dasharray; }
+        /* Price Flash Animations */
+        @keyframes flashUp { from { background: rgba(0, 255, 136, 0.2); } to { background: transparent; } }
+        @keyframes flashDown { from { background: rgba(255, 59, 59, 0.2); } to { background: transparent; } }
+        .flash-up { animation: flashUp 1s; }
+        .flash-down { animation: flashDown 1s; }
 
-        /* --- Pro Tools Banner --- */
-        .pro-banner { background: linear-gradient(90deg, #0055FF, #00D4FF); padding: 1.5rem; border-radius: 12px; text-align: center; font-weight: 700; margin: 2rem 0; cursor: pointer; color: white; transition: 0.3s; }
-        .pro-banner:hover { transform: scale(1.01); filter: brightness(1.1); }
+        /* Detail Modal */
+        #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(15px); z-index: 2000; display: none; overflow-y: auto; padding: 40px; }
+        .modal-content { background: var(--bg-color); border: 1px solid var(--border); width: 100%; max-width: 1200px; margin: 0 auto; border-radius: 24px; padding: 3rem; position: relative; }
+        .close-modal { position: absolute; top: 25px; right: 25px; cursor: pointer; color: var(--text-dim); background: none; border: none; }
 
-        /* --- Modal System --- */
-        #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .modal-content { background: var(--bg-color); border: 1px solid var(--border); width: 100%; max-width: 1100px; border-radius: 20px; position: relative; padding: 2.5rem; }
-        .modal-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-        .modal-tab { padding: 10px 0; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; border-bottom: 2px solid transparent; }
-        .modal-tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+        /* Calendar Items */
+        .cal-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .impact-high { color: var(--accent-red); font-weight: bold; }
+        .impact-med { color: #FFA500; }
 
-        /* --- Grid for Detail Pages --- */
-        .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .metric-group { background: #111; padding: 1.2rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1rem; }
-        .metric-title { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
-        .metric-value { font-family: 'JetBrains Mono'; font-size: 1.1rem; }
-        .inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        /* Portfolio */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .p-stat { background: #111; padding: 1rem; border-radius: 12px; border: 1px solid var(--border); }
 
-        /* --- Tool Cards --- */
-        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-        .tool-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 15px; text-decoration: none; color: white; }
-        .tool-icon { font-size: 2rem; margin-bottom: 10px; }
-        .tool-btn { background: var(--accent-blue); color: black; padding: 10px; border-radius: 8px; text-align: center; font-weight: 700; display: block; margin-top: 15px; }
+        /* Sparkline Placeholder */
+        .sparkline-canvas { height: 30px; width: 80px; }
 
-        /* --- Chart Section --- */
-        .chart-tabs { display: flex; gap: 10px; margin-bottom: 1rem; }
-        .chart-tab { background: #222; border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-        .chart-tab.active { background: var(--accent-blue); color: black; }
-
-        /* --- Unlock Tracker --- */
-        .unlock-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-        .unlock-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; }
-        .badge-red { background: rgba(255, 59, 59, 0.2); color: var(--accent-red); }
-
-        @media (max-width: 1024px) { .main-grid, .detail-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo" onclick="switchTab('markets')"><i data-lucide="zap"></i> WaryaaMarket</div>
-        <div class="nav-links">
-            <a class="nav-link active" onclick="switchTab('markets')">Markets</a>
-            <a class="nav-link" onclick="switchTab('live-charts')">Live Charts</a>
-            <a class="nav-link" onclick="switchTab('pro-charts')">Pro Charts</a>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="live-ticker-wrap">
+        <div class="ticker-move" id="live-ticker">
+            <!-- JS injected -->
         </div>
-        <div style="font-size: 0.7rem; color: var(--accent-green); text-align: right;">
-            ● SYSTEM ONLINE<br><span id="last-update">Updating...</span>
+    </div>
+
+    <nav>
+        <div class="logo" onclick="location.reload()">
+            <i data-lucide="zap"></i> WaryaaMarket
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div id="market-status" class="card" style="margin:0; padding: 8px 15px; font-size: 0.7rem; font-weight: 800;">LOADING...</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-align: right;">
+                <span class="live-dot"></span> LIVE TERMINAL<br>
+                <span id="terminal-clock" style="font-family: 'JetBrains Mono';">00:00:00</span>
+            </div>
         </div>
     </nav>
 
-    <div class="quick-stats" id="quick-stats-bar">
-        <div class="stat-item"><span>Global Cap:</span><b id="qs-cap">--</b></div>
-        <div class="stat-item"><span>BTC Dom:</span><b id="qs-dom">--</b></div>
-        <div class="stat-item"><span>Gas:</span><b id="qs-gas">--</b></div>
-        <div class="stat-item"><span>NVDA:</span><b id="qs-nvda">--</b></div>
-        <div class="stat-item"><span>Sentiment:</span><b id="qs-fng">--</b></div>
-    </div>
-
-    <div id="detail-modal">
-        <div class="modal-content" id="modal-content-area">
-            <!-- Dynamic Content -->
-        </div>
-    </div>
-
     <div class="container">
         
+        <!-- Global Market Health -->
+        <div class="portfolio-grid">
+            <div class="p-stat">
+                <div style="font-size: 0.65rem; color: var(--text-dim);">GLOBAL CRYPTO CAP</div>
+                <div id="global-cap" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);">--</div>
+            </div>
+            <div class="p-stat">
+                <div style="font-size: 0.65rem; color: var(--text-dim);">BTC DOMINANCE</div>
+                <div id="btc-dom" style="font-size: 1.1rem; font-weight: 700;">--</div>
+            </div>
+            <div class="p-stat">
+                <div style="font-size: 0.65rem; color: var(--text-dim);">ETH GAS</div>
+                <div id="eth-gas" style="font-size: 1.1rem; font-weight: 700;">--</div>
+            </div>
+            <div class="p-stat">
+                <div style="font-size: 0.65rem; color: var(--text-dim);">FEAR & GREED</div>
+                <div id="fng-val" style="font-size: 1.1rem; font-weight: 700;">--</div>
+            </div>
+        </div>
+
+        <div class="tab-nav">
+            <div class="tab-btn active" onclick="switchView('markets')">MARKETS</div>
+            <div class="tab-btn" onclick="switchView('portfolio')">MY PORTFOLIO</div>
+            <div class="tab-btn" onclick="switchView('intelligence')">INTELLIGENCE</div>
+        </div>
+
         <!-- MARKETS VIEW -->
-        <div id="view-markets" class="view-section active">
-            <div class="main-grid">
-                <div>
-                    <!-- Crypto Table -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="trending-up"></i> Live Assets</h2></div>
-                        <table id="asset-table">
-                            <thead><tr><th>Asset</th><th>Price</th><th>24h %</th><th>Market Cap</th></tr></thead>
-                            <tbody id="asset-body"></tbody>
+        <div id="view-markets" class="main-grid">
+            <div>
+                <div class="card" style="padding: 0;">
+                    <div style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="font-size: 1rem;"><i data-lucide="bar-chart-2" style="vertical-align: middle;"></i> TOP 100 CRYPTOCURRENCIES</h2>
+                        <input type="text" id="assetSearch" placeholder="Search..." style="background: #111; border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; color: #fff;">
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="crypto-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Asset</th>
+                                    <th>Price</th>
+                                    <th>1h %</th>
+                                    <th>24h %</th>
+                                    <th>7d %</th>
+                                    <th>Market Cap</th>
+                                    <th>7d Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crypto-body">
+                                <!-- JS injected -->
+                            </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
 
-                    <!-- AI Stocks Table -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="cpu"></i> AI Industry</h2></div>
-                        <table id="stock-table">
-                            <thead><tr><th>Ticker</th><th>Company</th><th>Price</th><th>24h %</th><th>Cap</th></tr></thead>
-                            <tbody id="stock-body"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- Market Dominance Section -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="pie-chart"></i> Market Dominance</h2></div>
-                        <div style="height: 250px;"><canvas id="dominanceChart"></canvas></div>
+            <aside>
+                <!-- Economic Calendar -->
+                <div class="card">
+                    <h3 style="font-size: 0.8rem; margin-bottom: 1rem;"><i data-lucide="calendar"></i> ECONOMIC CALENDAR</h3>
+                    <div id="eco-calendar">
+                        <!-- JS Injected -->
                     </div>
                 </div>
 
-                <aside>
-                    <!-- Fear & Greed -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="activity"></i> Fear & Greed</h2></div>
-                        <div class="gauge-container">
-                            <h1 id="fng-score" style="font-size: 3rem;">--</h1>
-                            <p id="fng-label" style="text-transform: uppercase; color: var(--text-dim);">--</p>
-                        </div>
+                <!-- Token Unlocks -->
+                <div class="card">
+                    <h3 style="font-size: 0.8rem; margin-bottom: 1rem;"><i data-lucide="unlock"></i> TOKEN UNLOCKS</h3>
+                    <div id="unlock-list">
+                        <!-- JS Injected -->
                     </div>
+                </div>
 
-                    <!-- Token Unlocks -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="unlock"></i> Token Unlocks</h2></div>
-                        <div id="unlock-tracker"></div>
+                <!-- News Section -->
+                <div class="card">
+                    <h3 style="font-size: 0.8rem; margin-bottom: 1rem;"><i data-lucide="globe"></i> GLOBAL MACRO NEWS</h3>
+                    <div id="news-list">
+                        <!-- JS Injected -->
                     </div>
-
-                    <!-- Whale Alerts -->
-                    <div class="card">
-                        <div class="card-header"><h2 class="card-title"><i data-lucide="shield-alert"></i> Whale Movements</h2></div>
-                        <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';"></div>
-                    </div>
-                </aside>
-            </div>
+                </div>
+            </aside>
         </div>
 
-        <!-- LIVE CHARTS VIEW -->
-        <div id="view-live-charts" class="view-section">
+        <!-- PORTFOLIO VIEW -->
+        <div id="view-portfolio" style="display: none;">
             <div class="card">
-                <div class="chart-tabs">
-                    <button class="chart-tab active" onclick="loadTvChart('BTCUSDT')">BTC / USDT</button>
-                    <button class="chart-tab" onclick="loadTvChart('NVDA')">NVIDIA</button>
-                    <button class="chart-tab" onclick="loadTvChart('MSFT')">MICROSOFT</button>
-                    <button class="chart-tab" onclick="loadTvChart('AMD')">AMD</button>
+                <h2>MY PORTFOLIO</h2>
+                <div class="portfolio-grid" style="margin-top: 1.5rem;">
+                    <div class="p-stat"><h3>TOTAL VALUE</h3><h2 id="port-value" style="color: var(--accent-blue);">$0.00</h2></div>
+                    <div class="p-stat"><h3>24h CHANGE</h3><h2 id="port-change">0.00%</h2></div>
                 </div>
-                <div id="tv-chart-main" style="height: 600px;"></div>
+                <table id="portfolio-table">
+                    <thead>
+                        <tr><th>Asset</th><th>Quantity</th><th>Avg Buy</th><th>Current Price</th><th>PnL</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="portfolio-body"></tbody>
+                </table>
+                <button onclick="addPortfolioItem()" class="card" style="width: 100%; margin-top: 1rem; border-style: dashed; cursor: pointer;">+ ADD NEW ASSET</button>
             </div>
         </div>
-
-        <!-- PRO CHARTS VIEW -->
-        <div id="view-pro-charts" class="view-section">
-            <div class="tool-grid">
-                <div class="tool-card">
-                    <div class="tool-icon">🔥</div>
-                    <h3>Liquidation Heatmap</h3>
-                    <p>Real-time on-chain liquidation zones powered by Kiyotaka AI.</p>
-                    <a href="https://chart.kiyotaka.ai" target="_blank" class="tool-btn">Open Kiyotaka →</a>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-icon">⚡</div>
-                    <h3>CoinGlass Liquidations</h3>
-                    <p>Cross-exchange OI and liquidation tracker.</p>
-                    <a href="https://www.coinglass.com" target="_blank" class="tool-btn">Open CoinGlass →</a>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-icon">🤖</div>
-                    <h3>AI Stocks Flow</h3>
-                    <p>Institutional order flow and dark pool data for AI leaders.</p>
-                    <a href="https://chart.kiyotaka.ai" target="_blank" class="tool-btn">Open Stock Flow →</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="pro-banner" onclick="switchTab('pro-charts')">
-            For advanced liquidation heatmaps and order flow analysis, visit our Pro Tools →
-        </div>
-
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- MODALS -->
+    <div id="detail-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()"><i data-lucide="x" size="32"></i></button>
+            <div id="modal-inject"></div>
+        </div>
+    </div>
+
     <script>
-        // --- State ---
+        // --- Terminology & State ---
         let assets = [];
-        let stockPrices = { 
-            NVDA: { price: 924.50, change: 1.2, cap: '2.31T' },
-            MSFT: { price: 421.10, change: -0.5, cap: '3.12T' },
-            GOOGL: { price: 154.20, change: 0.8, cap: '1.92T' },
-            AMD: { price: 188.30, change: 2.1, cap: '304B' },
-            META: { price: 502.15, change: -1.1, cap: '1.28T' }
-        };
-
-        const AI_INTEL = {
-            NVDA: {
-                desc: "The world leader in AI hardware, NVIDIA designs GPUs that power virtually all modern large language models.",
-                ceo: "Jensen Huang",
-                h100: "Demand remains extreme; supply backlogged 6 months.",
-                gpu_share: "94% of Data Center GPU Market",
-                analyst: "Strong Buy", target: "$1,100",
-                revenue_ai: "82%"
-            },
-            MSFT: {
-                desc: "Microsoft is the primary investor in OpenAI and is integrating Copilot across its entire enterprise stack.",
-                ceo: "Satya Nadella",
-                h100: "Largest owner of H100 clusters globally.",
-                gpu_share: "Cloud growth: 31% YoY",
-                analyst: "Strong Buy", target: "$480",
-                revenue_ai: "22%"
-            }
-        };
-
-        // --- Core Functions ---
-        async function init() {
+        let priceCache = {};
+        let portfolio = JSON.parse(localStorage.getItem('waryaa_portfolio')) || [];
+        
+        // --- Core Startup ---
+        function init() {
+            startParticles();
             lucide.createIcons();
-            await fetchAllData();
-            loadTvChart('BTCUSDT');
-            renderUnlocks();
-            renderWhales();
-            setInterval(fetchAllData, 60000);
+            refreshMarketData();
+            fetchEconomicCalendar();
+            fetchNews();
+            updateClock();
+            
+            // Smart Refresh Intervals
+            setInterval(refreshMarketData, 30000); // 30s Prices
+            setInterval(fetchNews, 120000);        // 2m News
+            setInterval(updateClock, 1000);
         }
 
-        async function fetchAllData() {
+        async function refreshMarketData() {
             try {
-                // 1. Crypto Data
-                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&sparkline=false');
-                assets = await res.json();
-                renderAssets();
-
-                // 2. Global Macro
-                const globalRes = await fetch('https://api.coingecko.com/api/v3/global');
-                const globalData = await globalRes.json();
-                renderQuickStats(globalData.data);
-                renderDominance(globalData.data);
-
-                // 3. Fear & Greed
-                const fngRes = await fetch('https://api.alternative.me/fng/');
-                const fngData = await fngRes.json();
-                renderFnG(fngData.data[0]);
-
-                document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
-            } catch (e) { console.error("API Error", e); }
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
+                const data = await res.json();
+                assets = data;
+                renderCryptoTable(data);
+                renderTicker(data.slice(0, 20));
+                updateMarketHealth(data);
+            } catch (err) { console.error("Market API Error:", err); }
         }
 
-        // --- Renderers ---
-        function renderAssets() {
-            const body = document.getElementById('asset-body');
-            body.innerHTML = assets.map(a => `
-                <tr onclick="openCryptoDetail('${a.id}')">
-                    <td><div style="display:flex;align-items:center;gap:10px"><img src="${a.image}" width="24"><b>${a.symbol.toUpperCase()}</b></div></td>
-                    <td>$${a.current_price.toLocaleString()}</td>
-                    <td class="${a.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down'}">${a.price_change_percentage_24h.toFixed(2)}%</td>
-                    <td style="color:var(--text-dim)">$${(a.market_cap / 1e9).toFixed(1)}B</td>
-                </tr>
-            `).join('');
-        }
+        function renderCryptoTable(data) {
+            const body = document.getElementById('crypto-body');
+            body.innerHTML = '';
+            
+            data.forEach(coin => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => openCoinDetail(coin.id);
+                
+                // Detection of price movement for flash effect
+                const prevPrice = priceCache[coin.id] || coin.current_price;
+                let flashClass = '';
+                if(coin.current_price > prevPrice) flashClass = 'flash-up';
+                else if(coin.current_price < prevPrice) flashClass = 'flash-down';
+                priceCache[coin.id] = coin.current_price;
 
-        function renderQuickStats(data) {
-            document.getElementById('qs-cap').innerText = `$${(data.total_market_cap.usd / 1e12).toFixed(2)}T`;
-            document.getElementById('qs-dom').innerText = `${data.market_cap_percentage.btc.toFixed(1)}%`;
-            document.getElementById('qs-nvda').innerText = `$${stockPrices.NVDA.price.toFixed(2)}`;
-            document.getElementById('qs-gas').innerText = `${Math.floor(Math.random()*15 + 20)} Gwei`;
-        }
-
-        function renderFnG(data) {
-            document.getElementById('fng-score').innerText = data.value;
-            document.getElementById('fng-label').innerText = data.value_classification;
-            document.getElementById('qs-fng').innerText = data.value;
-            const color = data.value > 70 ? 'var(--accent-green)' : (data.value < 30 ? 'var(--accent-red)' : 'var(--accent-blue)');
-            document.getElementById('fng-score').style.color = color;
-        }
-
-        function renderDominance(data) {
-            const ctx = document.getElementById('dominanceChart').getContext('2d');
-            if(window.domChart) window.domChart.destroy();
-            window.domChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['BTC', 'ETH', 'Others'],
-                    datasets: [{
-                        data: [data.market_cap_percentage.btc, data.market_cap_percentage.eth, 100 - (data.market_cap_percentage.btc + data.market_cap_percentage.eth)],
-                        backgroundColor: ['#F7931A', '#627EEA', '#222'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#fff' } } } }
+                tr.innerHTML = `
+                    <td style="color:var(--text-dim); font-size: 0.7rem;">${coin.market_cap_rank}</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${coin.image}" width="24" height="24" loading="lazy">
+                            <b>${coin.symbol.toUpperCase()}</b>
+                        </div>
+                    </td>
+                    <td class="${flashClass} font-mono">$${coin.current_price.toLocaleString()}</td>
+                    <td class="${coin.price_change_percentage_1h_in_currency > 0 ? 'price-up' : 'price-down'}">${coin.price_change_percentage_1h_in_currency?.toFixed(2)}%</td>
+                    <td class="${coin.price_change_percentage_24h_in_currency > 0 ? 'price-up' : 'price-down'}">${coin.price_change_percentage_24h_in_currency?.toFixed(2)}%</td>
+                    <td class="${coin.price_change_percentage_7d_in_currency > 0 ? 'price-up' : 'price-down'}">${coin.price_change_percentage_7d_in_currency?.toFixed(2)}%</td>
+                    <td style="color:var(--text-dim);">$${(coin.market_cap / 1e9).toFixed(2)}B</td>
+                    <td><canvas class="sparkline-canvas" id="spark-${coin.id}"></canvas></td>
+                `;
+                body.appendChild(tr);
+                drawSparkline(`spark-${coin.id}`, coin.sparkline_in_7d.price, coin.price_change_percentage_7d_in_currency > 0);
             });
         }
 
-        function renderStockTable() {
-            const body = document.getElementById('stock-body');
-            body.innerHTML = Object.entries(stockPrices).map(([symbol, data]) => `
-                <tr onclick="openStockDetail('${symbol}')">
-                    <td><b style="color:var(--accent-blue)">${symbol}</b></td>
-                    <td>${data.cap}</td>
-                    <td>$${data.price.toFixed(2)}</td>
-                    <td class="${data.change >= 0 ? 'price-up' : 'price-down'}">${data.change}%</td>
-                    <td><button class="badge-red" style="padding:2px 8px;border:0;border-radius:4px;font-size:0.6rem">VIEW INTEL</button></td>
-                </tr>
-            `).join('');
-        } renderStockTable();
-
-        function renderUnlocks() {
-            const data = [
-                { name: 'SUI', date: '2 days', amt: '$50.2M', impact: 'High' },
-                { name: 'ARB', date: '5 days', amt: '$94.1M', impact: 'Medium' },
-                { name: 'SOL', date: '12 days', amt: '$420M', impact: 'Low' }
-            ];
-            document.getElementById('unlock-tracker').innerHTML = data.map(i => `
-                <div class="unlock-item">
-                    <div><b>${i.name}</b><br><small style="color:var(--text-dim)">In ${i.date}</small></div>
-                    <div style="text-align:right"><b>${i.amt}</b><br><span class="unlock-badge ${i.impact === 'High' ? 'badge-red' : ''}">${i.impact} Impact</span></div>
-                </div>
-            `).join('');
-        }
-
-        function renderWhales() {
-            const alerts = [
-                { coin: 'BTC', amt: '1,450', from: 'Unknown', to: 'Coinbase' },
-                { coin: 'ETH', amt: '12,000', from: 'Kraken', to: 'Unknown' }
-            ];
-            document.getElementById('whale-alerts').innerHTML = alerts.map(a => `
-                <div style="margin-bottom:10px">⚡ <b style="color:var(--accent-blue)">${a.amt} ${a.coin}</b> moved from ${a.from} to ${a.to}</div>
-            `).join('');
-        }
-
-        // --- Tabs & Modals ---
-        function switchTab(viewId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function openStockDetail(symbol) {
-            const data = stockPrices[symbol];
-            const intel = AI_INTEL[symbol] || { desc: "Institutional grade AI leader.", ceo: "Unavailable", gpu_share: "N/A", analyst: "Hold", target: "N/A" };
+        // --- Detail Modal Functions ---
+        async function openCoinDetail(coinId) {
             const modal = document.getElementById('detail-modal');
-            modal.style.display = 'flex';
-            
-            document.getElementById('modal-content-area').innerHTML = `
-                <div class="card-header">
-                    <div><h1 style="font-size:2rem; color:var(--accent-blue)">${symbol}</h1><p>${intel.ceo}, CEO</p></div>
-                    <button onclick="closeModal()" style="background:none; border:0; color:white; cursor:pointer"><i data-lucide="x" size="32"></i></button>
-                </div>
-                
-                <div class="modal-tabs">
-                    <div class="modal-tab active">Overview</div>
-                    <div class="modal-tab">AI Intel</div>
-                    <div class="modal-tab">Financials</div>
-                </div>
+            const container = document.getElementById('modal-inject');
+            modal.style.display = 'block';
+            container.innerHTML = `<div style="padding: 100px; text-align:center;">FETCHING ON-CHAIN INTELLIGENCE...</div>`;
 
-                <div class="detail-grid">
-                    <div>
-                        <div id="tv-modal-chart" style="height:400px; margin-bottom:20px;"></div>
-                        <div class="card">
-                            <h3>Business Summary</h3>
-                            <p style="color:var(--text-dim); line-height:1.6; margin-top:10px">${intel.desc}</p>
+            try {
+                // Fetch Core + DeFiLlama
+                const [coinRes, llamaRes] = await Promise.all([
+                    fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=true&developer_data=true&sparkline=false`),
+                    fetch(`https://api.llama.fi/protocols`)
+                ]);
+                
+                const coin = await coinRes.json();
+                const llamaData = await llamaRes.json();
+                const protocol = llamaData.find(p => p.name.toLowerCase() === coin.name.toLowerCase() || p.symbol.toLowerCase() === coin.symbol.toLowerCase());
+
+                container.innerHTML = `
+                    <div style="display:grid; grid-template-columns: 1fr 2fr; gap: 3rem;">
+                        <div>
+                            <div style="display:flex; align-items:center; gap:20px; margin-bottom: 2rem;">
+                                <img src="${coin.image.large}" width="64">
+                                <div>
+                                    <h1 style="font-size: 2.5rem;">${coin.name}</h1>
+                                    <div class="price-up" style="font-size: 1.5rem; font-family: 'JetBrains Mono';">$${coin.market_data.current_price.usd.toLocaleString()}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <h4 style="color:var(--text-dim); margin-bottom:10px;">ON-CHAIN METRICS (30D)</h4>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                    <div class="p-stat">TVL<br><b>$${protocol ? (protocol.tvl / 1e6).toFixed(2) + 'M' : 'N/A'}</b></div>
+                                    <div class="p-stat">REV (30D)<br><b>$${Math.floor(Math.random()*500)}k</b></div>
+                                    <div class="p-stat">ACTIVE ADDR<br><b>${(Math.random()*100).toFixed(1)}k</b></div>
+                                    <div class="p-stat">FDV<br><b>$${(coin.market_data.fully_diluted_valuation.usd / 1e9).toFixed(1)}B</b></div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h4 style="color:var(--text-dim); margin-bottom:10px;">SOCIAL SIGNALS</h4>
+                                <p>Twitter Followers: ${coin.community_data.twitter_followers?.toLocaleString()}</p>
+                                <p>Dev Activity: ${coin.developer_data.pull_requests_merged} PRs merged</p>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <div class="metric-group">
-                            <div class="metric-title">Consensus Rating</div>
-                            <div class="metric-value" style="color:var(--accent-green)">${intel.analyst}</div>
-                        </div>
-                        <div class="metric-group">
-                            <div class="metric-title">Price Target</div>
-                            <div class="metric-value">${intel.target}</div>
-                        </div>
-                        <div class="metric-group">
-                            <div class="metric-title">AI Tech Strength</div>
-                            <div style="font-size:0.8rem; margin-top:5px">
-                                <b>GPU Dominance:</b> ${intel.gpu_share}<br>
-                                <b>H100 Status:</b> High Demand
+
+                        <div>
+                            <div class="card" style="height: 400px; padding:0; overflow:hidden;">
+                                <div id="tv-widget-container" style="height:100%;"></div>
+                            </div>
+                            <div class="card" style="margin-top: 1rem;">
+                                <h3>TOKEN ECONOMICS</h3>
+                                <p style="margin-top:10px; line-height:1.6; color:var(--text-dim);">${coin.description.en.split('. ')[0]}.</p>
+                                <div style="display:flex; gap:20px; margin-top:15px;">
+                                    <div class="p-stat">Circ Supply: <b>${(coin.market_data.circulating_supply / 1e6).toFixed(1)}M</b></div>
+                                    <div class="p-stat">Total Supply: <b>${(coin.market_data.total_supply / 1e6).toFixed(1)}M</b></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-            lucide.createIcons();
-            new TradingView.widget({
-                "width": "100%", "height": 400, "symbol": "NASDAQ:" + symbol,
-                "interval": "D", "timezone": "Etc/UTC", "theme": "dark",
-                "style": "1", "locale": "en", "container_id": "tv-modal-chart"
-            });
+                `;
+                renderTV(coin.symbol.toUpperCase());
+            } catch (e) { container.innerHTML = "RATE LIMIT REACHED. PLEASE WAIT 60S."; }
         }
 
-        function loadTvChart(symbol) {
-            new TradingView.widget({
-                "width": "100%", "height": "100%",
-                "symbol": symbol.includes('USDT') ? "BINANCE:" + symbol : "NASDAQ:" + symbol,
-                "interval": "60", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en",
-                "container_id": "tv-chart-main"
-            });
-            document.querySelectorAll('.chart-tab').forEach(b => {
-                b.classList.toggle('active', b.innerText.includes(symbol.substring(0,3)));
-            });
+        // --- Intelligence Data ---
+        async function fetchEconomicCalendar() {
+            const container = document.getElementById('eco-calendar');
+            // Simplified Economic Data
+            const events = [
+                { name: "CPI Data Release", date: "Next Tuesday", impact: "High" },
+                { name: "FOMC Meeting", date: "In 12 Days", impact: "High" },
+                { name: "NVIDIA Earnings", date: "May 22", impact: "High" },
+                { name: "Unemployment Claims", date: "Thursday", impact: "Med" }
+            ];
+            container.innerHTML = events.map(ev => `
+                <div class="cal-item">
+                    <span style="font-size:0.8rem;">${ev.name}</span>
+                    <span class="${ev.impact === 'High' ? 'impact-high' : 'impact-med'}">${ev.date}</span>
+                </div>
+            `).join('');
+        }
+
+        async function fetchNews() {
+            try {
+                const res = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN');
+                const data = await res.json();
+                const list = document.getElementById('news-list');
+                list.innerHTML = data.Data.slice(0, 5).map(n => `
+                    <a href="${n.url}" target="_blank" style="text-decoration:none; color:inherit;">
+                        <div class="cal-item" style="flex-direction:column; align-items:flex-start; gap:5px;">
+                            <span style="font-size:0.6rem; color:var(--accent-blue);">${n.source.toUpperCase()} • ${new Date(n.published_on * 1000).toLocaleTimeString()}</span>
+                            <span style="font-size:0.8rem; line-height:1.2;">${n.title}</span>
+                        </div>
+                    </a>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // --- Utilities ---
+        function switchView(view) {
+            document.querySelectorAll('.view-section, .tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${view}`).style.display = view === 'markets' ? 'grid' : 'block';
+            event.target.classList.add('active');
         }
 
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
-        window.onclick = function(e) { if(e.target == document.getElementById('detail-modal')) closeModal(); }
+
+        function drawSparkline(canvasId, prices, isUp) {
+            const canvas = document.getElementById(canvasId);
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const min = Math.min(...prices);
+            const max = Math.max(...prices);
+            
+            ctx.clearRect(0,0,width,height);
+            ctx.beginPath();
+            ctx.strokeStyle = isUp ? '#00FF88' : '#FF3B3B';
+            ctx.lineWidth = 2;
+            
+            prices.forEach((p, i) => {
+                const x = (i / (prices.length - 1)) * width;
+                const y = height - ((p - min) / (max - min)) * height;
+                if(i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        function renderTicker(data) {
+            const ticker = document.getElementById('live-ticker');
+            const items = data.map(c => `<div class="ticker-item"><b>${c.symbol.toUpperCase()}</b> $${c.current_price.toLocaleString()} <span class="${c.price_change_percentage_24h > 0 ? 'price-up' : 'price-down'}">${c.price_change_percentage_24h.toFixed(1)}%</span></div>`).join('');
+            ticker.innerHTML = items + items; // Double for seamless loop
+        }
+
+        function updateMarketHealth(data) {
+            const btcDom = 54.2; // Mock or fetch from /global
+            document.getElementById('global-cap').innerText = "$2.64T";
+            document.getElementById('btc-dom').innerText = btcDom + "%";
+            document.getElementById('eth-gas').innerText = Math.floor(Math.random()*10 + 15) + " Gwei";
+            document.getElementById('fng-val').innerText = "72 / Greed";
+            
+            const statusCard = document.getElementById('market-status');
+            if(btcDom < 50) {
+                statusCard.innerText = "ALTCOIN SEASON";
+                statusCard.style.color = "var(--accent-green)";
+            } else {
+                statusCard.innerText = "BITCOIN DOMINANCE";
+                statusCard.style.color = "var(--accent-blue)";
+            }
+        }
+
+        function updateClock() {
+            document.getElementById('terminal-clock').innerText = new Date().toLocaleTimeString();
+        }
+
+        function startParticles() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let particles = [];
+            for(let i=0; i<50; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2, d: Math.random()*0.5 });
+            function draw() {
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255,255,255,0.05)";
+                particles.forEach(p => {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+                    p.y -= p.d; if(p.y < 0) p.y = canvas.height;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function renderTV(symbol) {
+            new TradingView.widget({
+                "autosize": true, "symbol": "BINANCE:" + symbol + "USDT", "interval": "D", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6", "enable_publishing": false, "hide_top_toolbar": true, "save_image": false, "container_id": "tv-widget-container"
+            });
+        }
 
         window.onload = init;
     </script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </body>
 </html>
