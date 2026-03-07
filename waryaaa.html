@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaryaaMarket | Crypto & AI Stock Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #0D0D0D;
+            --card-bg: #161616;
+            --accent-blue: #00D4FF;
+            --accent-green: #00FF88;
+            --accent-red: #FF3B3B;
+            --text-main: #FFFFFF;
+            --text-dim: #A0A0A0;
+            --border: #262626;
+            --glow-blue: rgba(0, 212, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- Ticker --- */
+        .ticker-wrap {
+            width: 100%;
+            background: #000;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            height: 35px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            padding-right: 100%;
+            animation: ticker 40s linear infinite;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* --- Navigation --- */
+        nav {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 13, 13, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            flex: 0 1 400px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px var(--glow-blue);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            padding: 2rem 5%;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        /* --- Global Stats --- */
+        .top-stats {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono';
+        }
+
+        /* --- Asset Tables --- */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .price-up { color: var(--accent-green); }
+        .price-down { color: var(--accent-red); }
+
+        .coin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coin-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        /* --- Watchlist & Buttons --- */
+        .btn-action {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            color: var(--accent-blue);
+        }
+
+        .btn-ai {
+            background: linear-gradient(45deg, #00D4FF, #0055FF);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Sidebar Widgets --- */
+        .intelligence-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .news-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .news-tag {
+            font-size: 0.6rem;
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .news-title {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        /* --- Fear & Greed --- */
+        .fng-meter {
+            height: 10px;
+            width: 100%;
+            background: #333;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .fng-fill {
+            height: 100%;
+            transition: 1s ease-in-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes flashGreen {
+            0% { background: rgba(0, 255, 136, 0.2); }
+            100% { background: transparent; }
+        }
+
+        @keyframes flashRed {
+            0% { background: rgba(255, 59, 59, 0.2); }
+            100% { background: transparent; }
+        }
+
+        .flash-up { animation: flashGreen 1s; }
+        .flash-down { animation: flashRed 1s; }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, #161616 25%, #222 50%, #161616 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ticker-wrap">
+        <div class="ticker" id="live-ticker">
+            Loading market pulses...
+        </div>
+    </div>
+
+    <nav>
+        <div class="logo">
+            <i data-lucide="zap"></i> WaryaaMarket
+        </div>
+        <div class="search-container">
+            <i data-lucide="search" class="search-icon" size="18"></i>
+            <input type="text" id="assetSearch" placeholder="Search Crypto or AI Stocks...">
+        </div>
+        <div id="connection-status" style="font-size: 0.7rem; color: var(--accent-green)">
+            ● LIVE: AUTO-REFRESH (60s)
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- GLOBAL STATS -->
+        <div class="top-stats">
+            <div class="stat-card">
+                <div class="stat-label">Market Sentiment</div>
+                <div class="stat-value" id="fng-label">Loading...</div>
+                <div class="fng-meter"><div id="fng-bar" class="fng-fill" style="width: 0%"></div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ETH Gas (Gwei)</div>
+                <div class="stat-value" id="eth-gas">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">BTC Hash Rate</div>
+                <div class="stat-value" id="btc-hash">-- EH/s</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">AI Sector Cap</div>
+                <div class="stat-value" id="ai-market-cap" style="color: var(--accent-blue)">$2.48T</div>
+            </div>
+        </div>
+
+        <!-- MAIN MARKET DATA -->
+        <main>
+            <!-- Watchlist Section -->
+            <div id="watchlist-container" class="card" style="display: none; border: 1px solid var(--accent-blue);">
+                <div class="card-header">
+                    <h2 class="card-title" style="color: var(--accent-blue)"><i data-lucide="star"></i> My Watchlist</h2>
+                </div>
+                <table id="watchlist-table">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Price</th>
+                            <th>24h %</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="watchlist-body"></tbody>
+                </table>
+            </div>
+
+            <!-- Crypto Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="bitcoin"></i> Top 20 Cryptocurrencies</h2>
+                    <div class="stat-label">Powered by CoinGecko</div>
+                </div>
+                <table id="crypto-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Asset</th>
+                            <th>Price</th>
+                            <th>24h %</th>
+                            <th>Market Cap</th>
+                            <th>Insights</th>
+                            <th>Watch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crypto-body">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AI Stocks Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="cpu"></i> AI Industry Stocks</h2>
+                    <span class="news-tag">NASDAQ REAL-TIME</span>
+                </div>
+                <table id="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Company</th>
+                            <th>Price</th>
+                            <th>24h %</th>
+                            <th>Sentiment</th>
+                            <th>Watch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-body">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- MARKET INTELLIGENCE SIDEBAR -->
+        <aside class="intelligence-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="brain-circuit"></i> AI Daily Summary</h2>
+                </div>
+                <p id="daily-summary" style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">
+                    Analyzing market volatility... BTC dominance is shifting while NVDA shows strong pre-market momentum in the AI sector.
+                </p>
+                <button class="btn-ai" style="margin-top: 1rem; width: 100%; padding: 10px;" onclick="generateSummary()">Regenerate AI Insight</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="zap"></i> Whale Alerts & Activity</h2>
+                </div>
+                <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';">
+                    <!-- JS injected -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i data-lucide="newspaper"></i> AI & Crypto News</h2>
+                </div>
+                <div id="news-container">
+                    <!-- JS injected -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let watchlist = JSON.parse(localStorage.getItem('waryaa_watchlist')) || [];
+        let previousPrices = {};
+
+        // --- Configuration & Data ---
+        const AI_STOCKS = [
+            { symbol: 'NVDA', name: 'NVIDIA Corp', price: 912.45, change: 2.5 },
+            { symbol: 'MSFT', name: 'Microsoft', price: 415.22, change: -0.4 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc', price: 152.12, change: 1.2 },
+            { symbol: 'AMD', name: 'Advanced Micro', price: 194.33, change: 3.1 },
+            { symbol: 'META', name: 'Meta Platforms', price: 498.19, change: -1.1 },
+            { symbol: 'TSM', name: 'TSMC', price: 141.22, change: 0.8 },
+            { symbol: 'PLTR', name: 'Palantir Tech', price: 24.15, change: 5.4 }
+        ];
+
+        // --- Core Functions ---
+        async function init() {
+            lucide.createIcons();
+            fetchCryptoData();
+            fetchFearAndGreed();
+            fetchOnChainMetrics();
+            fetchNews();
+            renderStocks();
+            renderWatchlist();
+            generateWhaleAlerts();
+            
+            // Auto-refresh every 60 seconds
+            setInterval(() => {
+                fetchCryptoData();
+                fetchFearAndGreed();
+                updateStockPrices();
+            }, 60000);
+        }
+
+        async function fetchCryptoData() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&sparkline=false');
+                const data = await res.json();
+                renderCrypto(data);
+                updateTicker(data);
+            } catch (err) {
+                console.error("Crypto Fetch Error:", err);
+            }
+        }
+
+        async function fetchFearAndGreed() {
+            try {
+                const res = await fetch('https://api.alternative.me/fng/');
+                const data = await res.json();
+                const value = data.data[0].value;
+                const classification = data.data[0].value_classification;
+                
+                const elLabel = document.getElementById('fng-label');
+                const elBar = document.getElementById('fng-bar');
+                
+                elLabel.innerText = `${value} | ${classification}`;
+                elBar.style.width = `${value}%`;
+                
+                // Color coding
+                if(value < 30) elBar.style.backgroundColor = 'var(--accent-red)';
+                else if(value < 70) elBar.style.backgroundColor = 'var(--accent-blue)';
+                else elBar.style.backgroundColor = 'var(--accent-green)';
+            } catch (err) {}
+        }
+
+        async function fetchOnChainMetrics() {
+            // Simulated/Public Endpoints
+            document.getElementById('eth-gas').innerText = Math.floor(Math.random() * (40 - 15) + 15);
+            document.getElementById('btc-hash').innerText = (Math.random() * (620 - 580) + 580).toFixed(2);
+        }
+
+        function renderCrypto(coins) {
+            const container = document.getElementById('crypto-body');
+            container.innerHTML = '';
+
+            coins.forEach((coin, index) => {
+                const change = coin.price_change_percentage_24h;
+                const price = coin.current_price;
+                const prevPrice = previousPrices[coin.id];
+                let flashClass = '';
+
+                if(prevPrice) {
+                    if(price > prevPrice) flashClass = 'flash-up';
+                    else if(price < prevPrice) flashClass = 'flash-down';
+                }
+                previousPrices[coin.id] = price;
+
+                const tr = document.createElement('tr');
+                tr.className = flashClass;
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="coin-info">
+                            <img src="${coin.image}" class="coin-icon">
+                            <strong>${coin.name}</strong> 
+                            <span style="color:var(--text-dim); font-size:0.7rem">${coin.symbol.toUpperCase()}</span>
+                        </div>
+                    </td>
+                    <td class="font-mono">$${price.toLocaleString()}</td>
+                    <td class="${change >= 0 ? 'price-up' : 'price-down'}">
+                        ${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%
+                    </td>
+                    <td style="color: var(--text-dim)">$${(coin.market_cap / 1e9).toFixed(2)}B</td>
+                    <td><button class="btn-ai" onclick="getInsight('${coin.name}', ${change})">AI Insight</button></td>
+                    <td>
+                        <button class="btn-action" onclick="toggleWatchlist('${coin.id}', '${coin.symbol}', 'crypto')">
+                            <i data-lucide="star" size="16" ${watchlist.includes(coin.id) ? 'fill="var(--accent-blue)"' : ''}></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function renderStocks() {
+            const container = document.getElementById('stock-body');
+            container.innerHTML = '';
+
+            AI_STOCKS.forEach(stock => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:var(--accent-blue)">${stock.symbol}</strong></td>
+                    <td>${stock.name}</td>
+                    <td class="font-mono">$${stock.price.toFixed(2)}</td>
+                    <td class="${stock.change >= 0 ? 'price-up' : 'price-down'}">
+                        ${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.change).toFixed(2)}%
+                    </td>
+                    <td><span class="news-tag">${stock.change > 0 ? 'BULLISH' : 'NEUTRAL'}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="toggleWatchlist('${stock.symbol}', '${stock.symbol}', 'stock')">
+                            <i data-lucide="star" size="16" ${watchlist.includes(stock.symbol) ? 'fill="var(--accent-blue)"' : ''}></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // --- Watchlist Logic ---
+        function toggleWatchlist(id, symbol, type) {
+            if (watchlist.includes(id)) {
+                watchlist = watchlist.filter(item => item !== id);
+            } else {
+                watchlist.push(id);
+                showNotification(`Added ${symbol.toUpperCase()} to Watchlist`);
+            }
+            localStorage.setItem('waryaa_watchlist', JSON.stringify(watchlist));
+            renderWatchlist();
+            fetchCryptoData(); // Refresh icons
+            renderStocks();
+        }
+
+        function renderWatchlist() {
+            const container = document.getElementById('watchlist-container');
+            const body = document.getElementById('watchlist-body');
+            
+            if (watchlist.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            body.innerHTML = '';
+            
+            // Note: In a production app, we would fetch fresh prices for specific IDs
+            // For this demo, we show the names saved.
+            watchlist.forEach(id => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${id.toUpperCase()}</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td><button class="btn-action" onclick="toggleWatchlist('${id}', '${id}')">Remove</button></td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // --- AI Insight Generator ---
+        function getInsight(name, change) {
+            const mood = change > 0 ? "bullish accumulation" : "short-term correction";
+            const advice = change > 0 ? "Watch for resistance at the next psychological level." : "Support zones are being tested. Monitor volume.";
+            alert(`Waryaa AI Insight for ${name}: Current trend suggests ${mood}. ${advice}`);
+        }
+
+        function generateSummary() {
+            const summaries = [
+                "Market is showing signs of decoupling between AI stocks and Bitcoin.",
+                "High whale activity detected in ETH liquidity pools. Volatility expected.",
+                "Institutional inflow into AI sector remains dominant despite macro-headwinds.",
+                "Retail sentiment is hitting extreme greed; exercise caution on leverage."
+            ];
+            document.getElementById('daily-summary').innerText = summaries[Math.floor(Math.random() * summaries.length)];
+        }
+
+        // --- Ticker & UI ---
+        function updateTicker(data) {
+            const ticker = document.getElementById('live-ticker');
+            ticker.innerHTML = data.map(c => `
+                <span class="ticker-item">
+                    ${c.symbol.toUpperCase()} $${c.current_price.toLocaleString()} 
+                    <span style="color: ${c.price_change_percentage_24h > 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                        ${c.price_change_percentage_24h.toFixed(1)}%
+                    </span>
+                </span>
+            `).join('');
+        }
+
+        function generateWhaleAlerts() {
+            const container = document.getElementById('whale-alerts');
+            const alerts = [
+                { asset: 'BTC', amount: '1,200', target: 'Unknown Wallet' },
+                { asset: 'ETH', amount: '15,000', target: 'Coinbase' },
+                { asset: 'SOL', amount: '250,000', target: 'Binance' }
+            ];
+            
+            container.innerHTML = alerts.map(a => `
+                <div style="margin-bottom: 8px; color: var(--text-dim)">
+                    <span style="color: var(--accent-blue)">⚡ WHALE:</span> ${a.amount} ${a.asset} moved to ${a.target}
+                </div>
+            `).join('');
+        }
+
+        function fetchNews() {
+            const news = [
+                { tag: 'AI STOCKS', title: 'NVIDIA CEO Announces Next-Gen Blackwell Architecture' },
+                { tag: 'CRYPTO', title: 'SEC Reviewing Multiple Ethereum Spot ETF Applications' },
+                { tag: 'MARKET', title: 'Institutional Buy Wall for AI Infrastructure Grows' }
+            ];
+            
+            const container = document.getElementById('news-container');
+            container.innerHTML = news.map(n => `
+                <div class="news-item">
+                    <span class="news-tag">${n.tag}</span>
+                    <div class="news-title">${n.title}</div>
+                </div>
+            `).join('');
+        }
+
+        function showNotification(msg) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("WaryaaMarket Alert", { body: msg });
+            } else if ("Notification" in window && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
+
+        // Simulate stock price updates (Mock real-time)
+        function updateStockPrices() {
+            AI_STOCKS.forEach(stock => {
+                const move = (Math.random() - 0.5) * 2;
+                stock.price += move;
+            });
+            renderStocks();
+        }
+
+        // Search Filter
+        document.getElementById('assetSearch').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
