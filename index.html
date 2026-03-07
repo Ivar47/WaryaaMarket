@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WaryaaMarket | Crypto & AI Stock Intelligence</title>
+    <title>WaryaaMarket | Pro Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js for detailed price history -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -19,506 +18,432 @@
             --text-main: #FFFFFF;
             --text-dim: #A0A0A0;
             --border: #262626;
-            --glow-blue: rgba(0, 212, 255, 0.15);
-            --modal-overlay: rgba(0, 0, 0, 0.85);
+            --glow-blue: rgba(0, 212, 255, 0.2);
+            --modal-overlay: rgba(0, 0, 0, 0.9);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; scroll-behavior: smooth; }
 
-        /* --- Ticker --- */
-        .ticker-wrap { width: 100%; background: #000; border-bottom: 1px solid var(--border); overflow: hidden; height: 35px; display: flex; align-items: center; }
-        .ticker { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 40s linear infinite; }
-        .ticker-item { display: inline-block; padding: 0 2rem; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
-        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        /* --- Global Layout --- */
+        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-link { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { color: var(--accent-blue); font-weight: 600; }
 
-        /* --- Navigation --- */
-        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-        .logo { font-weight: 800; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .search-container { flex: 0 1 400px; position: relative; }
-        .search-container input { width: 100%; background: var(--card-bg); border: 1px solid var(--border); padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
-        .search-container input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--glow-blue); }
-        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+        /* --- Quick Stats Bar --- */
+        .quick-stats { background: #111; padding: 10px 5%; display: flex; gap: 2rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; font-family: 'JetBrains Mono'; white-space: nowrap; overflow-x: auto; }
+        .stat-item span { color: var(--text-dim); margin-right: 5px; }
+        .stat-item b { color: var(--accent-blue); }
 
-        /* --- Main Layout --- */
-        .container { padding: 2rem 5%; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .top-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; text-align: center; }
-        .stat-label { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
-        .stat-value { font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono'; }
+        .container { padding: 2rem 5%; max-width: 1600px; margin: 0 auto; }
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Asset Tables --- */
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        /* --- Cards & UI Elements --- */
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; transition: 0.3s; }
+        .card:hover { border-color: #444; box-shadow: 0 0 20px var(--glow-blue); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .card-title { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .card-title { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; color: var(--text-dim); font-size: 0.75rem; padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); }
-        td { padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        td { padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; cursor: pointer; }
         .price-up { color: var(--accent-green); }
         .price-down { color: var(--accent-red); }
-        .coin-info { display: flex; align-items: center; gap: 10px; }
-        .coin-icon { width: 24px; height: 24px; border-radius: 50%; }
 
-        /* --- Buttons --- */
-        .btn-action { background: none; border: none; color: var(--text-dim); cursor: pointer; transition: 0.2s; }
-        .btn-action:hover { color: var(--accent-blue); }
-        .btn-ai { background: linear-gradient(45deg, #00D4FF, #0055FF); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
+        /* --- Fear & Greed Gauge --- */
+        .gauge-container { text-align: center; padding: 20px; }
+        .gauge-svg { width: 150px; height: 150px; transform: rotate(-90deg); }
+        .gauge-circle { fill: none; stroke-width: 10; stroke-linecap: round; transition: 1s stroke-dasharray; }
 
-        /* --- Sidebar --- */
-        .intelligence-panel { display: flex; flex-direction: column; gap: 2rem; }
-        .news-item { padding: 1rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .news-item:hover .news-title { color: var(--accent-blue); }
-        .news-tag { font-size: 0.6rem; background: #333; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); margin-bottom: 5px; display: inline-block; }
-        .news-title { font-size: 0.9rem; line-height: 1.4; transition: 0.2s; }
+        /* --- Pro Tools Banner --- */
+        .pro-banner { background: linear-gradient(90deg, #0055FF, #00D4FF); padding: 1.5rem; border-radius: 12px; text-align: center; font-weight: 700; margin: 2rem 0; cursor: pointer; color: white; transition: 0.3s; }
+        .pro-banner:hover { transform: scale(1.01); filter: brightness(1.1); }
 
         /* --- Modal System --- */
-        #detail-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-overlay); backdrop-filter: blur(8px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--bg-color); border: 1px solid var(--border);
-            width: 90%; max-width: 1000px; max-height: 90vh;
-            border-radius: 16px; position: relative; overflow-y: auto;
-            animation: slideUp 0.3s ease-out; padding: 2.5rem;
-        }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .close-modal { position: absolute; top: 20px; right: 20px; color: var(--text-dim); cursor: pointer; border: none; background: none; }
-        
-        /* Modal Content Styling */
-        .detail-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; margin-top: 1.5rem; }
-        .chart-container { background: var(--card-bg); border-radius: 12px; padding: 1rem; border: 1px solid var(--border); height: 350px; }
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .metric-box { background: var(--card-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); }
-        .metric-val { font-family: 'JetBrains Mono'; font-weight: 600; font-size: 1rem; margin-top: 4px; }
-        .pressure-bar { height: 8px; background: #333; border-radius: 4px; margin-top: 10px; overflow: hidden; display: flex; }
+        #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
+        .modal-content { background: var(--bg-color); border: 1px solid var(--border); width: 100%; max-width: 1100px; border-radius: 20px; position: relative; padding: 2.5rem; }
+        .modal-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+        .modal-tab { padding: 10px 0; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; border-bottom: 2px solid transparent; }
+        .modal-tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
-        /* --- Fear & Greed --- */
-        .fng-meter { height: 10px; width: 100%; background: #333; border-radius: 5px; margin: 1rem 0; overflow: hidden; }
-        .fng-fill { height: 100%; transition: 1s ease-in-out; }
+        /* --- Grid for Detail Pages --- */
+        .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .metric-group { background: #111; padding: 1.2rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1rem; }
+        .metric-title { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+        .metric-value { font-family: 'JetBrains Mono'; font-size: 1.1rem; }
+        .inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-        @media (max-width: 1024px) {
-            .container { grid-template-columns: 1fr; }
-            .detail-grid { grid-template-columns: 1fr; }
-        }
+        /* --- Tool Cards --- */
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .tool-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 15px; text-decoration: none; color: white; }
+        .tool-icon { font-size: 2rem; margin-bottom: 10px; }
+        .tool-btn { background: var(--accent-blue); color: black; padding: 10px; border-radius: 8px; text-align: center; font-weight: 700; display: block; margin-top: 15px; }
+
+        /* --- Chart Section --- */
+        .chart-tabs { display: flex; gap: 10px; margin-bottom: 1rem; }
+        .chart-tab { background: #222; border: 1px solid var(--border); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+        .chart-tab.active { background: var(--accent-blue); color: black; }
+
+        /* --- Unlock Tracker --- */
+        .unlock-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .unlock-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; }
+        .badge-red { background: rgba(255, 59, 59, 0.2); color: var(--accent-red); }
+
+        @media (max-width: 1024px) { .main-grid, .detail-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- Modal Overlay -->
-    <div id="detail-modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()"><i data-lucide="x" size="28"></i></button>
-            <div id="modal-body-content">
-                <!-- Dynamic Content -->
-            </div>
-        </div>
-    </div>
-
-    <div class="ticker-wrap">
-        <div class="ticker" id="live-ticker">Loading market pulses...</div>
-    </div>
-
     <nav>
-        <div class="logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-            <i data-lucide="zap"></i> WaryaaMarket
+        <div class="logo" onclick="switchTab('markets')"><i data-lucide="zap"></i> WaryaaMarket</div>
+        <div class="nav-links">
+            <a class="nav-link active" onclick="switchTab('markets')">Markets</a>
+            <a class="nav-link" onclick="switchTab('live-charts')">Live Charts</a>
+            <a class="nav-link" onclick="switchTab('pro-charts')">Pro Charts</a>
         </div>
-        <div class="search-container">
-            <i data-lucide="search" class="search-icon" size="18"></i>
-            <input type="text" id="assetSearch" placeholder="Search Crypto or AI Stocks...">
+        <div style="font-size: 0.7rem; color: var(--accent-green); text-align: right;">
+            ● SYSTEM ONLINE<br><span id="last-update">Updating...</span>
         </div>
-        <div id="connection-status" style="font-size: 0.7rem; color: var(--accent-green)">● LIVE: AUTO-REFRESH (60s)</div>
     </nav>
 
+    <div class="quick-stats" id="quick-stats-bar">
+        <div class="stat-item"><span>Global Cap:</span><b id="qs-cap">--</b></div>
+        <div class="stat-item"><span>BTC Dom:</span><b id="qs-dom">--</b></div>
+        <div class="stat-item"><span>Gas:</span><b id="qs-gas">--</b></div>
+        <div class="stat-item"><span>NVDA:</span><b id="qs-nvda">--</b></div>
+        <div class="stat-item"><span>Sentiment:</span><b id="qs-fng">--</b></div>
+    </div>
+
+    <div id="detail-modal">
+        <div class="modal-content" id="modal-content-area">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+
     <div class="container">
-        <!-- GLOBAL STATS -->
-        <div class="top-stats">
-            <div class="stat-card">
-                <div class="stat-label">Market Sentiment</div>
-                <div class="stat-value" id="fng-label">Loading...</div>
-                <div class="fng-meter"><div id="fng-bar" class="fng-fill" style="width: 0%"></div></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">ETH Gas (Gwei)</div>
-                <div class="stat-value" id="eth-gas">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">BTC Hash Rate</div>
-                <div class="stat-value" id="btc-hash">-- EH/s</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">AI Sector Cap</div>
-                <div class="stat-value" id="ai-market-cap" style="color: var(--accent-blue)">$2.48T</div>
+        
+        <!-- MARKETS VIEW -->
+        <div id="view-markets" class="view-section active">
+            <div class="main-grid">
+                <div>
+                    <!-- Crypto Table -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="trending-up"></i> Live Assets</h2></div>
+                        <table id="asset-table">
+                            <thead><tr><th>Asset</th><th>Price</th><th>24h %</th><th>Market Cap</th></tr></thead>
+                            <tbody id="asset-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- AI Stocks Table -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="cpu"></i> AI Industry</h2></div>
+                        <table id="stock-table">
+                            <thead><tr><th>Ticker</th><th>Company</th><th>Price</th><th>24h %</th><th>Cap</th></tr></thead>
+                            <tbody id="stock-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Market Dominance Section -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="pie-chart"></i> Market Dominance</h2></div>
+                        <div style="height: 250px;"><canvas id="dominanceChart"></canvas></div>
+                    </div>
+                </div>
+
+                <aside>
+                    <!-- Fear & Greed -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="activity"></i> Fear & Greed</h2></div>
+                        <div class="gauge-container">
+                            <h1 id="fng-score" style="font-size: 3rem;">--</h1>
+                            <p id="fng-label" style="text-transform: uppercase; color: var(--text-dim);">--</p>
+                        </div>
+                    </div>
+
+                    <!-- Token Unlocks -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="unlock"></i> Token Unlocks</h2></div>
+                        <div id="unlock-tracker"></div>
+                    </div>
+
+                    <!-- Whale Alerts -->
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title"><i data-lucide="shield-alert"></i> Whale Movements</h2></div>
+                        <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';"></div>
+                    </div>
+                </aside>
             </div>
         </div>
 
-        <main>
-            <!-- Watchlist Section -->
-            <div id="watchlist-container" class="card" style="display: none; border: 1px solid var(--accent-blue);">
-                <div class="card-header"><h2 class="card-title" style="color: var(--accent-blue)"><i data-lucide="star"></i> My Watchlist</h2></div>
-                <table id="watchlist-table">
-                    <thead><tr><th>Asset</th><th>Price</th><th>24h %</th><th>Action</th></tr></thead>
-                    <tbody id="watchlist-body"></tbody>
-                </table>
-            </div>
-
-            <!-- Crypto Table -->
+        <!-- LIVE CHARTS VIEW -->
+        <div id="view-live-charts" class="view-section">
             <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-lucide="bitcoin"></i> Top 20 Cryptocurrencies</h2>
-                    <div class="stat-label">Powered by CoinGecko</div>
+                <div class="chart-tabs">
+                    <button class="chart-tab active" onclick="loadTvChart('BTCUSDT')">BTC / USDT</button>
+                    <button class="chart-tab" onclick="loadTvChart('NVDA')">NVIDIA</button>
+                    <button class="chart-tab" onclick="loadTvChart('MSFT')">MICROSOFT</button>
+                    <button class="chart-tab" onclick="loadTvChart('AMD')">AMD</button>
                 </div>
-                <table id="crypto-table">
-                    <thead><tr><th>#</th><th>Asset</th><th>Price</th><th>24h %</th><th>Market Cap</th><th>Insights</th><th>Watch</th></tr></thead>
-                    <tbody id="crypto-body"></tbody>
-                </table>
+                <div id="tv-chart-main" style="height: 600px;"></div>
             </div>
+        </div>
 
-            <!-- AI Stocks Table -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-lucide="cpu"></i> AI Industry Stocks</h2>
-                    <span class="news-tag">NASDAQ REAL-TIME</span>
+        <!-- PRO CHARTS VIEW -->
+        <div id="view-pro-charts" class="view-section">
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">🔥</div>
+                    <h3>Liquidation Heatmap</h3>
+                    <p>Real-time on-chain liquidation zones powered by Kiyotaka AI.</p>
+                    <a href="https://chart.kiyotaka.ai" target="_blank" class="tool-btn">Open Kiyotaka →</a>
                 </div>
-                <table id="stock-table">
-                    <thead><tr><th>Ticker</th><th>Company</th><th>Price</th><th>24h %</th><th>Sentiment</th><th>Watch</th></tr></thead>
-                    <tbody id="stock-body"></tbody>
-                </table>
+                <div class="tool-card">
+                    <div class="tool-icon">⚡</div>
+                    <h3>CoinGlass Liquidations</h3>
+                    <p>Cross-exchange OI and liquidation tracker.</p>
+                    <a href="https://www.coinglass.com" target="_blank" class="tool-btn">Open CoinGlass →</a>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">🤖</div>
+                    <h3>AI Stocks Flow</h3>
+                    <p>Institutional order flow and dark pool data for AI leaders.</p>
+                    <a href="https://chart.kiyotaka.ai" target="_blank" class="tool-btn">Open Stock Flow →</a>
+                </div>
             </div>
-        </main>
+        </div>
 
-        <aside class="intelligence-panel">
-            <div class="card">
-                <div class="card-header"><h2 class="card-title"><i data-lucide="brain-circuit"></i> AI Daily Summary</h2></div>
-                <p id="daily-summary" style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">Analyzing volatility...</p>
-                <button class="btn-ai" style="margin-top: 1rem; width: 100%; padding: 10px;" onclick="generateSummary()">Regenerate AI Insight</button>
-            </div>
+        <div class="pro-banner" onclick="switchTab('pro-charts')">
+            For advanced liquidation heatmaps and order flow analysis, visit our Pro Tools →
+        </div>
 
-            <div class="card">
-                <div class="card-header"><h2 class="card-title"><i data-lucide="zap"></i> Whale Alerts</h2></div>
-                <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';"></div>
-            </div>
-
-            <div class="card">
-                <div class="card-header"><h2 class="card-title"><i data-lucide="newspaper"></i> AI & Crypto News</h2></div>
-                <div id="news-container"></div>
-            </div>
-        </aside>
     </div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // --- State Management ---
-        let watchlist = JSON.parse(localStorage.getItem('waryaa_watchlist')) || [];
-        let previousPrices = {};
-        let newsData = [];
-        let coinCache = {}; // 60s cache
-        const CACHE_TIME = 60000;
+        // --- State ---
+        let assets = [];
+        let stockPrices = { 
+            NVDA: { price: 924.50, change: 1.2, cap: '2.31T' },
+            MSFT: { price: 421.10, change: -0.5, cap: '3.12T' },
+            GOOGL: { price: 154.20, change: 0.8, cap: '1.92T' },
+            AMD: { price: 188.30, change: 2.1, cap: '304B' },
+            META: { price: 502.15, change: -1.1, cap: '1.28T' }
+        };
 
-        const AI_STOCKS = [
-            { symbol: 'NVDA', name: 'NVIDIA Corp', price: 912.45, change: 2.5 },
-            { symbol: 'MSFT', name: 'Microsoft', price: 415.22, change: -0.4 },
-            { symbol: 'GOOGL', name: 'Alphabet Inc', price: 152.12, change: 1.2 },
-            { symbol: 'AMD', name: 'Advanced Micro', price: 194.33, change: 3.1 },
-            { symbol: 'META', name: 'Meta Platforms', price: 498.19, change: -1.1 },
-            { symbol: 'PLTR', name: 'Palantir Tech', price: 24.15, change: 5.4 }
-        ];
+        const AI_INTEL = {
+            NVDA: {
+                desc: "The world leader in AI hardware, NVIDIA designs GPUs that power virtually all modern large language models.",
+                ceo: "Jensen Huang",
+                h100: "Demand remains extreme; supply backlogged 6 months.",
+                gpu_share: "94% of Data Center GPU Market",
+                analyst: "Strong Buy", target: "$1,100",
+                revenue_ai: "82%"
+            },
+            MSFT: {
+                desc: "Microsoft is the primary investor in OpenAI and is integrating Copilot across its entire enterprise stack.",
+                ceo: "Satya Nadella",
+                h100: "Largest owner of H100 clusters globally.",
+                gpu_share: "Cloud growth: 31% YoY",
+                analyst: "Strong Buy", target: "$480",
+                revenue_ai: "22%"
+            }
+        };
 
+        // --- Core Functions ---
         async function init() {
             lucide.createIcons();
-            fetchCryptoData();
-            fetchFearAndGreed();
-            fetchOnChainMetrics();
-            fetchNews();
-            renderStocks();
-            renderWatchlist();
-            generateWhaleAlerts();
-            generateSummary();
-            
-            setInterval(() => {
-                fetchCryptoData();
-                fetchFearAndGreed();
-                updateStockPrices();
-            }, 60000);
+            await fetchAllData();
+            loadTvChart('BTCUSDT');
+            renderUnlocks();
+            renderWhales();
+            setInterval(fetchAllData, 60000);
         }
 
-        // --- Data Fetching ---
-        async function fetchCryptoData() {
+        async function fetchAllData() {
             try {
-                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&sparkline=false');
-                const data = await res.json();
-                renderCrypto(data);
-                updateTicker(data);
-            } catch (err) { console.error(err); }
+                // 1. Crypto Data
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&sparkline=false');
+                assets = await res.json();
+                renderAssets();
+
+                // 2. Global Macro
+                const globalRes = await fetch('https://api.coingecko.com/api/v3/global');
+                const globalData = await globalRes.json();
+                renderQuickStats(globalData.data);
+                renderDominance(globalData.data);
+
+                // 3. Fear & Greed
+                const fngRes = await fetch('https://api.alternative.me/fng/');
+                const fngData = await fngRes.json();
+                renderFnG(fngData.data[0]);
+
+                document.getElementById('last-update').innerText = new Date().toLocaleTimeString();
+            } catch (e) { console.error("API Error", e); }
         }
 
-        async function fetchNews() {
-            // Simulated real news for demo
-            newsData = [
-                { tag: 'AI STOCKS', title: 'NVIDIA CEO Announces Next-Gen Blackwell Architecture', source: 'Reuters', time: '2h ago', content: 'NVIDIA has officially unveiled the Blackwell GPU architecture, promising 30x performance increases for LLM workloads. This move solidifies their dominance in the AI hardware race as demand for compute continues to skyrocket globally.', sentiment: 'Strongly Bullish', impact: 'High', coins: ['NVDA', 'AMD'] },
-                { tag: 'CRYPTO', title: 'SEC Reviewing Multiple Ethereum Spot ETF Applications', source: 'Bloomberg', time: '4h ago', content: 'The Securities and Exchange Commission has opened a public comment period for three separate Ethereum ETF applications. Market analysts suggest a 60% probability of approval by May, which could trigger a massive liquidity influx into the ETH ecosystem.', sentiment: 'Bullish', impact: 'Medium', coins: ['ETH', 'LDO'] },
-                { tag: 'MARKET', title: 'Institutional Buy Wall for AI Infrastructure Grows', source: 'CoinDesk', time: '6h ago', content: 'Data shows a 400% increase in venture capital funding for AI infrastructure startups in Q1. Large asset managers are pivoting from traditional tech to specialized AI-driven platforms, creating a sustained support floor for the sector.', sentiment: 'Neutral', impact: 'Low', coins: ['PLTR', 'GOOGL'] }
+        // --- Renderers ---
+        function renderAssets() {
+            const body = document.getElementById('asset-body');
+            body.innerHTML = assets.map(a => `
+                <tr onclick="openCryptoDetail('${a.id}')">
+                    <td><div style="display:flex;align-items:center;gap:10px"><img src="${a.image}" width="24"><b>${a.symbol.toUpperCase()}</b></div></td>
+                    <td>$${a.current_price.toLocaleString()}</td>
+                    <td class="${a.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down'}">${a.price_change_percentage_24h.toFixed(2)}%</td>
+                    <td style="color:var(--text-dim)">$${(a.market_cap / 1e9).toFixed(1)}B</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderQuickStats(data) {
+            document.getElementById('qs-cap').innerText = `$${(data.total_market_cap.usd / 1e12).toFixed(2)}T`;
+            document.getElementById('qs-dom').innerText = `${data.market_cap_percentage.btc.toFixed(1)}%`;
+            document.getElementById('qs-nvda').innerText = `$${stockPrices.NVDA.price.toFixed(2)}`;
+            document.getElementById('qs-gas').innerText = `${Math.floor(Math.random()*15 + 20)} Gwei`;
+        }
+
+        function renderFnG(data) {
+            document.getElementById('fng-score').innerText = data.value;
+            document.getElementById('fng-label').innerText = data.value_classification;
+            document.getElementById('qs-fng').innerText = data.value;
+            const color = data.value > 70 ? 'var(--accent-green)' : (data.value < 30 ? 'var(--accent-red)' : 'var(--accent-blue)');
+            document.getElementById('fng-score').style.color = color;
+        }
+
+        function renderDominance(data) {
+            const ctx = document.getElementById('dominanceChart').getContext('2d');
+            if(window.domChart) window.domChart.destroy();
+            window.domChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['BTC', 'ETH', 'Others'],
+                    datasets: [{
+                        data: [data.market_cap_percentage.btc, data.market_cap_percentage.eth, 100 - (data.market_cap_percentage.btc + data.market_cap_percentage.eth)],
+                        backgroundColor: ['#F7931A', '#627EEA', '#222'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#fff' } } } }
+            });
+        }
+
+        function renderStockTable() {
+            const body = document.getElementById('stock-body');
+            body.innerHTML = Object.entries(stockPrices).map(([symbol, data]) => `
+                <tr onclick="openStockDetail('${symbol}')">
+                    <td><b style="color:var(--accent-blue)">${symbol}</b></td>
+                    <td>${data.cap}</td>
+                    <td>$${data.price.toFixed(2)}</td>
+                    <td class="${data.change >= 0 ? 'price-up' : 'price-down'}">${data.change}%</td>
+                    <td><button class="badge-red" style="padding:2px 8px;border:0;border-radius:4px;font-size:0.6rem">VIEW INTEL</button></td>
+                </tr>
+            `).join('');
+        } renderStockTable();
+
+        function renderUnlocks() {
+            const data = [
+                { name: 'SUI', date: '2 days', amt: '$50.2M', impact: 'High' },
+                { name: 'ARB', date: '5 days', amt: '$94.1M', impact: 'Medium' },
+                { name: 'SOL', date: '12 days', amt: '$420M', impact: 'Low' }
             ];
-            
-            const container = document.getElementById('news-container');
-            container.innerHTML = newsData.map((n, i) => `
-                <div class="news-item" onclick="openNewsDetail(${i})">
-                    <span class="news-tag">${n.tag}</span>
-                    <div class="news-title">${n.title}</div>
+            document.getElementById('unlock-tracker').innerHTML = data.map(i => `
+                <div class="unlock-item">
+                    <div><b>${i.name}</b><br><small style="color:var(--text-dim)">In ${i.date}</small></div>
+                    <div style="text-align:right"><b>${i.amt}</b><br><span class="unlock-badge ${i.impact === 'High' ? 'badge-red' : ''}">${i.impact} Impact</span></div>
                 </div>
             `).join('');
         }
 
-        // --- Renderers ---
-        function renderCrypto(coins) {
-            const container = document.getElementById('crypto-body');
-            container.innerHTML = '';
-            coins.forEach((coin, index) => {
-                const change = coin.price_change_percentage_24h;
-                const tr = document.createElement('tr');
-                tr.onclick = (e) => {
-                    if(!e.target.closest('button')) openCryptoDetail(coin.id);
-                };
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td><div class="coin-info"><img src="${coin.image}" class="coin-icon"><strong>${coin.name}</strong></div></td>
-                    <td class="font-mono">$${coin.current_price.toLocaleString()}</td>
-                    <td class="${change >= 0 ? 'price-up' : 'price-down'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</td>
-                    <td style="color: var(--text-dim)">$${(coin.market_cap / 1e9).toFixed(2)}B</td>
-                    <td><button class="btn-ai">View Intel</button></td>
-                    <td><button class="btn-action" onclick="toggleWatchlist('${coin.id}', '${coin.symbol}')"><i data-lucide="star" size="16"></i></button></td>
-                `;
-                container.appendChild(tr);
-            });
-            lucide.createIcons();
+        function renderWhales() {
+            const alerts = [
+                { coin: 'BTC', amt: '1,450', from: 'Unknown', to: 'Coinbase' },
+                { coin: 'ETH', amt: '12,000', from: 'Kraken', to: 'Unknown' }
+            ];
+            document.getElementById('whale-alerts').innerHTML = alerts.map(a => `
+                <div style="margin-bottom:10px">⚡ <b style="color:var(--accent-blue)">${a.amt} ${a.coin}</b> moved from ${a.from} to ${a.to}</div>
+            `).join('');
         }
 
-        function renderStocks() {
-            const container = document.getElementById('stock-body');
-            container.innerHTML = '';
-            AI_STOCKS.forEach(stock => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong style="color:var(--accent-blue)">${stock.symbol}</strong></td>
-                    <td>${stock.name}</td>
-                    <td class="font-mono">$${stock.price.toFixed(2)}</td>
-                    <td class="${stock.change >= 0 ? 'price-up' : 'price-down'}">${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.change).toFixed(2)}%</td>
-                    <td><span class="news-tag">BULLISH</span></td>
-                    <td><button class="btn-action" onclick="toggleWatchlist('${stock.symbol}', '${stock.symbol}')"><i data-lucide="star" size="16"></i></button></td>
-                `;
-                container.appendChild(tr);
-            });
-            lucide.createIcons();
+        // --- Tabs & Modals ---
+        function switchTab(viewId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // --- Detail Modal Functions ---
-        async function openCryptoDetail(id) {
+        function openStockDetail(symbol) {
+            const data = stockPrices[symbol];
+            const intel = AI_INTEL[symbol] || { desc: "Institutional grade AI leader.", ceo: "Unavailable", gpu_share: "N/A", analyst: "Hold", target: "N/A" };
             const modal = document.getElementById('detail-modal');
-            const body = document.getElementById('modal-body-content');
             modal.style.display = 'flex';
-            body.innerHTML = '<div style="text-align:center; padding: 3rem;">Loading High-Resolution Market Data...</div>';
-
-            try {
-                // Check Cache
-                let coin;
-                if(coinCache[id] && (Date.now() - coinCache[id].ts < CACHE_TIME)) {
-                    coin = coinCache[id].data;
-                } else {
-                    const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}?sparkline=true&localization=false`);
-                    coin = await res.json();
-                    coinCache[id] = { data: coin, ts: Date.now() };
-                }
-
-                const priceChange = coin.market_data.price_change_percentage_24h;
-                
-                body.innerHTML = `
-                    <div class="card-header">
-                        <div style="display:flex; align-items:center; gap:15px">
-                            <img src="${coin.image.large}" width="48">
-                            <div>
-                                <h1 style="font-size: 1.8rem;">${coin.name} <span style="color:var(--text-dim); font-size: 1rem;">${coin.symbol.toUpperCase()}</span></h1>
-                                <div style="font-size: 1.5rem; font-family:'JetBrains Mono'" class="${priceChange >= 0 ? 'price-up' : 'price-down'}">
-                                    $${coin.market_data.current_price.usd.toLocaleString()} 
-                                    <span style="font-size: 0.9rem">(${priceChange.toFixed(2)}%)</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="text-align:right">
-                            <div class="news-tag">Rank #${coin.market_cap_rank}</div>
-                            <div style="color:var(--text-dim); font-size: 0.8rem; margin-top:5px">Last Updated: ${new Date().toLocaleTimeString()}</div>
-                        </div>
-                    </div>
-
-                    <div class="detail-grid">
-                        <div class="chart-side">
-                            <div class="chart-container">
-                                <canvas id="priceChart"></canvas>
-                            </div>
-                            <div style="margin-top: 1.5rem">
-                                <h3>AI Intel Performance Summary</h3>
-                                <p style="color:var(--text-dim); margin-top:10px; font-size: 0.95rem; line-height:1.6">
-                                    ${coin.name} is currently showing ${priceChange > 0 ? 'strong bullish' : 'corrective'} momentum. 
-                                    On-chain metrics indicate ${Math.random() > 0.5 ? 'increased whale accumulation' : 'distribution'} over the last 72 hours. 
-                                    Relative Strength Index (RSI) is sitting at ${Math.floor(Math.random() * 40 + 30)}, suggesting the asset is 
-                                    ${priceChange > 5 ? 'approaching overbought territory' : 'in a healthy consolidation phase'}.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="metrics-side">
-                            <h3>Key Metrics</h3>
-                            <div class="metrics-grid" style="margin-top:1rem">
-                                <div class="metric-box"><div class="stat-label">Market Cap</div><div class="metric-val">$${(coin.market_data.market_cap.usd / 1e9).toFixed(2)}B</div></div>
-                                <div class="metric-box"><div class="stat-label">24h Volume</div><div class="metric-val">$${(coin.market_data.total_volume.usd / 1e6).toFixed(2)}M</div></div>
-                                <div class="metric-box"><div class="stat-label">Circ. Supply</div><div class="metric-val">${(coin.market_data.circulating_supply / 1e6).toFixed(1)}M</div></div>
-                                <div class="metric-box"><div class="stat-label">All-Time High</div><div class="metric-val" style="color:var(--accent-green)">$${coin.market_data.ath.usd.toLocaleString()}</div></div>
-                            </div>
-                            
-                            <div class="metric-box" style="margin-top:1rem">
-                                <div class="stat-label">Buy/Sell Pressure (AI Estimate)</div>
-                                <div class="pressure-bar">
-                                    <div style="width: 65%; background: var(--accent-green)"></div>
-                                    <div style="width: 35%; background: var(--accent-red)"></div>
-                                </div>
-                                <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-top:5px">
-                                    <span>BUY 65%</span>
-                                    <span>SELL 35%</span>
-                                </div>
-                            </div>
-
-                            <div style="margin-top:1.5rem">
-                                <h3>On-Chain Signals</h3>
-                                <ul style="list-style:none; margin-top:10px; color:var(--text-dim); font-size:0.9rem">
-                                    <li style="margin-bottom:8px">● Active Addresses: ${(Math.random()*500).toFixed(1)}k (↑ 12%)</li>
-                                    <li style="margin-bottom:8px">● Whale Netflow: <span style="color:var(--accent-green)">+$42.5M</span></li>
-                                    <li style="margin-bottom:8px">● Network Security: Optimal</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                renderChart(coin.market_data.sparkline_7d.price);
-            } catch (err) {
-                body.innerHTML = `<div style="color:var(--accent-red)">Error loading data. CoinGecko API limit might be reached. Try again in 60s.</div>`;
-            }
-        }
-
-        function openNewsDetail(index) {
-            const news = newsData[index];
-            const modal = document.getElementById('detail-modal');
-            const body = document.getElementById('modal-body-content');
-            modal.style.display = 'flex';
-
-            body.innerHTML = `
-                <div class="news-tag">${news.tag}</div>
-                <h1 style="margin: 1rem 0; font-size: 2rem;">${news.title}</h1>
-                <div style="color:var(--text-dim); display:flex; gap:20px; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
-                    <span>Source: <strong>${news.source}</strong></span>
-                    <span>Time: ${news.time}</span>
+            
+            document.getElementById('modal-content-area').innerHTML = `
+                <div class="card-header">
+                    <div><h1 style="font-size:2rem; color:var(--accent-blue)">${symbol}</h1><p>${intel.ceo}, CEO</p></div>
+                    <button onclick="closeModal()" style="background:none; border:0; color:white; cursor:pointer"><i data-lucide="x" size="32"></i></button>
                 </div>
                 
+                <div class="modal-tabs">
+                    <div class="modal-tab active">Overview</div>
+                    <div class="modal-tab">AI Intel</div>
+                    <div class="modal-tab">Financials</div>
+                </div>
+
                 <div class="detail-grid">
                     <div>
-                        <h3>Article Summary</h3>
-                        <p style="margin-top: 1rem; line-height: 1.8; color: #ddd; font-size: 1.1rem;">${news.content}</p>
-                        
-                        <div style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius:12px">
-                            <h4>Mentioned Assets</h4>
-                            <div style="display:flex; gap:10px; margin-top:10px">
-                                ${news.coins.map(c => `<span class="news-tag" style="padding: 5px 15px; font-size:0.8rem">#${c}</span>`).join('')}
-                            </div>
+                        <div id="tv-modal-chart" style="height:400px; margin-bottom:20px;"></div>
+                        <div class="card">
+                            <h3>Business Summary</h3>
+                            <p style="color:var(--text-dim); line-height:1.6; margin-top:10px">${intel.desc}</p>
                         </div>
                     </div>
-                    
                     <div>
-                        <div class="metric-box">
-                            <div class="stat-label">AI Sentiment Analysis</div>
-                            <div style="font-size: 1.5rem; color: ${news.sentiment.includes('Bullish') ? 'var(--accent-green)' : 'var(--accent-blue)'}">${news.sentiment}</div>
+                        <div class="metric-group">
+                            <div class="metric-title">Consensus Rating</div>
+                            <div class="metric-value" style="color:var(--accent-green)">${intel.analyst}</div>
                         </div>
-                        <div class="metric-box" style="margin-top:1rem">
-                            <div class="stat-label">Projected Market Impact</div>
-                            <div style="font-size: 1.5rem; color: var(--accent-blue)">${news.impact} Priority</div>
+                        <div class="metric-group">
+                            <div class="metric-title">Price Target</div>
+                            <div class="metric-value">${intel.target}</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="metric-title">AI Tech Strength</div>
+                            <div style="font-size:0.8rem; margin-top:5px">
+                                <b>GPU Dominance:</b> ${intel.gpu_share}<br>
+                                <b>H100 Status:</b> High Demand
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
+            lucide.createIcons();
+            new TradingView.widget({
+                "width": "100%", "height": 400, "symbol": "NASDAQ:" + symbol,
+                "interval": "D", "timezone": "Etc/UTC", "theme": "dark",
+                "style": "1", "locale": "en", "container_id": "tv-modal-chart"
+            });
         }
 
-        function renderChart(prices) {
-            const ctx = document.getElementById('priceChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: prices.map((_, i) => i),
-                    datasets: [{
-                        label: '7D Price History',
-                        data: prices,
-                        borderColor: '#00D4FF',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: true,
-                        backgroundColor: 'rgba(0, 212, 255, 0.05)',
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { display: false },
-                        y: { grid: { color: '#222' }, ticks: { color: '#666', font: { size: 10 } } }
-                    }
-                }
+        function loadTvChart(symbol) {
+            new TradingView.widget({
+                "width": "100%", "height": "100%",
+                "symbol": symbol.includes('USDT') ? "BINANCE:" + symbol : "NASDAQ:" + symbol,
+                "interval": "60", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en",
+                "container_id": "tv-chart-main"
+            });
+            document.querySelectorAll('.chart-tab').forEach(b => {
+                b.classList.toggle('active', b.innerText.includes(symbol.substring(0,3)));
             });
         }
 
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
-
-        // --- Logic Helpers ---
-        function generateSummary() {
-            const summaries = ["BTC dominance is shifting while NVDA shows strong momentum.", "Whale activity detected in ETH liquidity pools.", "Institutional inflow into AI sector remains dominant.", "Retail sentiment is hitting extreme greed."];
-            document.getElementById('daily-summary').innerText = summaries[Math.floor(Math.random()*summaries.length)];
-        }
-
-        function generateWhaleAlerts() {
-            const alerts = [{asset:'BTC', qty:'1,200'}, {asset:'ETH', qty:'15,000'}, {asset:'SOL', qty:'250k'}];
-            document.getElementById('whale-alerts').innerHTML = alerts.map(a => `<div style="margin-bottom:8px"><span style="color:var(--accent-blue)">⚡ WHALE:</span> ${a.qty} ${a.asset} moved</div>`).join('');
-        }
-
-        function fetchFearAndGreed() {
-            fetch('https://api.alternative.me/fng/').then(res => res.json()).then(data => {
-                const val = data.data[0].value;
-                document.getElementById('fng-label').innerText = `${val} | ${data.data[0].value_classification}`;
-                document.getElementById('fng-bar').style.width = `${val}%`;
-                document.getElementById('fng-bar').style.backgroundColor = val < 40 ? 'var(--accent-red)' : 'var(--accent-green)';
-            });
-        }
-
-        function updateTicker(data) {
-            document.getElementById('live-ticker').innerHTML = data.map(c => `<span class="ticker-item">${c.symbol.toUpperCase()} $${c.current_price.toLocaleString()} <span style="color:${c.price_change_percentage_24h>0?'var(--accent-green)':'var(--accent-red)'}">${c.price_change_percentage_24h.toFixed(1)}%</span></span>`).join('');
-        }
-
-        function fetchOnChainMetrics() {
-            document.getElementById('eth-gas').innerText = Math.floor(Math.random()*30 + 10);
-            document.getElementById('btc-hash').innerText = (Math.random()*50 + 550).toFixed(1);
-        }
-
-        function renderWatchlist() {
-            const container = document.getElementById('watchlist-container');
-            const body = document.getElementById('watchlist-body');
-            if (watchlist.length === 0) { container.style.display = 'none'; return; }
-            container.style.display = 'block';
-            body.innerHTML = watchlist.map(id => `<tr><td>${id.toUpperCase()}</td><td>--</td><td>--</td><td><button onclick="toggleWatchlist('${id}','')">Remove</button></td></tr>`).join('');
-        }
-
-        function toggleWatchlist(id) {
-            watchlist = watchlist.includes(id) ? watchlist.filter(i => i !== id) : [...watchlist, id];
-            localStorage.setItem('waryaa_watchlist', JSON.stringify(watchlist));
-            renderWatchlist();
-        }
+        window.onclick = function(e) { if(e.target == document.getElementById('detail-modal')) closeModal(); }
 
         window.onload = init;
     </script>
