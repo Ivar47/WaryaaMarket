@@ -938,18 +938,7 @@ function goPage(page, btn){
 // ======================================================
 //  FETCH
 // ======================================================
-async function fetchCrypto(){
-  try{
-    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
-    cryptoData=await r.json();
-    renderCryptoTable();
-    renderCryptoFull();
-    updateTickerFromData();
-    updateAltcoinIndex();
-  }catch(e){
-    document.getElementById('cryptoBody').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">Rate limited — refreshing in 60s...</td></tr>';
-  }
-}
+async function fetchCrypto(){ return fetchCryptoWithRetry(); }
 
 async function fetchGlobal(){
   try{
@@ -1823,9 +1812,33 @@ function timeAgo(ts){
 }
 
 // ======================================================
-//  INIT
+//  INIT — staggered fetches to avoid rate limiting
 // ======================================================
+async function fetchCryptoWithRetry(attempt=1){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
+    if(r.status===429) throw new Error('rate_limit');
+    cryptoData=await r.json();
+    if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
+    renderCryptoTable();
+    renderCryptoFull();
+    updateTickerFromData();
+    updateAltcoinIndex();
+  }catch(e){
+    const wait=attempt*8000; // 8s, 16s, 24s...
+    const maxAttempts=5;
+    const tbody=document.getElementById('cryptoBody');
+    if(attempt<=maxAttempts){
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
+      setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
+    }else{
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ CoinGecko rate limited. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
+    }
+  }
+}
+
 async function init(){
+  // Render static content first (no API needed)
   buildTicker();
   renderStocksOverview();
   renderSideUnlocks();
@@ -1834,20 +1847,21 @@ async function init(){
   renderFunding();
   renderWhales();
 
-  // Async fetches
-  await fetchCrypto();
-  fetchGlobal();
-  fetchFearGreed();
-  fetchGas();
-  loadNews('ALL');
+  // Stagger all API calls — 2s apart to avoid rate limit
+  fetchCryptoWithRetry();
+  setTimeout(()=>fetchGlobal(), 2000);
+  setTimeout(()=>fetchFearGreed(), 4000);
+  setTimeout(()=>fetchGas(), 5000);
+  setTimeout(()=>loadNews('ALL'), 6000);
 
   // Timers
   setInterval(tick,1000);
 
-  // Auto-refresh
-  setInterval(()=>{fetchCrypto();fetchGlobal();},60000);
-  setInterval(()=>{fetchFearGreed();fetchGas();},300000);
-  setInterval(()=>loadNews('ALL'),180000);
+  // Auto-refresh (staggered too)
+  setInterval(()=>fetchCryptoWithRetry(), 65000);
+  setInterval(()=>fetchGlobal(), 67000);
+  setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
+  setInterval(()=>loadNews('ALL'), 180000);
 }
 
 init();
