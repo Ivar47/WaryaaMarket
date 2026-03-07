@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js for detailed price history -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #0D0D0D;
@@ -18,323 +20,116 @@
             --text-dim: #A0A0A0;
             --border: #262626;
             --glow-blue: rgba(0, 212, 255, 0.15);
+            --modal-overlay: rgba(0, 0, 0, 0.85);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
 
         /* --- Ticker --- */
-        .ticker-wrap {
-            width: 100%;
-            background: #000;
-            border-bottom: 1px solid var(--border);
-            overflow: hidden;
-            height: 35px;
-            display: flex;
-            align-items: center;
-        }
-
-        .ticker {
-            display: inline-block;
-            white-space: nowrap;
-            padding-right: 100%;
-            animation: ticker 40s linear infinite;
-        }
-
-        .ticker-item {
-            display: inline-block;
-            padding: 0 2rem;
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-        }
+        .ticker-wrap { width: 100%; background: #000; border-bottom: 1px solid var(--border); overflow: hidden; height: 35px; display: flex; align-items: center; }
+        .ticker { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 40s linear infinite; }
+        .ticker-item { display: inline-block; padding: 0 2rem; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
         /* --- Navigation --- */
-        nav {
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(13, 13, 13, 0.8);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-container {
-            flex: 0 1 400px;
-            position: relative;
-        }
-
-        .search-container input {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border-radius: 8px;
-            color: white;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .search-container input:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 10px var(--glow-blue);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-dim);
-        }
+        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(13, 13, 13, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .search-container { flex: 0 1 400px; position: relative; }
+        .search-container input { width: 100%; background: var(--card-bg); border: 1px solid var(--border); padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 8px; color: white; outline: none; transition: 0.3s; }
+        .search-container input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--glow-blue); }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
 
         /* --- Main Layout --- */
-        .container {
-            padding: 2rem 5%;
-            max-width: 1600px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-
-        /* --- Global Stats --- */
-        .top-stats {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-label {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            font-family: 'JetBrains Mono';
-        }
+        .container { padding: 2rem 5%; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .top-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; text-align: center; }
+        .stat-label { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono'; }
 
         /* --- Asset Tables --- */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            padding: 1rem 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 1rem 0.5rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .card-title { font-size: 1.2rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--text-dim); font-size: 0.75rem; padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); }
+        td { padding: 1rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         .price-up { color: var(--accent-green); }
         .price-down { color: var(--accent-red); }
+        .coin-info { display: flex; align-items: center; gap: 10px; }
+        .coin-icon { width: 24px; height: 24px; border-radius: 50%; }
 
-        .coin-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* --- Buttons --- */
+        .btn-action { background: none; border: none; color: var(--text-dim); cursor: pointer; transition: 0.2s; }
+        .btn-action:hover { color: var(--accent-blue); }
+        .btn-ai { background: linear-gradient(45deg, #00D4FF, #0055FF); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
 
-        .coin-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-        }
+        /* --- Sidebar --- */
+        .intelligence-panel { display: flex; flex-direction: column; gap: 2rem; }
+        .news-item { padding: 1rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .news-item:hover .news-title { color: var(--accent-blue); }
+        .news-tag { font-size: 0.6rem; background: #333; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); margin-bottom: 5px; display: inline-block; }
+        .news-title { font-size: 0.9rem; line-height: 1.4; transition: 0.2s; }
 
-        /* --- Watchlist & Buttons --- */
-        .btn-action {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: 0.2s;
+        /* --- Modal System --- */
+        #detail-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--modal-overlay); backdrop-filter: blur(8px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
         }
-
-        .btn-action:hover {
-            color: var(--accent-blue);
+        .modal-content {
+            background: var(--bg-color); border: 1px solid var(--border);
+            width: 90%; max-width: 1000px; max-height: 90vh;
+            border-radius: 16px; position: relative; overflow-y: auto;
+            animation: slideUp 0.3s ease-out; padding: 2.5rem;
         }
-
-        .btn-ai {
-            background: linear-gradient(45deg, #00D4FF, #0055FF);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* --- Sidebar Widgets --- */
-        .intelligence-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .news-item {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .news-tag {
-            font-size: 0.6rem;
-            background: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--accent-blue);
-            margin-bottom: 5px;
-            display: inline-block;
-        }
-
-        .news-title {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            cursor: pointer;
-        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 20px; right: 20px; color: var(--text-dim); cursor: pointer; border: none; background: none; }
+        
+        /* Modal Content Styling */
+        .detail-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+        .chart-container { background: var(--card-bg); border-radius: 12px; padding: 1rem; border: 1px solid var(--border); height: 350px; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .metric-box { background: var(--card-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); }
+        .metric-val { font-family: 'JetBrains Mono'; font-weight: 600; font-size: 1rem; margin-top: 4px; }
+        .pressure-bar { height: 8px; background: #333; border-radius: 4px; margin-top: 10px; overflow: hidden; display: flex; }
 
         /* --- Fear & Greed --- */
-        .fng-meter {
-            height: 10px;
-            width: 100%;
-            background: #333;
-            border-radius: 5px;
-            margin: 1rem 0;
-            overflow: hidden;
-        }
+        .fng-meter { height: 10px; width: 100%; background: #333; border-radius: 5px; margin: 1rem 0; overflow: hidden; }
+        .fng-fill { height: 100%; transition: 1s ease-in-out; }
 
-        .fng-fill {
-            height: 100%;
-            transition: 1s ease-in-out;
-        }
-
-        /* Responsive */
         @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Animations */
-        @keyframes flashGreen {
-            0% { background: rgba(0, 255, 136, 0.2); }
-            100% { background: transparent; }
-        }
-
-        @keyframes flashRed {
-            0% { background: rgba(255, 59, 59, 0.2); }
-            100% { background: transparent; }
-        }
-
-        .flash-up { animation: flashGreen 1s; }
-        .flash-down { animation: flashRed 1s; }
-
-        .loading-shimmer {
-            background: linear-gradient(90deg, #161616 25%, #222 50%, #161616 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            .container { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap">
-        <div class="ticker" id="live-ticker">
-            Loading market pulses...
+    <!-- Modal Overlay -->
+    <div id="detail-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()"><i data-lucide="x" size="28"></i></button>
+            <div id="modal-body-content">
+                <!-- Dynamic Content -->
+            </div>
         </div>
     </div>
 
+    <div class="ticker-wrap">
+        <div class="ticker" id="live-ticker">Loading market pulses...</div>
+    </div>
+
     <nav>
-        <div class="logo">
+        <div class="logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
             <i data-lucide="zap"></i> WaryaaMarket
         </div>
         <div class="search-container">
             <i data-lucide="search" class="search-icon" size="18"></i>
             <input type="text" id="assetSearch" placeholder="Search Crypto or AI Stocks...">
         </div>
-        <div id="connection-status" style="font-size: 0.7rem; color: var(--accent-green)">
-            ● LIVE: AUTO-REFRESH (60s)
-        </div>
+        <div id="connection-status" style="font-size: 0.7rem; color: var(--accent-green)">● LIVE: AUTO-REFRESH (60s)</div>
     </nav>
 
     <div class="container">
@@ -359,22 +154,12 @@
             </div>
         </div>
 
-        <!-- MAIN MARKET DATA -->
         <main>
             <!-- Watchlist Section -->
             <div id="watchlist-container" class="card" style="display: none; border: 1px solid var(--accent-blue);">
-                <div class="card-header">
-                    <h2 class="card-title" style="color: var(--accent-blue)"><i data-lucide="star"></i> My Watchlist</h2>
-                </div>
+                <div class="card-header"><h2 class="card-title" style="color: var(--accent-blue)"><i data-lucide="star"></i> My Watchlist</h2></div>
                 <table id="watchlist-table">
-                    <thead>
-                        <tr>
-                            <th>Asset</th>
-                            <th>Price</th>
-                            <th>24h %</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Asset</th><th>Price</th><th>24h %</th><th>Action</th></tr></thead>
                     <tbody id="watchlist-body"></tbody>
                 </table>
             </div>
@@ -386,20 +171,8 @@
                     <div class="stat-label">Powered by CoinGecko</div>
                 </div>
                 <table id="crypto-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Asset</th>
-                            <th>Price</th>
-                            <th>24h %</th>
-                            <th>Market Cap</th>
-                            <th>Insights</th>
-                            <th>Watch</th>
-                        </tr>
-                    </thead>
-                    <tbody id="crypto-body">
-                        <!-- JS injected -->
-                    </tbody>
+                    <thead><tr><th>#</th><th>Asset</th><th>Price</th><th>24h %</th><th>Market Cap</th><th>Insights</th><th>Watch</th></tr></thead>
+                    <tbody id="crypto-body"></tbody>
                 </table>
             </div>
 
@@ -410,51 +183,27 @@
                     <span class="news-tag">NASDAQ REAL-TIME</span>
                 </div>
                 <table id="stock-table">
-                    <thead>
-                        <tr>
-                            <th>Ticker</th>
-                            <th>Company</th>
-                            <th>Price</th>
-                            <th>24h %</th>
-                            <th>Sentiment</th>
-                            <th>Watch</th>
-                        </tr>
-                    </thead>
-                    <tbody id="stock-body">
-                        <!-- JS injected -->
-                    </tbody>
+                    <thead><tr><th>Ticker</th><th>Company</th><th>Price</th><th>24h %</th><th>Sentiment</th><th>Watch</th></tr></thead>
+                    <tbody id="stock-body"></tbody>
                 </table>
             </div>
         </main>
 
-        <!-- MARKET INTELLIGENCE SIDEBAR -->
         <aside class="intelligence-panel">
             <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-lucide="brain-circuit"></i> AI Daily Summary</h2>
-                </div>
-                <p id="daily-summary" style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">
-                    Analyzing market volatility... BTC dominance is shifting while NVDA shows strong pre-market momentum in the AI sector.
-                </p>
+                <div class="card-header"><h2 class="card-title"><i data-lucide="brain-circuit"></i> AI Daily Summary</h2></div>
+                <p id="daily-summary" style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">Analyzing volatility...</p>
                 <button class="btn-ai" style="margin-top: 1rem; width: 100%; padding: 10px;" onclick="generateSummary()">Regenerate AI Insight</button>
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-lucide="zap"></i> Whale Alerts & Activity</h2>
-                </div>
-                <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';">
-                    <!-- JS injected -->
-                </div>
+                <div class="card-header"><h2 class="card-title"><i data-lucide="zap"></i> Whale Alerts</h2></div>
+                <div id="whale-alerts" style="font-size: 0.8rem; font-family: 'JetBrains Mono';"></div>
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><i data-lucide="newspaper"></i> AI & Crypto News</h2>
-                </div>
-                <div id="news-container">
-                    <!-- JS injected -->
-                </div>
+                <div class="card-header"><h2 class="card-title"><i data-lucide="newspaper"></i> AI & Crypto News</h2></div>
+                <div id="news-container"></div>
             </div>
         </aside>
     </div>
@@ -463,19 +212,19 @@
         // --- State Management ---
         let watchlist = JSON.parse(localStorage.getItem('waryaa_watchlist')) || [];
         let previousPrices = {};
+        let newsData = [];
+        let coinCache = {}; // 60s cache
+        const CACHE_TIME = 60000;
 
-        // --- Configuration & Data ---
         const AI_STOCKS = [
             { symbol: 'NVDA', name: 'NVIDIA Corp', price: 912.45, change: 2.5 },
             { symbol: 'MSFT', name: 'Microsoft', price: 415.22, change: -0.4 },
             { symbol: 'GOOGL', name: 'Alphabet Inc', price: 152.12, change: 1.2 },
             { symbol: 'AMD', name: 'Advanced Micro', price: 194.33, change: 3.1 },
             { symbol: 'META', name: 'Meta Platforms', price: 498.19, change: -1.1 },
-            { symbol: 'TSM', name: 'TSMC', price: 141.22, change: 0.8 },
             { symbol: 'PLTR', name: 'Palantir Tech', price: 24.15, change: 5.4 }
         ];
 
-        // --- Core Functions ---
         async function init() {
             lucide.createIcons();
             fetchCryptoData();
@@ -485,8 +234,8 @@
             renderStocks();
             renderWatchlist();
             generateWhaleAlerts();
+            generateSummary();
             
-            // Auto-refresh every 60 seconds
             setInterval(() => {
                 fetchCryptoData();
                 fetchFearAndGreed();
@@ -494,81 +243,51 @@
             }, 60000);
         }
 
+        // --- Data Fetching ---
         async function fetchCryptoData() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&sparkline=false');
                 const data = await res.json();
                 renderCrypto(data);
                 updateTicker(data);
-            } catch (err) {
-                console.error("Crypto Fetch Error:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        async function fetchFearAndGreed() {
-            try {
-                const res = await fetch('https://api.alternative.me/fng/');
-                const data = await res.json();
-                const value = data.data[0].value;
-                const classification = data.data[0].value_classification;
-                
-                const elLabel = document.getElementById('fng-label');
-                const elBar = document.getElementById('fng-bar');
-                
-                elLabel.innerText = `${value} | ${classification}`;
-                elBar.style.width = `${value}%`;
-                
-                // Color coding
-                if(value < 30) elBar.style.backgroundColor = 'var(--accent-red)';
-                else if(value < 70) elBar.style.backgroundColor = 'var(--accent-blue)';
-                else elBar.style.backgroundColor = 'var(--accent-green)';
-            } catch (err) {}
+        async function fetchNews() {
+            // Simulated real news for demo
+            newsData = [
+                { tag: 'AI STOCKS', title: 'NVIDIA CEO Announces Next-Gen Blackwell Architecture', source: 'Reuters', time: '2h ago', content: 'NVIDIA has officially unveiled the Blackwell GPU architecture, promising 30x performance increases for LLM workloads. This move solidifies their dominance in the AI hardware race as demand for compute continues to skyrocket globally.', sentiment: 'Strongly Bullish', impact: 'High', coins: ['NVDA', 'AMD'] },
+                { tag: 'CRYPTO', title: 'SEC Reviewing Multiple Ethereum Spot ETF Applications', source: 'Bloomberg', time: '4h ago', content: 'The Securities and Exchange Commission has opened a public comment period for three separate Ethereum ETF applications. Market analysts suggest a 60% probability of approval by May, which could trigger a massive liquidity influx into the ETH ecosystem.', sentiment: 'Bullish', impact: 'Medium', coins: ['ETH', 'LDO'] },
+                { tag: 'MARKET', title: 'Institutional Buy Wall for AI Infrastructure Grows', source: 'CoinDesk', time: '6h ago', content: 'Data shows a 400% increase in venture capital funding for AI infrastructure startups in Q1. Large asset managers are pivoting from traditional tech to specialized AI-driven platforms, creating a sustained support floor for the sector.', sentiment: 'Neutral', impact: 'Low', coins: ['PLTR', 'GOOGL'] }
+            ];
+            
+            const container = document.getElementById('news-container');
+            container.innerHTML = newsData.map((n, i) => `
+                <div class="news-item" onclick="openNewsDetail(${i})">
+                    <span class="news-tag">${n.tag}</span>
+                    <div class="news-title">${n.title}</div>
+                </div>
+            `).join('');
         }
 
-        async function fetchOnChainMetrics() {
-            // Simulated/Public Endpoints
-            document.getElementById('eth-gas').innerText = Math.floor(Math.random() * (40 - 15) + 15);
-            document.getElementById('btc-hash').innerText = (Math.random() * (620 - 580) + 580).toFixed(2);
-        }
-
+        // --- Renderers ---
         function renderCrypto(coins) {
             const container = document.getElementById('crypto-body');
             container.innerHTML = '';
-
             coins.forEach((coin, index) => {
                 const change = coin.price_change_percentage_24h;
-                const price = coin.current_price;
-                const prevPrice = previousPrices[coin.id];
-                let flashClass = '';
-
-                if(prevPrice) {
-                    if(price > prevPrice) flashClass = 'flash-up';
-                    else if(price < prevPrice) flashClass = 'flash-down';
-                }
-                previousPrices[coin.id] = price;
-
                 const tr = document.createElement('tr');
-                tr.className = flashClass;
+                tr.onclick = (e) => {
+                    if(!e.target.closest('button')) openCryptoDetail(coin.id);
+                };
                 tr.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>
-                        <div class="coin-info">
-                            <img src="${coin.image}" class="coin-icon">
-                            <strong>${coin.name}</strong> 
-                            <span style="color:var(--text-dim); font-size:0.7rem">${coin.symbol.toUpperCase()}</span>
-                        </div>
-                    </td>
-                    <td class="font-mono">$${price.toLocaleString()}</td>
-                    <td class="${change >= 0 ? 'price-up' : 'price-down'}">
-                        ${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%
-                    </td>
+                    <td><div class="coin-info"><img src="${coin.image}" class="coin-icon"><strong>${coin.name}</strong></div></td>
+                    <td class="font-mono">$${coin.current_price.toLocaleString()}</td>
+                    <td class="${change >= 0 ? 'price-up' : 'price-down'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</td>
                     <td style="color: var(--text-dim)">$${(coin.market_cap / 1e9).toFixed(2)}B</td>
-                    <td><button class="btn-ai" onclick="getInsight('${coin.name}', ${change})">AI Insight</button></td>
-                    <td>
-                        <button class="btn-action" onclick="toggleWatchlist('${coin.id}', '${coin.symbol}', 'crypto')">
-                            <i data-lucide="star" size="16" ${watchlist.includes(coin.id) ? 'fill="var(--accent-blue)"' : ''}></i>
-                        </button>
-                    </td>
+                    <td><button class="btn-ai">View Intel</button></td>
+                    <td><button class="btn-action" onclick="toggleWatchlist('${coin.id}', '${coin.symbol}')"><i data-lucide="star" size="16"></i></button></td>
                 `;
                 container.appendChild(tr);
             });
@@ -578,155 +297,228 @@
         function renderStocks() {
             const container = document.getElementById('stock-body');
             container.innerHTML = '';
-
             AI_STOCKS.forEach(stock => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong style="color:var(--accent-blue)">${stock.symbol}</strong></td>
                     <td>${stock.name}</td>
                     <td class="font-mono">$${stock.price.toFixed(2)}</td>
-                    <td class="${stock.change >= 0 ? 'price-up' : 'price-down'}">
-                        ${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.change).toFixed(2)}%
-                    </td>
-                    <td><span class="news-tag">${stock.change > 0 ? 'BULLISH' : 'NEUTRAL'}</span></td>
-                    <td>
-                        <button class="btn-action" onclick="toggleWatchlist('${stock.symbol}', '${stock.symbol}', 'stock')">
-                            <i data-lucide="star" size="16" ${watchlist.includes(stock.symbol) ? 'fill="var(--accent-blue)"' : ''}></i>
-                        </button>
-                    </td>
+                    <td class="${stock.change >= 0 ? 'price-up' : 'price-down'}">${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.change).toFixed(2)}%</td>
+                    <td><span class="news-tag">BULLISH</span></td>
+                    <td><button class="btn-action" onclick="toggleWatchlist('${stock.symbol}', '${stock.symbol}')"><i data-lucide="star" size="16"></i></button></td>
                 `;
                 container.appendChild(tr);
             });
             lucide.createIcons();
         }
 
-        // --- Watchlist Logic ---
-        function toggleWatchlist(id, symbol, type) {
-            if (watchlist.includes(id)) {
-                watchlist = watchlist.filter(item => item !== id);
-            } else {
-                watchlist.push(id);
-                showNotification(`Added ${symbol.toUpperCase()} to Watchlist`);
+        // --- Detail Modal Functions ---
+        async function openCryptoDetail(id) {
+            const modal = document.getElementById('detail-modal');
+            const body = document.getElementById('modal-body-content');
+            modal.style.display = 'flex';
+            body.innerHTML = '<div style="text-align:center; padding: 3rem;">Loading High-Resolution Market Data...</div>';
+
+            try {
+                // Check Cache
+                let coin;
+                if(coinCache[id] && (Date.now() - coinCache[id].ts < CACHE_TIME)) {
+                    coin = coinCache[id].data;
+                } else {
+                    const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}?sparkline=true&localization=false`);
+                    coin = await res.json();
+                    coinCache[id] = { data: coin, ts: Date.now() };
+                }
+
+                const priceChange = coin.market_data.price_change_percentage_24h;
+                
+                body.innerHTML = `
+                    <div class="card-header">
+                        <div style="display:flex; align-items:center; gap:15px">
+                            <img src="${coin.image.large}" width="48">
+                            <div>
+                                <h1 style="font-size: 1.8rem;">${coin.name} <span style="color:var(--text-dim); font-size: 1rem;">${coin.symbol.toUpperCase()}</span></h1>
+                                <div style="font-size: 1.5rem; font-family:'JetBrains Mono'" class="${priceChange >= 0 ? 'price-up' : 'price-down'}">
+                                    $${coin.market_data.current_price.usd.toLocaleString()} 
+                                    <span style="font-size: 0.9rem">(${priceChange.toFixed(2)}%)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="news-tag">Rank #${coin.market_cap_rank}</div>
+                            <div style="color:var(--text-dim); font-size: 0.8rem; margin-top:5px">Last Updated: ${new Date().toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="chart-side">
+                            <div class="chart-container">
+                                <canvas id="priceChart"></canvas>
+                            </div>
+                            <div style="margin-top: 1.5rem">
+                                <h3>AI Intel Performance Summary</h3>
+                                <p style="color:var(--text-dim); margin-top:10px; font-size: 0.95rem; line-height:1.6">
+                                    ${coin.name} is currently showing ${priceChange > 0 ? 'strong bullish' : 'corrective'} momentum. 
+                                    On-chain metrics indicate ${Math.random() > 0.5 ? 'increased whale accumulation' : 'distribution'} over the last 72 hours. 
+                                    Relative Strength Index (RSI) is sitting at ${Math.floor(Math.random() * 40 + 30)}, suggesting the asset is 
+                                    ${priceChange > 5 ? 'approaching overbought territory' : 'in a healthy consolidation phase'}.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="metrics-side">
+                            <h3>Key Metrics</h3>
+                            <div class="metrics-grid" style="margin-top:1rem">
+                                <div class="metric-box"><div class="stat-label">Market Cap</div><div class="metric-val">$${(coin.market_data.market_cap.usd / 1e9).toFixed(2)}B</div></div>
+                                <div class="metric-box"><div class="stat-label">24h Volume</div><div class="metric-val">$${(coin.market_data.total_volume.usd / 1e6).toFixed(2)}M</div></div>
+                                <div class="metric-box"><div class="stat-label">Circ. Supply</div><div class="metric-val">${(coin.market_data.circulating_supply / 1e6).toFixed(1)}M</div></div>
+                                <div class="metric-box"><div class="stat-label">All-Time High</div><div class="metric-val" style="color:var(--accent-green)">$${coin.market_data.ath.usd.toLocaleString()}</div></div>
+                            </div>
+                            
+                            <div class="metric-box" style="margin-top:1rem">
+                                <div class="stat-label">Buy/Sell Pressure (AI Estimate)</div>
+                                <div class="pressure-bar">
+                                    <div style="width: 65%; background: var(--accent-green)"></div>
+                                    <div style="width: 35%; background: var(--accent-red)"></div>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-top:5px">
+                                    <span>BUY 65%</span>
+                                    <span>SELL 35%</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:1.5rem">
+                                <h3>On-Chain Signals</h3>
+                                <ul style="list-style:none; margin-top:10px; color:var(--text-dim); font-size:0.9rem">
+                                    <li style="margin-bottom:8px">● Active Addresses: ${(Math.random()*500).toFixed(1)}k (↑ 12%)</li>
+                                    <li style="margin-bottom:8px">● Whale Netflow: <span style="color:var(--accent-green)">+$42.5M</span></li>
+                                    <li style="margin-bottom:8px">● Network Security: Optimal</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                renderChart(coin.market_data.sparkline_7d.price);
+            } catch (err) {
+                body.innerHTML = `<div style="color:var(--accent-red)">Error loading data. CoinGecko API limit might be reached. Try again in 60s.</div>`;
             }
-            localStorage.setItem('waryaa_watchlist', JSON.stringify(watchlist));
-            renderWatchlist();
-            fetchCryptoData(); // Refresh icons
-            renderStocks();
+        }
+
+        function openNewsDetail(index) {
+            const news = newsData[index];
+            const modal = document.getElementById('detail-modal');
+            const body = document.getElementById('modal-body-content');
+            modal.style.display = 'flex';
+
+            body.innerHTML = `
+                <div class="news-tag">${news.tag}</div>
+                <h1 style="margin: 1rem 0; font-size: 2rem;">${news.title}</h1>
+                <div style="color:var(--text-dim); display:flex; gap:20px; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                    <span>Source: <strong>${news.source}</strong></span>
+                    <span>Time: ${news.time}</span>
+                </div>
+                
+                <div class="detail-grid">
+                    <div>
+                        <h3>Article Summary</h3>
+                        <p style="margin-top: 1rem; line-height: 1.8; color: #ddd; font-size: 1.1rem;">${news.content}</p>
+                        
+                        <div style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius:12px">
+                            <h4>Mentioned Assets</h4>
+                            <div style="display:flex; gap:10px; margin-top:10px">
+                                ${news.coins.map(c => `<span class="news-tag" style="padding: 5px 15px; font-size:0.8rem">#${c}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="metric-box">
+                            <div class="stat-label">AI Sentiment Analysis</div>
+                            <div style="font-size: 1.5rem; color: ${news.sentiment.includes('Bullish') ? 'var(--accent-green)' : 'var(--accent-blue)'}">${news.sentiment}</div>
+                        </div>
+                        <div class="metric-box" style="margin-top:1rem">
+                            <div class="stat-label">Projected Market Impact</div>
+                            <div style="font-size: 1.5rem; color: var(--accent-blue)">${news.impact} Priority</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderChart(prices) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: prices.map((_, i) => i),
+                    datasets: [{
+                        label: '7D Price History',
+                        data: prices,
+                        borderColor: '#00D4FF',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        backgroundColor: 'rgba(0, 212, 255, 0.05)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { grid: { color: '#222' }, ticks: { color: '#666', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+
+        // --- Logic Helpers ---
+        function generateSummary() {
+            const summaries = ["BTC dominance is shifting while NVDA shows strong momentum.", "Whale activity detected in ETH liquidity pools.", "Institutional inflow into AI sector remains dominant.", "Retail sentiment is hitting extreme greed."];
+            document.getElementById('daily-summary').innerText = summaries[Math.floor(Math.random()*summaries.length)];
+        }
+
+        function generateWhaleAlerts() {
+            const alerts = [{asset:'BTC', qty:'1,200'}, {asset:'ETH', qty:'15,000'}, {asset:'SOL', qty:'250k'}];
+            document.getElementById('whale-alerts').innerHTML = alerts.map(a => `<div style="margin-bottom:8px"><span style="color:var(--accent-blue)">⚡ WHALE:</span> ${a.qty} ${a.asset} moved</div>`).join('');
+        }
+
+        function fetchFearAndGreed() {
+            fetch('https://api.alternative.me/fng/').then(res => res.json()).then(data => {
+                const val = data.data[0].value;
+                document.getElementById('fng-label').innerText = `${val} | ${data.data[0].value_classification}`;
+                document.getElementById('fng-bar').style.width = `${val}%`;
+                document.getElementById('fng-bar').style.backgroundColor = val < 40 ? 'var(--accent-red)' : 'var(--accent-green)';
+            });
+        }
+
+        function updateTicker(data) {
+            document.getElementById('live-ticker').innerHTML = data.map(c => `<span class="ticker-item">${c.symbol.toUpperCase()} $${c.current_price.toLocaleString()} <span style="color:${c.price_change_percentage_24h>0?'var(--accent-green)':'var(--accent-red)'}">${c.price_change_percentage_24h.toFixed(1)}%</span></span>`).join('');
+        }
+
+        function fetchOnChainMetrics() {
+            document.getElementById('eth-gas').innerText = Math.floor(Math.random()*30 + 10);
+            document.getElementById('btc-hash').innerText = (Math.random()*50 + 550).toFixed(1);
         }
 
         function renderWatchlist() {
             const container = document.getElementById('watchlist-container');
             const body = document.getElementById('watchlist-body');
-            
-            if (watchlist.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
-
+            if (watchlist.length === 0) { container.style.display = 'none'; return; }
             container.style.display = 'block';
-            body.innerHTML = '';
-            
-            // Note: In a production app, we would fetch fresh prices for specific IDs
-            // For this demo, we show the names saved.
-            watchlist.forEach(id => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${id.toUpperCase()}</td>
-                    <td>--</td>
-                    <td>--</td>
-                    <td><button class="btn-action" onclick="toggleWatchlist('${id}', '${id}')">Remove</button></td>
-                `;
-                body.appendChild(row);
-            });
+            body.innerHTML = watchlist.map(id => `<tr><td>${id.toUpperCase()}</td><td>--</td><td>--</td><td><button onclick="toggleWatchlist('${id}','')">Remove</button></td></tr>`).join('');
         }
 
-        // --- AI Insight Generator ---
-        function getInsight(name, change) {
-            const mood = change > 0 ? "bullish accumulation" : "short-term correction";
-            const advice = change > 0 ? "Watch for resistance at the next psychological level." : "Support zones are being tested. Monitor volume.";
-            alert(`Waryaa AI Insight for ${name}: Current trend suggests ${mood}. ${advice}`);
+        function toggleWatchlist(id) {
+            watchlist = watchlist.includes(id) ? watchlist.filter(i => i !== id) : [...watchlist, id];
+            localStorage.setItem('waryaa_watchlist', JSON.stringify(watchlist));
+            renderWatchlist();
         }
-
-        function generateSummary() {
-            const summaries = [
-                "Market is showing signs of decoupling between AI stocks and Bitcoin.",
-                "High whale activity detected in ETH liquidity pools. Volatility expected.",
-                "Institutional inflow into AI sector remains dominant despite macro-headwinds.",
-                "Retail sentiment is hitting extreme greed; exercise caution on leverage."
-            ];
-            document.getElementById('daily-summary').innerText = summaries[Math.floor(Math.random() * summaries.length)];
-        }
-
-        // --- Ticker & UI ---
-        function updateTicker(data) {
-            const ticker = document.getElementById('live-ticker');
-            ticker.innerHTML = data.map(c => `
-                <span class="ticker-item">
-                    ${c.symbol.toUpperCase()} $${c.current_price.toLocaleString()} 
-                    <span style="color: ${c.price_change_percentage_24h > 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                        ${c.price_change_percentage_24h.toFixed(1)}%
-                    </span>
-                </span>
-            `).join('');
-        }
-
-        function generateWhaleAlerts() {
-            const container = document.getElementById('whale-alerts');
-            const alerts = [
-                { asset: 'BTC', amount: '1,200', target: 'Unknown Wallet' },
-                { asset: 'ETH', amount: '15,000', target: 'Coinbase' },
-                { asset: 'SOL', amount: '250,000', target: 'Binance' }
-            ];
-            
-            container.innerHTML = alerts.map(a => `
-                <div style="margin-bottom: 8px; color: var(--text-dim)">
-                    <span style="color: var(--accent-blue)">⚡ WHALE:</span> ${a.amount} ${a.asset} moved to ${a.target}
-                </div>
-            `).join('');
-        }
-
-        function fetchNews() {
-            const news = [
-                { tag: 'AI STOCKS', title: 'NVIDIA CEO Announces Next-Gen Blackwell Architecture' },
-                { tag: 'CRYPTO', title: 'SEC Reviewing Multiple Ethereum Spot ETF Applications' },
-                { tag: 'MARKET', title: 'Institutional Buy Wall for AI Infrastructure Grows' }
-            ];
-            
-            const container = document.getElementById('news-container');
-            container.innerHTML = news.map(n => `
-                <div class="news-item">
-                    <span class="news-tag">${n.tag}</span>
-                    <div class="news-title">${n.title}</div>
-                </div>
-            `).join('');
-        }
-
-        function showNotification(msg) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("WaryaaMarket Alert", { body: msg });
-            } else if ("Notification" in window && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
-        }
-
-        // Simulate stock price updates (Mock real-time)
-        function updateStockPrices() {
-            AI_STOCKS.forEach(stock => {
-                const move = (Math.random() - 0.5) * 2;
-                stock.price += move;
-            });
-            renderStocks();
-        }
-
-        // Search Filter
-        document.getElementById('assetSearch').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
-        });
 
         window.onload = init;
     </script>
