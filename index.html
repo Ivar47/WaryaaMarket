@@ -1187,6 +1187,8 @@ function renderCatCoins(coins){
       </table>
     </div>`;
 }
+
+function sortCrypto(key){
   if(sortKey===key) sortDir*=-1; else{sortKey=key;sortDir=1;}
   const sorted=[...cryptoData].sort((a,b)=>{
     const map={rank:r=>r.market_cap_rank,price:r=>r.current_price,p1h:r=>r.price_change_percentage_1h_in_currency||0,p24h:r=>r.price_change_percentage_24h||0,p7d:r=>r.price_change_percentage_7d_in_currency||0,mcap:r=>r.market_cap,vol:r=>r.total_volume};
