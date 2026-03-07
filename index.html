@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WaryaaMarket | Crypto & AI Stock Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -17,7 +18,7 @@
   --red:#FF3055;--red2:#C62828;
   --yellow:#FFD600;--orange:#FF6B00;--purple:#8B5CF6;
   --text:#E2EBF8;--text2:#7B8FA8;--text3:#3D5070;
-  --mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;--display:'Inter',sans-serif;
   --glow:0 0 30px rgba(0,210,255,0.15);
 }
 html{scroll-behavior:smooth}
@@ -290,9 +291,71 @@ svg.spark{overflow:visible}
 /* === DONUT CHART === */
 .donut-wrap{display:flex;justify-content:center;align-items:center;padding:10px 0}
 
+
 /* === SKELETON === */
 .sk{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);background-size:200% 100%;animation:sk 1.5s infinite;border-radius:4px;height:14px}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* === MOBILE RESPONSIVE === */
+@media(max-width:768px){
+  .h-inner{gap:10px;height:50px}
+  .logo{font-size:14px}
+  .logo-mark{width:26px;height:26px;font-size:12px}
+  .nav{display:none}
+  .mobile-menu-btn{display:flex!important}
+  .search{width:140px}
+  .search input{font-size:11px}
+  .stats-strip{padding:0 10px}
+  .gs-item{padding:0 10px;font-size:10.5px}
+  .main{padding:10px;gap:12px}
+  .metrics-row{grid-template-columns:repeat(2,1fr);gap:8px}
+  .metric-card{padding:12px}
+  .mc-label{font-size:9px}
+  .mc-val{font-size:16px}
+  .tbl th{padding:7px 8px;font-size:9.5px}
+  .tbl td{padding:7px 8px;font-size:11.5px}
+  .c-name{font-size:12px}
+  .c-sym{font-size:9.5px}
+  .c-logo{width:22px;height:22px}
+  .modal{margin:0;border-radius:0;min-height:100vh}
+  .modal-bg{padding:0}
+  .m-hdr{padding:14px 16px;flex-wrap:wrap;gap:8px}
+  .m-price{font-size:20px;margin-left:0!important}
+  .m-name{font-size:18px}
+  .stats-g{grid-template-columns:repeat(2,1fr)}
+  .tools-grid{grid-template-columns:1fr!important}
+  .cat-grid{grid-template-columns:repeat(2,1fr)!important}
+  .news-grid{grid-template-columns:1fr!important}
+  .sec-hdr{flex-wrap:wrap;gap:8px}
+  .sub-tabs{flex-wrap:wrap}
+  .ticker-bar{height:28px}
+  .t-item{padding:0 12px;font-size:10px}
+  .spark-cell{display:none}
+  .gs-item:nth-child(n+6){display:none}
+}
+@media(max-width:480px){
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .cat-grid{grid-template-columns:1fr!important}
+  .tbl .mcap-val{display:none}
+  h1,h2{font-size:16px}
+}
+
+/* === MOBILE NAV OVERLAY === */
+.mobile-menu-btn{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;background:var(--card);border:1px solid var(--border);border-radius:7px}
+.mobile-menu-btn span{width:18px;height:2px;background:var(--text2);border-radius:2px;display:block}
+.mobile-nav{display:none;position:fixed;top:54px;left:0;right:0;background:rgba(6,9,15,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:199;padding:12px;flex-direction:column;gap:4px}
+.mobile-nav.on{display:flex}
+.mobile-nav-btn{padding:12px 16px;border-radius:8px;font-size:14px;font-weight:600;color:var(--text2);text-align:left;transition:all 0.15s;border:none;background:none;cursor:pointer;width:100%}
+.mobile-nav-btn:hover,.mobile-nav-btn.on{color:var(--blue);background:rgba(0,210,255,0.08)}
+
+/* === CATEGORY MODAL === */
+.cat-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);z-index:600;display:none;overflow-y:auto}
+.cat-modal-bg.on{display:block}
+.cat-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;max-width:1100px;margin:30px auto;animation:modal-in 0.28s ease}
+@media(max-width:768px){.cat-modal{margin:0;border-radius:0;min-height:100vh}}
+.cat-modal-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cat-modal-title{font-size:18px;font-weight:700}
+
 
 /* === ANALYST BARS === */
 .analyst-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
@@ -348,9 +411,24 @@ svg.spark{overflow:visible}
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" placeholder="Search assets..." id="searchInput" oninput="doSearch(this.value)">
       </div>
+      <div class="mobile-menu-btn" onclick="toggleMobileNav()" id="mobileMenuBtn">
+        <span></span><span></span><span></span>
+      </div>
     </div>
   </div>
 </header>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-btn on" onclick="goPage('overview',this);toggleMobileNav()">📊 Overview</button>
+  <button class="mobile-nav-btn" onclick="goPage('crypto',this);toggleMobileNav()">💹 Crypto</button>
+  <button class="mobile-nav-btn" onclick="goPage('stocks',this);toggleMobileNav()">📈 AI Stocks</button>
+  <button class="mobile-nav-btn" onclick="goPage('unlocks',this);toggleMobileNav()">🔓 Unlocks</button>
+  <button class="mobile-nav-btn" onclick="goPage('news',this);toggleMobileNav()">📰 News</button>
+  <button class="mobile-nav-btn" onclick="goPage('calendar',this);toggleMobileNav()">📅 Calendar</button>
+  <button class="mobile-nav-btn" onclick="goPage('protools',this);toggleMobileNav()">🔬 Pro Tools</button>
+  <button class="mobile-nav-btn" onclick="goPage('funding',this);toggleMobileNav()">💰 Funding</button>
+</div>
 
 <!-- GLOBAL STATS STRIP -->
 <div class="stats-strip">
@@ -733,6 +811,35 @@ svg.spark{overflow:visible}
   </div>
 </div>
 
+<!-- CATEGORY MODAL -->
+<div class="cat-modal-bg" id="catModal">
+  <div class="cat-modal">
+    <div class="cat-modal-hdr">
+      <div>
+        <div class="cat-modal-title" id="catModalTitle">Category</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">Top coins by market cap in this category</div>
+      </div>
+      <button class="m-close" onclick="document.getElementById('catModal').classList.remove('on')">✕</button>
+    </div>
+    <div style="padding:16px 20px" id="catModalBody">
+      <div style="text-align:center;padding:40px;color:var(--text2)">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleMobileNav(){
+  document.getElementById('mobileNav').classList.toggle('on');
+}
+document.addEventListener('click',e=>{
+  const nav=document.getElementById('mobileNav');
+  const btn=document.getElementById('mobileMenuBtn');
+  if(nav.classList.contains('on')&&!nav.contains(e.target)&&!btn.contains(e.target)){
+    nav.classList.remove('on');
+  }
+});
+</script>
+
 <script>
 // ======================================================
 //  DATA DEFINITIONS
@@ -1028,18 +1135,83 @@ async function loadCats(){
   try{
     const r=await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_desc');
     const cats=await r.json();
-    grid.innerHTML=cats.slice(0,18).map(c=>{
+    window._cats=cats;
+    grid.innerHTML=cats.slice(0,24).map(c=>{
       const chg=c.market_cap_change_24h||0;
-      return`<div class="cat-c" onclick="">
-        <div class="cat-nm">${c.name}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div class="cat-mc">$${fmt(c.market_cap,true)}</div>
+      const topCoins=(c.top_3_coins||[]).slice(0,3);
+      return`<div class="cat-c" onclick="openCatModal('${c.id}','${c.name.replace(/'/g,"\\'")}')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div class="cat-nm">${c.name}</div>
           <span class="pct ${chg>=0?'up':'dn'}" style="font-size:10px">${(chg>=0?'+':'')+chg.toFixed(2)}%</span>
         </div>
-        <div class="cat-ct">${c.num_tokens||'?'} tokens</div>
+        <div class="cat-mc" style="margin-bottom:6px">$${fmt(c.market_cap,true)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:4px">
+            ${topCoins.map(img=>`<img src="${img}" style="width:18px;height:18px;border-radius:50%;background:var(--card)" onerror="this.style.display='none'">`).join('')}
+          </div>
+          <div class="cat-ct">${c.num_tokens||'?'} tokens</div>
+        </div>
       </div>`;
     }).join('');
-  }catch{grid.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);grid-column:span 3">Rate limited. Try again shortly.</div>';}
+  }catch(e){
+    // Fallback static categories
+    const fallback=[
+      {id:'layer-1',name:'Layer 1 (L1)',mc:'$1.94T',chg:-3.08,tokens:65},
+      {id:'smart-contract-platform',name:'Smart Contract Platform',mc:'$1.97T',chg:-3.08,tokens:92},
+      {id:'proof-of-work',name:'Proof of Work (PoW)',mc:'$1.46T',chg:-4.01,tokens:44},
+      {id:'defi',name:'Decentralized Finance (DeFi)',mc:'$88.1B',chg:-2.19,tokens:480},
+      {id:'stablecoins',name:'Stablecoins',mc:'$221B',chg:0.01,tokens:85},
+      {id:'layer-2',name:'Layer 2 (L2)',mc:'$28.4B',chg:-4.2,tokens:58},
+      {id:'ai-big-data',name:'Artificial Intelligence',mc:'$24.6B',chg:-3.1,tokens:120},
+      {id:'real-world-assets-rwa',name:'Real World Assets (RWA)',mc:'$51.7B',chg:-1.13,tokens:44},
+      {id:'gaming',name:'Gaming & Metaverse',mc:'$18.3B',chg:-2.8,tokens:210},
+    ];
+    grid.innerHTML=fallback.map(c=>`<div class="cat-c" onclick="openCatModal('${c.id}','${c.name}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="cat-nm">${c.name}</div>
+        <span class="pct ${c.chg>=0?'up':'dn'}" style="font-size:10px">${(c.chg>=0?'+':'')+c.chg.toFixed(2)}%</span>
+      </div>
+      <div class="cat-mc" style="margin-bottom:4px">${c.mc}</div>
+      <div class="cat-ct">${c.tokens} tokens · Click to explore</div>
+    </div>`).join('');
+  }
+}
+
+async function openCatModal(catId, catName){
+  // Show modal
+  document.getElementById('catModal').classList.add('on');
+  document.getElementById('catModalTitle').textContent=catName;
+  document.getElementById('catModalBody').innerHTML='<div style="text-align:center;padding:40px;color:var(--text2)">Loading coins...</div>';
+  try{
+    // Fetch coins in this category
+    const r=await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${catId}&order=market_cap_desc&per_page=20&page=1&sparkline=true&price_change_percentage=1h,24h,7d`);
+    const coins=await r.json();
+    if(!coins.length){document.getElementById('catModalBody').innerHTML='<div style="text-align:center;padding:30px;color:var(--text2)">No coins found in this category.</div>';return;}
+    document.getElementById('catModalBody').innerHTML=`
+      <div class="tbl-scroll">
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Name</th><th>Price</th><th>1h %</th><th>24h %</th><th>7d %</th><th>Market Cap</th><th>Volume 24h</th><th>7D</th></tr></thead>
+          <tbody>${coins.map((c,i)=>{
+            const p1h=c.price_change_percentage_1h_in_currency||0;
+            const p24=c.price_change_percentage_24h||0;
+            const p7d=c.price_change_percentage_7d_in_currency||0;
+            return`<tr onclick="document.getElementById('catModal').classList.remove('on');openCoin('${c.id}')">
+              <td class="c-rank">${i+1}</td>
+              <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.style.display='none'" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
+              <td class="price-val">$${fmtP(c.current_price)}</td>
+              <td><span class="pct ${p1h>=0?'up':'dn'}">${(p1h>=0?'+':'')+p1h.toFixed(2)}%</span></td>
+              <td><span class="pct ${p24>=0?'up':'dn'}">${(p24>=0?'+':'')+p24.toFixed(2)}%</span></td>
+              <td><span class="pct ${p7d>=0?'up':'dn'}">${(p7d>=0?'+':'')+p7d.toFixed(2)}%</span></td>
+              <td class="mcap-val">$${fmt(c.market_cap,true)}</td>
+              <td class="mcap-val">$${fmt(c.total_volume,true)}</td>
+              <td>${spark(c.sparkline_in_7d?.price,p7d>=0)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+  }catch(e){
+    document.getElementById('catModalBody').innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2)">Rate limited. Please try again in 30 seconds.<br><br><button onclick="openCatModal('${catId}','${catName}')" style="color:var(--blue);background:none;border:1px solid var(--blue);padding:8px 16px;border-radius:8px;cursor:pointer">Retry</button></div>`;
+  }
 }
 
 function sortCrypto(key){
@@ -1290,25 +1462,61 @@ async function loadNews(cats){
   if(!grid) return;
   grid.innerHTML='<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">Loading news...</div>';
   try{
-    const url=`https://min-api.cryptocompare.com/data/v2/news/?lang=EN${cats!=='ALL'?'&categories='+cats:''}`;
-    const r=await fetch(url);
-    const articles=(await r.json()).Data;
-    grid.innerHTML=articles.slice(0,12).map(a=>{
+    // Primary: CryptoCompare (crypto + global news)
+    const catParam=cats!=='ALL'?`&categories=${cats}`:'';
+    const r=await fetch(`https://min-api.cryptocompare.com/data/v2/news/?lang=EN${catParam}&sortOrder=latest`);
+    const d=await r.json();
+    let articles=d.Data||[];
+
+    // Supplement with RSS feeds via allorigins proxy for world news
+    if(cats==='ALL'||cats.includes('Geopolitics')){
+      try{
+        // Reuters RSS via proxy
+        const rss=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent('https://feeds.reuters.com/reuters/businessNews'));
+        const rssData=await rss.json();
+        const parser=new DOMParser();
+        const xml=parser.parseFromString(rssData.contents,'text/xml');
+        const rssItems=[...xml.querySelectorAll('item')].slice(0,6).map(item=>({
+          title:item.querySelector('title')?.textContent||'',
+          url:item.querySelector('link')?.textContent||'#',
+          imageurl:'https://s3.tradingview.com/news/reuters.png',
+          published_on:Math.floor(new Date(item.querySelector('pubDate')?.textContent||Date.now())/1000),
+          source:'Reuters',
+          source_info:{name:'Reuters'}
+        }));
+        articles=[...articles,...rssItems];
+      }catch(e){}
+    }
+
+    articles=articles.slice(0,16);
+    if(!articles.length) throw new Error('no articles');
+
+    grid.innerHTML=articles.map(a=>{
       const s=sentiment(a.title);
       const t=timeAgo(a.published_on);
-      return`<div class="ng-item" onclick="window.open('${a.url}','_blank')">
-        <img class="ng-img" src="${a.imageurl}" alt="" onerror="this.style.display='none'">
+      const src=a.source_info?.name||a.source||'News';
+      const img=a.imageurl||'';
+      return`<div class="ng-item" onclick="window.open('${a.url||'#'}','_blank')">
+        ${img?`<img class="ng-img" src="${img}" alt="" onerror="this.style.background='var(--bg3)';this.style.minHeight='80px'">`:'<div style="height:80px;background:var(--bg3)"></div>'}
         <div class="ng-body">
-          <div class="ng-source">📰 ${a.source_info?.name||a.source}</div>
+          <div class="ng-source">📰 <b>${src}</b></div>
           <div class="ng-hl">${a.title}</div>
-          <div class="ng-meta"><span class="n-sent ${s.cls}">${s.label}</span><span class="n-time">${t}</span></div>
+          <div class="ng-meta">
+            <span class="n-sent ${s.cls}">${s.label}</span>
+            <span class="n-time">${t}</span>
+          </div>
         </div>
       </div>`;
     }).join('');
-    // Sidebar news
+
+    // Update sidebar news
     document.getElementById('sideNews').innerHTML=articles.slice(0,5).map(renderNewsItem).join('');
-  }catch{
-    grid.innerHTML='<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">Unable to load news.</div>';
+  }catch(e){
+    grid.innerHTML=`<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">
+      <div style="font-size:24px;margin-bottom:10px">📰</div>
+      Unable to load news. Check your connection.<br>
+      <button onclick="loadNews('ALL')" style="margin-top:12px;color:var(--blue);background:none;border:1px solid var(--blue);padding:8px 16px;border-radius:8px;cursor:pointer">Retry</button>
+    </div>`;
   }
 }
 
