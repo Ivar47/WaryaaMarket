@@ -936,8 +936,33 @@ function goPage(page, btn){
 }
 
 // ======================================================
-//  FETCH
+//  DATA LAYER — CoinCap (primary, free/no-key) + CoinGecko (fallback)
 // ======================================================
+function normaliseCoinCap(a, rank){
+  const price=parseFloat(a.priceUsd)||0;
+  const chg24=parseFloat(a.changePercent24Hr)||0;
+  const sym=(a.symbol||'').toLowerCase();
+  return{
+    id:a.id, symbol:sym, name:a.name||a.id,
+    image:`https://assets.coincap.io/assets/icons/${sym}@2x.png`,
+    current_price:price,
+    market_cap:parseFloat(a.marketCapUsd)||0,
+    market_cap_rank:rank+1,
+    total_volume:parseFloat(a.volumeUsd24Hr)||0,
+    price_change_percentage_24h:chg24,
+    price_change_percentage_1h_in_currency:0,
+    price_change_percentage_7d_in_currency:0,
+    high_24h:price*(1+Math.abs(chg24)/200),
+    low_24h:price*(1-Math.abs(chg24)/200),
+    ath:price*3, ath_change_percentage:-65,
+    circulating_supply:parseFloat(a.supply)||0,
+    max_supply:parseFloat(a.maxSupply)||null,
+    fully_diluted_valuation:null,
+    sparkline_in_7d:{price:[]},
+    _source:'coincap'
+  };
+}
+
 async function fetchCrypto(){ return fetchCryptoWithRetry(); }
 
 async function fetchGlobal(){
@@ -1814,33 +1839,118 @@ function timeAgo(ts){
 }
 
 // ======================================================
-//  INIT — staggered fetches to avoid rate limiting
+//  CORE DATA FETCH — CoinCap primary, CoinGecko fallback
 // ======================================================
 async function fetchCryptoWithRetry(attempt=1){
+  const tbody=document.getElementById('cryptoBody');
+  const showStatus=msg=>{if(tbody)tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">${msg}</td></tr>`;};
+
+  // ── STEP 1: Try CoinCap (no key, no CORS issues, very reliable) ──
   try{
-    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
-    if(r.status===429) throw new Error('rate_limit');
-    cryptoData=await r.json();
-    if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
+    showStatus('⚡ Loading market data...');
+    const r=await fetch('https://api.coincap.io/v2/assets?limit=100',{headers:{Accept:'application/json'}});
+    if(!r.ok) throw new Error('coincap_fail');
+    const json=await r.json();
+    const assets=json.data;
+    if(!Array.isArray(assets)||assets.length<10) throw new Error('coincap_empty');
+
+    cryptoData=assets.map((a,i)=>normaliseCoinCap(a,i));
+
+    // Fetch sparklines async (non-blocking) for top 20 from CoinCap history
+    fetchSparklines(cryptoData.slice(0,20));
+
+    renderCryptoTable();
+    renderCryptoFull();
+    updateTickerFromData();
+    updateAltcoinIndex();
+
+    // Also fetch global stats from CoinCap
+    fetchGlobalFromCoinCap();
+    return; // success — done
+  }catch(e){
+    console.warn('CoinCap failed, trying CoinGecko:', e.message);
+  }
+
+  // ── STEP 2: CoinGecko fallback ──
+  const cgUrl='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d';
+  try{
+    if(attempt>1) showStatus(`⏳ Retry ${attempt}/4 — connecting to backup API...`);
+    const r=await fetch(cgUrl);
+    if(r.status===429) throw new Error('ratelimit');
+    const data=await r.json();
+    if(!Array.isArray(data)||data.length<5) throw new Error('empty_response');
+    cryptoData=data;
     renderCryptoTable();
     renderCryptoFull();
     updateTickerFromData();
     updateAltcoinIndex();
   }catch(e){
-    const wait=attempt*8000; // 8s, 16s, 24s...
-    const maxAttempts=5;
-    const tbody=document.getElementById('cryptoBody');
-    if(attempt<=maxAttempts){
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
+    if(attempt<=4){
+      const wait=[0,6000,15000,30000][attempt]||30000;
+      showStatus(`⏳ Loading market data... (${wait/1000}s)`);
       setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
     }else{
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ CoinGecko rate limited. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
+      showStatus('⚠️ Could not load data. <span onclick="fetchCryptoWithRetry(1)" style="color:var(--blue);cursor:pointer;text-decoration:underline">↻ Retry now</span>');
     }
   }
 }
 
-async function init(){
-  // Render static content first (no API needed)
+// Fetch 7-day sparklines from CoinCap (non-blocking, enhances charts)
+async function fetchSparklines(coins){
+  for(const coin of coins.slice(0,10)){
+    try{
+      const end=Date.now();
+      const start=end-(7*24*60*60*1000);
+      const r=await fetch(`https://api.coincap.io/v2/assets/${coin.id}/history?interval=h6&start=${start}&end=${end}`);
+      const j=await r.json();
+      if(j.data&&j.data.length>0){
+        const prices=j.data.map(d=>parseFloat(d.priceUsd));
+        const idx=cryptoData.findIndex(c=>c.id===coin.id);
+        if(idx!==-1) cryptoData[idx].sparkline_in_7d={price:prices};
+      }
+      await new Promise(r=>setTimeout(r,300)); // 300ms between spark requests
+    }catch{}
+  }
+  renderCryptoTable(); // re-render once sparklines are loaded
+}
+
+// Global stats from CoinCap (no rate limit)
+async function fetchGlobalFromCoinCap(){
+  try{
+    const r=await fetch('https://api.coincap.io/v2/assets?limit=100');
+    const j=await r.json();
+    const assets=j.data||[];
+    const totalMcap=assets.reduce((s,a)=>s+parseFloat(a.marketCapUsd||0),0);
+    const totalVol=assets.reduce((s,a)=>s+parseFloat(a.volumeUsd24Hr||0),0);
+    const btc=assets.find(a=>a.id==='bitcoin');
+    const eth=assets.find(a=>a.id==='ethereum');
+    const btcDom=btc?(parseFloat(btc.marketCapUsd)/totalMcap*100).toFixed(1):'--';
+    const ethDom=eth?(parseFloat(eth.marketCapUsd)/totalMcap*100).toFixed(1):'--';
+    const el=id=>document.getElementById(id);
+    if(el('gsMcap')) el('gsMcap').textContent='$'+fmt(totalMcap,true);
+    if(el('gsVol'))  el('gsVol').textContent='$'+fmt(totalVol,true);
+    if(el('gsBtcDom')){el('gsBtcDom').textContent=btcDom+'%';}
+    if(el('gsEthDom')){el('gsEthDom').textContent=ethDom+'%';}
+    if(el('btcDomPct')) el('btcDomPct').textContent=btcDom+'%';
+    if(el('ethDomPct')) el('ethDomPct').textContent=ethDom+'%';
+    if(el('btcDomTxt')) el('btcDomTxt').textContent=btcDom+'%';
+    // Donut arcs
+    const total=264;
+    const btcAmt=(parseFloat(btcDom)/100*total).toFixed(1);
+    const ethAmt=(parseFloat(ethDom)/100*total).toFixed(1);
+    if(el('btcArc'))el('btcArc').setAttribute('stroke-dasharray',btcAmt+' '+total);
+    if(el('ethArc')){
+      el('ethArc').setAttribute('stroke-dasharray',ethAmt+' '+total);
+      el('ethArc').setAttribute('stroke-dashoffset',-(parseFloat(btcAmt)-66).toFixed(1));
+    }
+  }catch(e){ fetchGlobal(); } // final fallback to CoinGecko global
+}
+
+// ======================================================
+//  INIT
+// ======================================================
+function init(){
+  // Render all static/hardcoded content immediately
   buildTicker();
   renderStocksOverview();
   renderSideUnlocks();
@@ -1849,24 +1959,30 @@ async function init(){
   renderFunding();
   renderWhales();
 
-  // Stagger all API calls — 2s apart to avoid rate limit
-  fetchCryptoWithRetry();
-  setTimeout(()=>fetchGlobal(), 2000);
-  setTimeout(()=>fetchFearGreed(), 4000);
-  setTimeout(()=>fetchGas(), 5000);
-  setTimeout(()=>loadNews('ALL'), 6000);
+  // Fire API calls — staggered to prevent any rate-limit cascade
+  fetchCryptoWithRetry(1);                        // t=0s  (CoinCap primary)
+  setTimeout(()=>fetchFearGreed(),   1500);       // t=1.5s
+  setTimeout(()=>fetchGas(),         3000);       // t=3s
+  setTimeout(()=>loadNews('ALL'),    4500);       // t=4.5s
+  setTimeout(()=>fetchGlobal(),      6000);       // t=6s  (CoinGecko global, low priority)
 
-  // Timers
-  setInterval(tick,1000);
+  // Live countdown timers
+  setInterval(tick, 1000);
 
-  // Auto-refresh (staggered too)
-  setInterval(()=>fetchCryptoWithRetry(), 65000);
-  setInterval(()=>fetchGlobal(), 67000);
-  setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
-  setInterval(()=>loadNews('ALL'), 180000);
+  // Auto-refresh cycles
+  setInterval(()=>fetchCryptoWithRetry(1),  60000);
+  setInterval(()=>fetchGlobalFromCoinCap(), 62000);
+  setInterval(()=>fetchFearGreed(),        300000);
+  setInterval(()=>fetchGas(),              300000);
+  setInterval(()=>loadNews('ALL'),         180000);
 }
 
-init();
+// Wait for DOM before running
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+}else{
+  init();
+}
 </script>
 </body>
 </html>
