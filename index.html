@@ -8,6 +8,10 @@
 <meta name="keywords" content="crypto prices, bitcoin price, ethereum price, cryptocurrency dashboard, DEX screener, NFT rankings, crypto market, altcoin season, fear greed index, token rug checker, DeFi">
 <meta name="author" content="WaryaaMarket">
 <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; connect-src 'self' https:; frame-src https://s.tradingview.com https://www.tradingview.com;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <link rel="canonical" href="https://waryaamarket.com/">
 
 <!-- Open Graph (for social sharing) -->
@@ -2536,14 +2540,22 @@ function renderNewTokens(){
 //  RUG CHECKER — Honeypot.is API
 // ======================================================
 async function runRugCheck(){
-  const addr = document.getElementById('rugAddress').value.trim();
+  const rawAddr = document.getElementById('rugAddress').value.trim();
   const chain = document.getElementById('rugChain').value;
   const res = document.getElementById('rugResult');
-  if(!addr){res.innerHTML='<div class="loading-dex" style="color:var(--red)">⚠️ Please enter a contract address</div>';return;}
+  if(!rawAddr){res.innerHTML='<div class="loading-dex" style="color:var(--red)">⚠️ Please enter a contract address</div>';return;}
+  // Sanitize: only allow valid hex contract address format (0x + 40 hex chars)
+  const addr = rawAddr.replace(/[^a-fA-F0-9x]/g,'');
+  if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){
+    res.innerHTML='<div class="loading-dex" style="color:var(--red)">⚠️ Invalid contract address format. Must be 0x followed by 40 hex characters.</div>';
+    return;
+  }
   res.innerHTML = '<div class="loading-dex"><div class="spin">🔍</div><br>Analyzing token...</div>';
   try{
-    const chainMap = {eth:'1',bsc:'56',base:'8453'};
-    const chainId = chainMap[chain]||'1';
+    const allowedChains = ['eth','bsc','base','arbitrum','polygon'];
+    const safeChain = allowedChains.includes(chain) ? chain : 'eth';
+    const chainMap = {eth:'1',bsc:'56',base:'8453',arbitrum:'42161',polygon:'137'};
+    const chainId = chainMap[safeChain]||'1';
     // Honeypot.is
     const [hpRes, dsRes] = await Promise.allSettled([
       fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${addr}&chainID=${chainId}`).then(r=>r.json()),
@@ -3165,6 +3177,20 @@ function openStory(id){
 function closeStory(){
   document.getElementById('storyModal').classList.remove('on');
   document.body.style.overflow='';
+}
+
+// ===== SECURITY HELPERS =====
+function sanitizeHTML(str){
+  // Strip any HTML tags from user-facing strings before DOM injection
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(String(str)));
+  return div.innerHTML;
+}
+function isValidAddress(addr){
+  return /^0x[a-fA-F0-9]{40}$/.test(addr);
+}
+function isValidChain(chain){
+  return ['eth','bsc','base','arbitrum','polygon','solana'].includes(chain);
 }
 
 // ===== EDUCATION SECTION =====
