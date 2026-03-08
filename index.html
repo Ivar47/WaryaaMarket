@@ -64,8 +64,9 @@ header{background:rgba(6,9,15,0.92);backdrop-filter:blur(24px);border-bottom:1px
 .gs-val{font-family:var(--mono);font-weight:600}
 
 /* === LAYOUT === */
-.main{max-width:1700px;margin:0 auto;padding:18px 20px;display:grid;grid-template-columns:1fr 330px;gap:18px}
-@media(max-width:1200px){.main{grid-template-columns:1fr}.sidebar{display:none}}
+.main{max-width:1700px;margin:0 auto;padding:18px 20px;display:grid;grid-template-columns:1fr 340px;gap:18px}
+@media(max-width:1200px){.main{grid-template-columns:1fr 300px}}
+@media(max-width:900px){.main{grid-template-columns:1fr}.sidebar{display:none}}
 .content{min-width:0}
 
 /* === PAGES === */
@@ -366,17 +367,18 @@ body.light header{background:rgba(255,255,255,0.95)}
 body.light .stats-strip{background:#fff}
 
 /* === NFT SIDEBAR WIDGET === */
-.nft-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:opacity 0.12s}
+.nft-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:opacity 0.12s}
 .nft-item:hover{opacity:0.8}
 .nft-item:last-child{border-bottom:none}
-.nft-rank{font-family:var(--mono);font-size:10px;color:var(--text3);width:16px;flex-shrink:0;text-align:center}
-.nft-img{width:36px;height:36px;border-radius:7px;object-fit:cover;background:var(--card2);flex-shrink:0}
+.nft-rank{font-family:var(--mono);font-size:10px;color:var(--text3);width:18px;flex-shrink:0;text-align:center;font-weight:700}
+.nft-img{width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden}
+.nft-img img{width:100%;height:100%;object-fit:cover;border-radius:8px}
 .nft-info{flex:1;min-width:0}
-.nft-name{font-weight:700;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nft-floor{font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:1px}
-.nft-chg{font-family:var(--mono);font-size:10.5px;font-weight:700;flex-shrink:0;text-align:right}
-.nft-tabs{display:flex;gap:1px;background:var(--bg);border-radius:6px;padding:3px;margin-bottom:10px}
-.nft-tab{flex:1;padding:4px 6px;border-radius:4px;font-size:10px;font-weight:700;color:var(--text2);text-align:center;cursor:pointer;transition:all 0.15s}
+.nft-name{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.nft-floor{font-family:var(--mono);font-size:10px;color:var(--text2);margin-top:2px}
+.nft-chg{font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0;text-align:right;min-width:44px}
+.nft-tabs{display:flex;gap:1px;background:var(--bg);border-radius:6px;padding:3px;margin-bottom:12px}
+.nft-tab{flex:1;padding:5px 6px;border-radius:4px;font-size:10.5px;font-weight:700;color:var(--text2);text-align:center;cursor:pointer;transition:all 0.15s}
 .nft-tab.on{background:var(--card2);color:var(--text)}
 
 /* === FOOTER === */
@@ -2476,32 +2478,32 @@ function setTheme(mode){
 //  NFT RANKINGS — OpenSea & Magic Eden via public APIs
 // ======================================================
 const NFT_ETH = [
-  {name:'CryptoPunks',floor:'46.9',vol:'1,240',chg:'+2.4',img:'https://i.seadn.io/gae/BdoEyebyyodfqXLr1NUznzkdtO7W6yEIV4xvHVeJf9cLMMiRHMCBTGOkvbvtFwuFWvTwlfhzrPUxsMCZtHXdeN_uHkFHcTIl3nD0?w=100'},
-  {name:'Bored Ape YC',floor:'8.2',vol:'892',chg:'-1.1',img:'https://i.seadn.io/gcs/files/mf-boe-bayc.png?w=100'},
-  {name:'Azuki',floor:'3.8',vol:'561',chg:'+5.7',img:'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6Cjd-D0bwjGYNsQ-vBFKSqMjDE4UNbqrBLPmrXA?w=100'},
-  {name:'Pudgy Penguins',floor:'6.1',vol:'720',chg:'+3.2',img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661OoG-clRi7EgInLX4LpkCd9Jc117yGqHMiO9Qjn?w=100'},
-  {name:'Doodles',floor:'1.3',vol:'234',chg:'-0.8',img:'https://i.seadn.io/gae/7B0qai02OdHA8P_EOVK672qUliyjQdQDGNrACxs7WnTgZAkJa_wWURnIFKeOh5VTf8cfTqW3wQpozGedaC9mhvXB824xaWts35GfQ?w=100'},
-  {name:'Mutant Ape YC',floor:'1.9',vol:'445',chg:'+0.6',img:'https://i.seadn.io/gae/lHexKRMpw-aoSyB1WdFBff5yfANLReFxpYUouByiaNkx_Uw5SvtNn40K5UhLB2T7Hms5Rc-HQsV_MVUPkbIDAsMDf1TOVkF1Jn0?w=100'},
-  {name:'Milady Maker',floor:'2.1',vol:'388',chg:'+8.3',img:'https://i.seadn.io/gcs/files/milady.png?w=100'},
-  {name:'CloneX',floor:'0.9',vol:'178',chg:'-2.1',img:'https://i.seadn.io/gae/XN0XuD8Uh3jyRWNtPTFeXJg_ht8m5ofDx6aHdsmyMgyptfkec4LTN1mZ5yVECUGl-XEI0Wv9j7sJB5nvM11-n6kOcJVLUwsJ_-N?w=100'},
+  {name:'CryptoPunks',floor:'46.9',vol:'1,240',chg:'+2.4',emoji:'👾',color:'#6366f1'},
+  {name:'Bored Ape YC',floor:'8.2',vol:'892',chg:'-1.1',emoji:'🐒',color:'#f59e0b'},
+  {name:'Azuki',floor:'3.8',vol:'561',chg:'+5.7',emoji:'⛩️',color:'#ef4444'},
+  {name:'Pudgy Penguins',floor:'6.1',vol:'720',chg:'+3.2',emoji:'🐧',color:'#60a5fa'},
+  {name:'Doodles',floor:'1.3',vol:'234',chg:'-0.8',emoji:'🎨',color:'#f472b6'},
+  {name:'Mutant Ape YC',floor:'1.9',vol:'445',chg:'+0.6',emoji:'🧟',color:'#10b981'},
+  {name:'Milady Maker',floor:'2.1',vol:'388',chg:'+8.3',emoji:'👧',color:'#8b5cf6'},
+  {name:'CloneX',floor:'0.9',vol:'178',chg:'-2.1',emoji:'🤖',color:'#06b6d4'},
 ];
 const NFT_SOL = [
-  {name:'Mad Lads',floor:'82',vol:'4,210',chg:'+6.2',img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/mad-lads_pfp_1680927566628.png',sym:'SOL'},
-  {name:'Tensorians',floor:'41',vol:'1,890',chg:'+1.8',img:'https://bafybeifvwitulscqwzsdfzabgkd72mbj5cqkdvowvgfzagzz52mcm6fhre.ipfs.nftstorage.link/1.png',sym:'SOL'},
-  {name:'Okay Bears',floor:'28',vol:'920',chg:'-0.5',img:'https://bafkreih4ckdrsvvhjbsotxjkb3tlgjxzjrjjucnfvs7bw2sj3jbrjw5k3e.ipfs.nftstorage.link/',sym:'SOL'},
-  {name:'DeGods',floor:'19',vol:'780',chg:'+3.4',img:'https://metadata.degods.com/g/0-dead.png',sym:'SOL'},
-  {name:'y00ts',floor:'11',vol:'560',chg:'-1.2',img:'https://bafkreia7xbzdqy4jxlhm6bdq2dn3xcqchqh5ljhfv5rjpzxpjpozwtzrwi.ipfs.nftstorage.link/',sym:'SOL'},
-  {name:'SMB Gen2',floor:'16',vol:'430',chg:'+2.9',img:'https://arweave.net/4YvZpkbaSEhqFINBWAU-KQnhJQMuvlw1RW9OuB67Kac',sym:'SOL'},
-  {name:'Aurory',floor:'5',vol:'290',chg:'+0.4',img:'https://bafybeigfrmtlsiqzgne4no6nj7cz4frdlqlirqj2dpze77l4miwgv3z54u.ipfs.nftstorage.link/1.png',sym:'SOL'},
-  {name:'Famous Fox',floor:'8',vol:'340',chg:'+1.6',img:'https://arweave.net/N36gWbjnIQMVwcXlNNhYFTCN1oEPgp-oC_k4xFO_YXQ',sym:'SOL'},
+  {name:'Mad Lads',floor:'82 SOL',vol:'4,210',chg:'+6.2',emoji:'😤',color:'#f97316'},
+  {name:'Tensorians',floor:'41 SOL',vol:'1,890',chg:'+1.8',emoji:'⚡',color:'#6366f1'},
+  {name:'Okay Bears',floor:'28 SOL',vol:'920',chg:'-0.5',emoji:'🐻',color:'#78716c'},
+  {name:'DeGods',floor:'19 SOL',vol:'780',chg:'+3.4',emoji:'👑',color:'#eab308'},
+  {name:'y00ts',floor:'11 SOL',vol:'560',chg:'-1.2',emoji:'🐐',color:'#64748b'},
+  {name:'SMB Gen2',floor:'16 SOL',vol:'430',chg:'+2.9',emoji:'🐵',color:'#10b981'},
+  {name:'Aurory',floor:'5 SOL',vol:'290',chg:'+0.4',emoji:'🦊',color:'#ec4899'},
+  {name:'Famous Fox',floor:'8 SOL',vol:'340',chg:'+1.6',emoji:'🦝',color:'#f59e0b'},
 ];
 const NFT_TRENDING = [
-  {name:'Pudgy Penguins',floor:'6.1',vol:'720',chg:'+12.4',img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661OoG-clRi7EgInLX4LpkCd9Jc117yGqHMiO9Qjn?w=100',tag:'🔥'},
-  {name:'Mad Lads',floor:'82 SOL',vol:'4,210',chg:'+6.2',img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/mad-lads_pfp_1680927566628.png',tag:'📈'},
-  {name:'Milady Maker',floor:'2.1 ETH',vol:'388',chg:'+8.3',img:'https://i.seadn.io/gcs/files/milady.png?w=100',tag:'🚀'},
-  {name:'Azuki',floor:'3.8 ETH',vol:'561',chg:'+5.7',img:'https://i.seadn.io/gae/H8jOCJuQokNqGBpkBN5wk1oZwO7LM8bNnrHCaekV2nKjnCqw6UB5oaH8XyNeBDj6Cjd-D0bwjGYNsQ-vBFKSqMjDE4UNbqrBLPmrXA?w=100',tag:'💎'},
-  {name:'DeGods',floor:'19 SOL',vol:'780',chg:'+3.4',img:'https://metadata.degods.com/g/0-dead.png',tag:'📊'},
-  {name:'Tensorians',floor:'41 SOL',vol:'1,890',chg:'+1.8',img:'https://bafybeifvwitulscqwzsdfzabgkd72mbj5cqkdvowvgfzagzz52mcm6fhre.ipfs.nftstorage.link/1.png',tag:'⚡'},
+  {name:'Pudgy Penguins',floor:'6.1 ETH',vol:'720',chg:'+12.4',emoji:'🐧',color:'#60a5fa',tag:'🔥'},
+  {name:'Mad Lads',floor:'82 SOL',vol:'4,210',chg:'+6.2',emoji:'😤',color:'#f97316',tag:'📈'},
+  {name:'Milady Maker',floor:'2.1 ETH',vol:'388',chg:'+8.3',emoji:'👧',color:'#8b5cf6',tag:'🚀'},
+  {name:'Azuki',floor:'3.8 ETH',vol:'561',chg:'+5.7',emoji:'⛩️',color:'#ef4444',tag:'💎'},
+  {name:'DeGods',floor:'19 SOL',vol:'780',chg:'+3.4',emoji:'👑',color:'#eab308',tag:'📊'},
+  {name:'Tensorians',floor:'41 SOL',vol:'1,890',chg:'+1.8',emoji:'⚡',color:'#6366f1',tag:'⚡'},
 ];
 
 let nftCurrentTab = 'eth';
@@ -2515,17 +2517,18 @@ function switchNFT(tab, btn){
 
 function renderNFT(){
   const el = document.getElementById('nftList');
+  if(!el) return;
   const data = nftCurrentTab==='sol' ? NFT_SOL : nftCurrentTab==='trending' ? NFT_TRENDING : NFT_ETH;
-  const sym = nftCurrentTab==='sol' ? 'SOL' : nftCurrentTab==='trending' ? '' : 'ETH';
+  const mktLink = nftCurrentTab==='sol' ? 'https://magiceden.io/marketplace' : 'https://opensea.io/rankings';
   el.innerHTML = data.map((n,i)=>{
     const up = parseFloat(n.chg) >= 0;
-    const floorLabel = n.floor + (sym&&!n.sym?' '+sym:'')+(n.sym?' '+n.sym:'');
-    return `<div class="nft-item" onclick="window.open('https://${nftCurrentTab==='sol'?'magiceden.io/marketplace/':'opensea.io/collection/'}','_blank')">
-      <div class="nft-rank">${n.tag||('#'+(i+1))}</div>
-      <img class="nft-img" src="${n.img}" alt="${n.name}" onerror="this.style.background='var(--card3)';this.src=''">
+    const label = n.tag || ('#'+(i+1));
+    return `<div class="nft-item" onclick="window.open('${mktLink}','_blank')">
+      <div class="nft-rank">${label}</div>
+      <div class="nft-img" style="background:${n.color}22;border:1px solid ${n.color}44;font-size:20px;display:flex;align-items:center;justify-content:center;border-radius:8px;width:40px;height:40px;flex-shrink:0">${n.emoji}</div>
       <div class="nft-info">
         <div class="nft-name">${n.name}</div>
-        <div class="nft-floor">Floor: ${floorLabel}</div>
+        <div class="nft-floor">Floor: ${n.floor}</div>
       </div>
       <div class="nft-chg ${up?'up':'down'}">${up?'+':''}${n.chg}%</div>
     </div>`;
