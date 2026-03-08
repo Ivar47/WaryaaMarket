@@ -3250,9 +3250,9 @@ function filterEdu(cat, btn){
 // ======================================================
 //  RAMADAN / EID BANNER + FIREWORKS
 // ======================================================
-const RAMADAN_START = new Date('2026-03-01T00:00:00');
-const EID_START     = new Date('2026-03-30T00:00:00');
-const EID_END       = new Date('2026-04-07T00:00:00');
+const RAMADAN_START = new Date('2026-02-18T00:00:00');
+const EID_START     = new Date('2026-03-20T00:00:00');
+const EID_END       = new Date('2026-03-27T00:00:00');
 
 function getRamadanPhase(){
   const now = new Date();
@@ -3349,7 +3349,7 @@ function initRamadanBanner(){
     scroll.innerHTML = buildEidContent();
     // Check if it's the FIRST DAY of Eid for full fireworks
     const now = new Date();
-    const eidDay1End = new Date('2026-03-31T00:00:00');
+    const eidDay1End = new Date('2026-03-21T00:00:00');
     const shownKey = 'wm-eid-fireworks-2026';
     if(now < eidDay1End && !localStorage.getItem(shownKey)){
       localStorage.setItem(shownKey, '1');
