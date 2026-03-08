@@ -62,6 +62,33 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
+/* === RAMADAN / EID BANNER === */
+#ramadanBar{position:relative;overflow:hidden;height:34px;display:flex;align-items:center;z-index:100;transition:background 1s ease}
+#ramadanBar.ramadan-mode{background:linear-gradient(90deg,#071a0e,#0a3d1f,#071a0e);border-bottom:1px solid #1a6b35}
+#ramadanBar.eid-mode{background:linear-gradient(90deg,#2a1400,#7a4200,#c8720a,#7a4200,#2a1400);border-bottom:1px solid #d4a017}
+.ramadan-scroll{display:flex;animation:ramadan-scroll 35s linear infinite;white-space:nowrap;align-items:center;height:100%}
+.ramadan-scroll:hover{animation-play-state:paused}
+@keyframes ramadan-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.r-item{display:inline-flex;align-items:center;gap:6px;padding:0 28px;font-size:12px;font-weight:700;letter-spacing:0.3px}
+.r-item.english{color:#FFD700;font-family:'Segoe UI',sans-serif}
+.r-item.arabic{color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;direction:rtl}
+.r-item.countdown{color:#90EE90;font-family:monospace;font-size:11px;font-weight:600}
+.r-item.eid-en{color:#FFD700;font-family:'Segoe UI',sans-serif;font-size:13px;text-shadow:0 0 8px rgba(255,215,0,0.6)}
+.r-item.eid-ar{color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;direction:rtl;text-shadow:0 0 8px rgba(255,255,255,0.4)}
+.r-sep{color:#FFD700;opacity:0.5;padding:0 6px;font-size:14px}
+.r-sep.eid{color:#FFD700;opacity:0.8;animation:twinkle 1.5s ease-in-out infinite alternate}
+@keyframes twinkle{0%{opacity:0.4;transform:scale(0.9)}100%{opacity:1;transform:scale(1.1)}}
+
+/* Eid particle canvas */
+#eidFireworks{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;display:none}
+
+/* Eid bar sparkle particles */
+.eid-spark{position:absolute;width:4px;height:4px;border-radius:50%;pointer-events:none;animation:spark-fly 1.2s ease-out forwards}
+@keyframes spark-fly{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}
+}
+
 /* === TICKER === */
 .ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);height:30px;overflow:hidden;display:flex;align-items:center}
 .ticker-inner{display:flex;animation:scroll-left 80s linear infinite;white-space:nowrap}
@@ -614,6 +641,16 @@ body.light .stats-strip{background:#fff}
 </style>
 </head>
 <body>
+
+<!-- FIREWORKS CANVAS (full page - Eid day only) -->
+<canvas id="eidFireworks"></canvas>
+
+<!-- RAMADAN / EID BANNER -->
+<div id="ramadanBar" style="display:none">
+  <div class="ramadan-scroll" id="ramadanScroll">
+    <!-- JS filled -->
+  </div>
+</div>
 
 <!-- TICKER -->
 <div class="ticker-bar">
@@ -2343,6 +2380,9 @@ async function fetchCryptoWithRetry(attempt=1){
 }
 
 async function init(){
+  // Ramadan / Eid banner — runs first, above everything
+  initRamadanBanner();
+
   // Render static content first (no API needed)
   buildTicker();
   renderStocksOverview();
@@ -3205,6 +3245,341 @@ function filterEdu(cat, btn){
     if(cat==='all' || c.dataset.cat===cat) c.style.display='';
     else c.style.display='none';
   });
+}
+
+// ======================================================
+//  RAMADAN / EID BANNER + FIREWORKS
+// ======================================================
+const RAMADAN_START = new Date('2026-03-01T00:00:00');
+const EID_START     = new Date('2026-03-30T00:00:00');
+const EID_END       = new Date('2026-04-07T00:00:00');
+
+function getRamadanPhase(){
+  const now = new Date();
+  if(now >= EID_END)   return 'hidden';
+  if(now >= EID_START) return 'eid';
+  if(now >= RAMADAN_START) return 'ramadan';
+  return 'hidden';
+}
+
+function formatCountdown(target){
+  const diff = target - new Date();
+  if(diff <= 0) return null;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  if(d > 0) return `${d}d ${h}h ${m}m ${s}s`;
+  return `${h}h ${m}m ${s}s`;
+}
+
+function buildRamadanContent(){
+  const countdown = formatCountdown(EID_START);
+  const items = [
+    `<div class="r-item english">🌙 Ramadan Mubarak</div>`,
+    `<div class="r-sep">·</div>`,
+    `<div class="r-item arabic">رمضان مبارك 🌙</div>`,
+    `<div class="r-sep">·</div>`,
+    countdown ? `<div class="r-item countdown">⏳ ${countdown} until Eid</div>` : '',
+    `<div class="r-sep">·</div>`,
+    `<div class="r-item english">🕌 Ramadan Kareem</div>`,
+    `<div class="r-sep">·</div>`,
+    `<div class="r-item arabic">كل عام وأنتم بخير 🕌</div>`,
+    `<div class="r-sep">·</div>`,
+    `<div class="r-item english">☪️ May Allah accept our fasts</div>`,
+    `<div class="r-sep">·</div>`,
+    `<div class="r-item arabic">تقبل الله منا ومنكم ☪️</div>`,
+    `<div class="r-sep">·</div>`,
+  ].join('');
+  return items + items; // duplicate for seamless loop
+}
+
+function buildEidContent(){
+  const items = [
+    `<div class="r-item eid-en">🎆 Eid Mubarak!</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-ar">عيد مبارك 🎇</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-en">🌟 Taqabbal Allahu Minna wa Minkum</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-ar">تقبل الله منا ومنكم 🌟</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-en">🎊 Wishing you joy, peace & blessings</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-ar">كل عام وأنتم بخير 🎊</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-en">☪️ Eid al-Fitr Mubarak</div>`,
+    `<div class="r-sep eid">✨</div>`,
+    `<div class="r-item eid-ar">عيد الفطر المبارك ☪️</div>`,
+    `<div class="r-sep eid">✨</div>`,
+  ].join('');
+  return items + items;
+}
+
+function initRamadanBanner(){
+  const phase = getRamadanPhase();
+  const bar   = document.getElementById('ramadanBar');
+  const scroll = document.getElementById('ramadanScroll');
+  if(!bar || !scroll) return;
+
+  if(phase === 'hidden'){
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+
+  if(phase === 'ramadan'){
+    bar.className = 'ramadan-mode';
+    scroll.innerHTML = buildRamadanContent();
+    // Update countdown every second
+    setInterval(()=>{
+      const c = formatCountdown(EID_START);
+      if(c){
+        scroll.innerHTML = buildRamadanContent();
+      } else {
+        // Eid has arrived — switch!
+        initRamadanBanner();
+      }
+    }, 1000);
+  }
+
+  if(phase === 'eid'){
+    bar.className = 'eid-mode';
+    scroll.innerHTML = buildEidContent();
+    // Check if it's the FIRST DAY of Eid for full fireworks
+    const now = new Date();
+    const eidDay1End = new Date('2026-03-31T00:00:00');
+    const shownKey = 'wm-eid-fireworks-2026';
+    if(now < eidDay1End && !localStorage.getItem(shownKey)){
+      localStorage.setItem(shownKey, '1');
+      setTimeout(()=> launchEidFireworks(), 800);
+    }
+    // Spawn bar sparkles every 2s
+    setInterval(()=> spawnBarSparkles(bar), 2000);
+  }
+}
+
+// ── Full-page Eid Fireworks (Canvas) ──────────────────
+function launchEidFireworks(){
+  const canvas = document.getElementById('eidFireworks');
+  if(!canvas) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+  const colors = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4',
+                   '#FFEAA7','#DDA0DD','#98FB98','#FF9A9E','#ffffff',
+                   '#FF6347','#00FA9A','#FFB347','#87CEEB','#DEB887'];
+
+  class Firework {
+    constructor(){
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height * 0.7;
+      this.color = colors[Math.floor(Math.random()*colors.length)];
+      this.particles = [];
+      this.exploded = false;
+      this.vy = -(Math.random()*4 + 6);
+      this.vx = (Math.random()-0.5)*2;
+      this.startY = canvas.height;
+      this.curY = canvas.height;
+      this.curX = this.x;
+    }
+    update(){
+      if(!this.exploded){
+        this.curY += this.vy;
+        this.curX += this.vx;
+        this.vy += 0.15;
+        if(this.vy >= -1) this.explode();
+      } else {
+        this.particles.forEach(p=>p.update());
+        this.particles = this.particles.filter(p=>p.alpha>0.01);
+      }
+    }
+    explode(){
+      this.exploded = true;
+      const count = Math.floor(Math.random()*80)+60;
+      for(let i=0;i<count;i++){
+        const angle = (Math.PI*2/count)*i;
+        const speed = Math.random()*5+2;
+        this.particles.push(new Particle(
+          this.curX, this.curY,
+          Math.cos(angle)*speed,
+          Math.sin(angle)*speed,
+          this.color
+        ));
+      }
+      // Add sparkle star burst
+      for(let i=0;i<20;i++){
+        const angle = Math.random()*Math.PI*2;
+        const speed = Math.random()*8+4;
+        this.particles.push(new Particle(
+          this.curX, this.curY,
+          Math.cos(angle)*speed,
+          Math.sin(angle)*speed,
+          '#ffffff'
+        ));
+      }
+    }
+    draw(){
+      if(!this.exploded){
+        ctx.beginPath();
+        ctx.arc(this.curX, this.curY, 2, 0, Math.PI*2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        // Trail
+        ctx.beginPath();
+        ctx.moveTo(this.curX, this.curY);
+        ctx.lineTo(this.curX - this.vx*4, this.curY - this.vy*4);
+        ctx.strokeStyle = this.color+'44';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      } else {
+        this.particles.forEach(p=>p.draw());
+      }
+    }
+    done(){ return this.exploded && this.particles.length===0; }
+  }
+
+  class Particle {
+    constructor(x,y,vx,vy,color){
+      this.x=x; this.y=y; this.vx=vx; this.vy=vy;
+      this.color=color; this.alpha=1;
+      this.gravity=0.08;
+      this.size=Math.random()*3+1;
+      this.decay=Math.random()*0.015+0.008;
+    }
+    update(){
+      this.x+=this.vx; this.y+=this.vy;
+      this.vy+=this.gravity;
+      this.vx*=0.98;
+      this.alpha-=this.decay;
+    }
+    draw(){
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,this.alpha);
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+      ctx.fillStyle=this.color;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const fireworks = [];
+  let frame = 0;
+  let running = true;
+
+  // Show "Eid Mubarak" text overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    text-align:center;z-index:100000;pointer-events:none;
+    animation:eid-text-appear 1s ease forwards;
+  `;
+  overlay.innerHTML = `
+    <div style="font-size:clamp(32px,6vw,72px);font-weight:900;color:#FFD700;
+      text-shadow:0 0 30px rgba(255,215,0,0.8),0 0 60px rgba(255,215,0,0.4);
+      font-family:'Segoe UI',sans-serif;letter-spacing:2px;margin-bottom:12px">
+      🎆 Eid Mubarak! 🎆
+    </div>
+    <div style="font-size:clamp(24px,4vw,52px);font-weight:800;color:#ffffff;
+      text-shadow:0 0 20px rgba(255,255,255,0.6);font-family:'Segoe UI',Arial;
+      direction:rtl;margin-bottom:16px">
+      عيد مبارك 🌙
+    </div>
+    <div style="font-size:clamp(12px,2vw,18px);color:#90EE90;font-weight:600;
+      letter-spacing:1px;font-family:'Segoe UI',sans-serif">
+      Taqabbal Allahu Minna wa Minkum
+    </div>
+  `;
+
+  // Add animation keyframe
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes eid-text-appear{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}
+      50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}
+      100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    }
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(overlay);
+
+  function animate(){
+    if(!running) return;
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    frame++;
+    // Launch fireworks — frequent bursts for 5 seconds
+    if(frame < 300 && frame % 12 === 0){
+      fireworks.push(new Firework());
+    }
+    // Extra burst at the start
+    if(frame === 1){
+      for(let i=0;i<8;i++) fireworks.push(new Firework());
+    }
+    if(frame === 60){
+      for(let i=0;i<6;i++) fireworks.push(new Firework());
+    }
+
+    for(let i=fireworks.length-1;i>=0;i--){
+      fireworks[i].update();
+      fireworks[i].draw();
+      if(fireworks[i].done()) fireworks.splice(i,1);
+    }
+
+    if(frame < 350 || fireworks.length > 0){
+      requestAnimationFrame(animate);
+    } else {
+      // Fade out
+      let opacity = 1;
+      const fadeOut = setInterval(()=>{
+        opacity -= 0.05;
+        canvas.style.opacity = opacity;
+        overlay.style.opacity = opacity;
+        if(opacity <= 0){
+          clearInterval(fadeOut);
+          canvas.style.display = 'none';
+          canvas.style.opacity = 1;
+          overlay.remove();
+          style.remove();
+          running = false;
+        }
+      }, 50);
+    }
+  }
+  animate();
+
+  // Handle resize
+  window.addEventListener('resize', ()=>{
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, {once:true});
+}
+
+// ── Bar sparkle particles during Eid week ─────────────
+function spawnBarSparkles(bar){
+  const colors = ['#FFD700','#ffffff','#FF6B6B','#4ECDC4','#98FB98'];
+  for(let i=0;i<6;i++){
+    const spark = document.createElement('div');
+    spark.className = 'eid-spark';
+    const x = Math.random() * bar.offsetWidth;
+    const dx = (Math.random()-0.5)*60 + 'px';
+    const dy = -(Math.random()*40+10) + 'px';
+    spark.style.cssText = `
+      left:${x}px;top:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --dx:${dx};--dy:${dy};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${0.8+Math.random()*0.6}s;
+    `;
+    bar.appendChild(spark);
+    setTimeout(()=>spark.remove(), 1500);
+  }
 }
 
 init();
