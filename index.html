@@ -304,6 +304,51 @@ svg.spark{overflow:visible}
 /* === RESPONSIVE TABLE SCROLL === */
 .tbl-scroll{overflow-x:auto}
 
+/* === DEX / NEW TOKENS / RUG CHECK / TRENDING POOLS === */
+.dex-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.chain-btn{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid var(--border);color:var(--text2);transition:all 0.15s;cursor:pointer;background:none}
+.chain-btn:hover{border-color:var(--border2);color:var(--text)}
+.chain-btn.on{background:rgba(56,97,251,0.12);border-color:var(--blue);color:var(--blue)}
+.pair-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 80px;gap:0;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.035);cursor:pointer;transition:background 0.12s}
+.pair-row:hover{background:var(--card2)}
+.pair-row.hdr{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text2);background:var(--bg2);border-bottom:1px solid var(--border);cursor:default}
+.pair-row.hdr:hover{background:var(--bg2)}
+.pair-name{font-weight:700;font-size:13px}
+.pair-sub{font-size:10px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
+.pair-chain{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(0,210,255,0.08);color:var(--blue);font-weight:700;width:fit-content;margin-top:2px}
+.dex-val{font-family:var(--mono);font-size:12.5px;font-weight:600}
+.dex-sub{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.boost-badge{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,165,0,0.12);color:orange;font-weight:700;border:1px solid rgba(255,165,0,0.2)}
+.new-badge{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(0,255,136,0.1);color:var(--green);font-weight:700}
+.rug-score{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:13px;font-weight:700;padding:3px 10px;border-radius:6px}
+.rug-safe{background:rgba(0,255,136,0.1);color:var(--green)}
+.rug-warn{background:rgba(255,214,0,0.1);color:#FFD600}
+.rug-danger{background:rgba(255,48,85,0.12);color:var(--red)}
+.rug-form{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.rug-input{flex:1;min-width:240px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none}
+.rug-input:focus{border-color:var(--blue)}
+.rug-input::placeholder{color:var(--text3)}
+.rug-btn{padding:10px 20px;background:var(--blue);border-radius:8px;color:white;font-weight:700;font-size:13px;cursor:pointer;transition:opacity 0.15s;border:none;font-family:var(--display)}
+.rug-btn:hover{opacity:0.85}
+.rug-result{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.rug-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+@media(max-width:700px){.rug-grid{grid-template-columns:repeat(2,1fr)}.pair-row{grid-template-columns:2fr 1fr 1fr 1fr}.pair-row>*:nth-child(n+5){display:none}}
+.rug-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
+.rug-stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:var(--text2);margin-bottom:5px}
+.rug-stat-val{font-family:var(--mono);font-size:15px;font-weight:700}
+.pool-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 0.15s}
+.pool-card:hover{border-color:var(--border3);transform:translateY(-1px)}
+.pool-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.pool-name{font-weight:800;font-size:14px}
+.pool-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:600px){.pool-stats{grid-template-columns:repeat(2,1fr)}}
+.pool-stat-l{font-size:9.5px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+.pool-stat-v{font-family:var(--mono);font-size:13px;font-weight:700;margin-top:2px}
+.age-badge{font-size:9px;padding:2px 7px;border-radius:4px;background:rgba(139,92,246,0.12);color:var(--purple);font-weight:700}
+.loading-dex{text-align:center;padding:40px;color:var(--text2);font-size:13px}
+.loading-dex .spin{display:inline-block;animation:spin 1s linear infinite;font-size:20px;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* === GLOBAL NEWS GRID === */
 .news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 @media(max-width:800px){.news-grid{grid-template-columns:1fr}}
@@ -400,6 +445,10 @@ svg.spark{overflow:visible}
       <button class="nav-btn" onclick="goPage('calendar',this)">📅 Calendar</button>
       <button class="nav-btn" onclick="goPage('protools',this)">🔬 Pro Tools</button>
       <button class="nav-btn" onclick="goPage('funding',this)">💰 Funding</button>
+      <button class="nav-btn" onclick="goPage('dex',this)">🔥 DEX Pairs</button>
+      <button class="nav-btn" onclick="goPage('newtokens',this)">🌱 New Tokens</button>
+      <button class="nav-btn" onclick="goPage('rugcheck',this)">🛡️ Rug Check</button>
+      <button class="nav-btn" onclick="goPage('trendingpools',this)">📊 Trending Pools</button>
     </nav>
     <div class="h-right">
       <div class="live-pill"><div class="live-dot"></div>LIVE</div>
@@ -677,8 +726,95 @@ svg.spark{overflow:visible}
   <div class="card card-p" id="fundingList"></div>
 </div>
 
-</div><!-- /content -->
+</div><!-- /content funding end -->
 
+<!-- ===== DEX TRENDING PAIRS PAGE ===== -->
+<div class="pg" id="pg-dex">
+  <div class="sec-hdr">
+    <div class="sec-title">🔥 DEX Trending Pairs</div>
+    <div style="font-size:11px;color:var(--text2)" id="dexLastUpdate"></div>
+  </div>
+  <div class="dex-filter-bar">
+    <button class="chain-btn on" onclick="filterDex('all',this)">All Chains</button>
+    <button class="chain-btn" onclick="filterDex('ethereum',this)">Ethereum</button>
+    <button class="chain-btn" onclick="filterDex('bsc',this)">BSC</button>
+    <button class="chain-btn" onclick="filterDex('solana',this)">Solana</button>
+    <button class="chain-btn" onclick="filterDex('base',this)">Base</button>
+    <button class="chain-btn" onclick="filterDex('arbitrum',this)">Arbitrum</button>
+    <button class="chain-btn" onclick="filterDex('polygon',this)">Polygon</button>
+  </div>
+  <div class="card">
+    <div class="pair-row hdr">
+      <div>Pair / Token</div>
+      <div>Price</div>
+      <div>5m %</div>
+      <div>1h %</div>
+      <div>24h Vol</div>
+      <div>Liquidity</div>
+      <div>Status</div>
+    </div>
+    <div id="dexPairsBody"><div class="loading-dex"><div class="spin">⏳</div><br>Loading DEX pairs...</div></div>
+  </div>
+</div>
+
+<!-- ===== NEW TOKENS PAGE ===== -->
+<div class="pg" id="pg-newtokens">
+  <div class="sec-hdr">
+    <div class="sec-title">🌱 New Tokens</div>
+    <div style="font-size:11px;color:var(--text2)" id="newTokLastUpdate"></div>
+  </div>
+  <div class="dex-filter-bar">
+    <button class="chain-btn on" onclick="filterNewTok('all',this)">All Chains</button>
+    <button class="chain-btn" onclick="filterNewTok('eth',this)">Ethereum</button>
+    <button class="chain-btn" onclick="filterNewTok('bsc',this)">BSC</button>
+    <button class="chain-btn" onclick="filterNewTok('solana',this)">Solana</button>
+    <button class="chain-btn" onclick="filterNewTok('base',this)">Base</button>
+    <button class="chain-btn" onclick="filterNewTok('arbitrum',this)">Arbitrum</button>
+  </div>
+  <div id="newTokensGrid"><div class="loading-dex"><div class="spin">⏳</div><br>Loading new tokens from GeckoTerminal...</div></div>
+</div>
+
+<!-- ===== RUG CHECKER PAGE ===== -->
+<div class="pg" id="pg-rugcheck">
+  <div class="sec-hdr"><div class="sec-title">🛡️ Token Rug Checker</div></div>
+  <div class="card card-p" style="margin-bottom:16px">
+    <div style="font-size:12.5px;color:var(--text2);margin-bottom:12px">Enter a token contract address to check for honeypot, rug pull risk, holder concentration, and more.</div>
+    <div class="rug-form">
+      <select id="rugChain" style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:12px;outline:none;cursor:pointer">
+        <option value="eth">Ethereum</option>
+        <option value="bsc">BSC (BNB Chain)</option>
+        <option value="base">Base</option>
+      </select>
+      <input class="rug-input" id="rugAddress" placeholder="0x... contract address" />
+      <button class="rug-btn" onclick="runRugCheck()">🔍 Analyze Token</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3)">Examples: ETH: <span style="color:var(--blue);cursor:pointer" onclick="document.getElementById('rugAddress').value='0x6982508145454Ce325dDbE47a25d4ec3d2311933';document.getElementById('rugChain').value='eth'">PEPE</span> · <span style="color:var(--blue);cursor:pointer" onclick="document.getElementById('rugAddress').value='0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE';document.getElementById('rugChain').value='eth'">SHIB</span></div>
+  </div>
+  <div id="rugResult"></div>
+  <!-- Recent checks -->
+  <div class="sec-hdr" style="margin-top:10px"><div class="sec-title">📋 Trending Token Checks</div></div>
+  <div id="rugTrending"><div class="loading-dex"><div class="spin">⏳</div><br>Loading trending tokens...</div></div>
+</div>
+
+<!-- ===== TRENDING POOLS PAGE ===== -->
+<div class="pg" id="pg-trendingpools">
+  <div class="sec-hdr">
+    <div class="sec-title">📊 Trending Pools</div>
+    <div style="font-size:11px;color:var(--text2)" id="poolsLastUpdate"></div>
+  </div>
+  <div class="dex-filter-bar">
+    <button class="chain-btn on" onclick="filterPools('all',this)">All Networks</button>
+    <button class="chain-btn" onclick="filterPools('eth',this)">Ethereum</button>
+    <button class="chain-btn" onclick="filterPools('bsc',this)">BSC</button>
+    <button class="chain-btn" onclick="filterPools('solana',this)">Solana</button>
+    <button class="chain-btn" onclick="filterPools('base',this)">Base</button>
+    <button class="chain-btn" onclick="filterPools('arbitrum',this)">Arbitrum</button>
+    <button class="chain-btn" onclick="filterPools('polygon_pos',this)">Polygon</button>
+  </div>
+  <div id="trendingPoolsGrid"><div class="loading-dex"><div class="spin">⏳</div><br>Loading trending pools from GeckoTerminal...</div></div>
+</div>
+
+</div><!-- /content -->
 <!-- ===== SIDEBAR ===== -->
 <div class="sidebar">
 
@@ -926,6 +1062,10 @@ function goPage(page, btn){
   document.getElementById('pg-'+page).classList.add('on');
   if(btn) btn.classList.add('on');
   // Init page-specific
+  if(page==='dex') loadDexPairs();
+  if(page==='newtokens') loadNewTokens();
+  if(page==='rugcheck') loadRugTrending();
+  if(page==='trendingpools') loadTrendingPools();
   if(page==='protools'&&!tvInitialized){initTV('BINANCE:BTCUSDT');tvInitialized=true;}
   if(page==='news') loadNews('ALL');
   if(page==='calendar') renderCalFull();
@@ -936,33 +1076,8 @@ function goPage(page, btn){
 }
 
 // ======================================================
-//  DATA LAYER — CoinCap (primary, free/no-key) + CoinGecko (fallback)
+//  FETCH
 // ======================================================
-function normaliseCoinCap(a, rank){
-  const price=parseFloat(a.priceUsd)||0;
-  const chg24=parseFloat(a.changePercent24Hr)||0;
-  const sym=(a.symbol||'').toLowerCase();
-  return{
-    id:a.id, symbol:sym, name:a.name||a.id,
-    image:`https://assets.coincap.io/assets/icons/${sym}@2x.png`,
-    current_price:price,
-    market_cap:parseFloat(a.marketCapUsd)||0,
-    market_cap_rank:rank+1,
-    total_volume:parseFloat(a.volumeUsd24Hr)||0,
-    price_change_percentage_24h:chg24,
-    price_change_percentage_1h_in_currency:0,
-    price_change_percentage_7d_in_currency:0,
-    high_24h:price*(1+Math.abs(chg24)/200),
-    low_24h:price*(1-Math.abs(chg24)/200),
-    ath:price*3, ath_change_percentage:-65,
-    circulating_supply:parseFloat(a.supply)||0,
-    max_supply:parseFloat(a.maxSupply)||null,
-    fully_diluted_valuation:null,
-    sparkline_in_7d:{price:[]},
-    _source:'coincap'
-  };
-}
-
 async function fetchCrypto(){ return fetchCryptoWithRetry(); }
 
 async function fetchGlobal(){
@@ -1839,118 +1954,33 @@ function timeAgo(ts){
 }
 
 // ======================================================
-//  CORE DATA FETCH — CoinCap primary, CoinGecko fallback
+//  INIT — staggered fetches to avoid rate limiting
 // ======================================================
 async function fetchCryptoWithRetry(attempt=1){
-  const tbody=document.getElementById('cryptoBody');
-  const showStatus=msg=>{if(tbody)tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">${msg}</td></tr>`;};
-
-  // ── STEP 1: Try CoinCap (no key, no CORS issues, very reliable) ──
   try{
-    showStatus('⚡ Loading market data...');
-    const r=await fetch('https://api.coincap.io/v2/assets?limit=100',{headers:{Accept:'application/json'}});
-    if(!r.ok) throw new Error('coincap_fail');
-    const json=await r.json();
-    const assets=json.data;
-    if(!Array.isArray(assets)||assets.length<10) throw new Error('coincap_empty');
-
-    cryptoData=assets.map((a,i)=>normaliseCoinCap(a,i));
-
-    // Fetch sparklines async (non-blocking) for top 20 from CoinCap history
-    fetchSparklines(cryptoData.slice(0,20));
-
-    renderCryptoTable();
-    renderCryptoFull();
-    updateTickerFromData();
-    updateAltcoinIndex();
-
-    // Also fetch global stats from CoinCap
-    fetchGlobalFromCoinCap();
-    return; // success — done
-  }catch(e){
-    console.warn('CoinCap failed, trying CoinGecko:', e.message);
-  }
-
-  // ── STEP 2: CoinGecko fallback ──
-  const cgUrl='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d';
-  try{
-    if(attempt>1) showStatus(`⏳ Retry ${attempt}/4 — connecting to backup API...`);
-    const r=await fetch(cgUrl);
-    if(r.status===429) throw new Error('ratelimit');
-    const data=await r.json();
-    if(!Array.isArray(data)||data.length<5) throw new Error('empty_response');
-    cryptoData=data;
+    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
+    if(r.status===429) throw new Error('rate_limit');
+    cryptoData=await r.json();
+    if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
     renderCryptoTable();
     renderCryptoFull();
     updateTickerFromData();
     updateAltcoinIndex();
   }catch(e){
-    if(attempt<=4){
-      const wait=[0,6000,15000,30000][attempt]||30000;
-      showStatus(`⏳ Loading market data... (${wait/1000}s)`);
+    const wait=attempt*8000; // 8s, 16s, 24s...
+    const maxAttempts=5;
+    const tbody=document.getElementById('cryptoBody');
+    if(attempt<=maxAttempts){
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
       setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
     }else{
-      showStatus('⚠️ Could not load data. <span onclick="fetchCryptoWithRetry(1)" style="color:var(--blue);cursor:pointer;text-decoration:underline">↻ Retry now</span>');
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ CoinGecko rate limited. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
     }
   }
 }
 
-// Fetch 7-day sparklines from CoinCap (non-blocking, enhances charts)
-async function fetchSparklines(coins){
-  for(const coin of coins.slice(0,10)){
-    try{
-      const end=Date.now();
-      const start=end-(7*24*60*60*1000);
-      const r=await fetch(`https://api.coincap.io/v2/assets/${coin.id}/history?interval=h6&start=${start}&end=${end}`);
-      const j=await r.json();
-      if(j.data&&j.data.length>0){
-        const prices=j.data.map(d=>parseFloat(d.priceUsd));
-        const idx=cryptoData.findIndex(c=>c.id===coin.id);
-        if(idx!==-1) cryptoData[idx].sparkline_in_7d={price:prices};
-      }
-      await new Promise(r=>setTimeout(r,300)); // 300ms between spark requests
-    }catch{}
-  }
-  renderCryptoTable(); // re-render once sparklines are loaded
-}
-
-// Global stats from CoinCap (no rate limit)
-async function fetchGlobalFromCoinCap(){
-  try{
-    const r=await fetch('https://api.coincap.io/v2/assets?limit=100');
-    const j=await r.json();
-    const assets=j.data||[];
-    const totalMcap=assets.reduce((s,a)=>s+parseFloat(a.marketCapUsd||0),0);
-    const totalVol=assets.reduce((s,a)=>s+parseFloat(a.volumeUsd24Hr||0),0);
-    const btc=assets.find(a=>a.id==='bitcoin');
-    const eth=assets.find(a=>a.id==='ethereum');
-    const btcDom=btc?(parseFloat(btc.marketCapUsd)/totalMcap*100).toFixed(1):'--';
-    const ethDom=eth?(parseFloat(eth.marketCapUsd)/totalMcap*100).toFixed(1):'--';
-    const el=id=>document.getElementById(id);
-    if(el('gsMcap')) el('gsMcap').textContent='$'+fmt(totalMcap,true);
-    if(el('gsVol'))  el('gsVol').textContent='$'+fmt(totalVol,true);
-    if(el('gsBtcDom')){el('gsBtcDom').textContent=btcDom+'%';}
-    if(el('gsEthDom')){el('gsEthDom').textContent=ethDom+'%';}
-    if(el('btcDomPct')) el('btcDomPct').textContent=btcDom+'%';
-    if(el('ethDomPct')) el('ethDomPct').textContent=ethDom+'%';
-    if(el('btcDomTxt')) el('btcDomTxt').textContent=btcDom+'%';
-    // Donut arcs
-    const total=264;
-    const btcAmt=(parseFloat(btcDom)/100*total).toFixed(1);
-    const ethAmt=(parseFloat(ethDom)/100*total).toFixed(1);
-    if(el('btcArc'))el('btcArc').setAttribute('stroke-dasharray',btcAmt+' '+total);
-    if(el('ethArc')){
-      el('ethArc').setAttribute('stroke-dasharray',ethAmt+' '+total);
-      el('ethArc').setAttribute('stroke-dashoffset',-(parseFloat(btcAmt)-66).toFixed(1));
-    }
-  }catch(e){ fetchGlobal(); } // final fallback to CoinGecko global
-}
-
-// ======================================================
-//  INIT
-// ======================================================
-function init(){
-  // Render all static/hardcoded content immediately
+async function init(){
+  // Render static content first (no API needed)
   buildTicker();
   renderStocksOverview();
   renderSideUnlocks();
@@ -1959,30 +1989,363 @@ function init(){
   renderFunding();
   renderWhales();
 
-  // Fire API calls — staggered to prevent any rate-limit cascade
-  fetchCryptoWithRetry(1);                        // t=0s  (CoinCap primary)
-  setTimeout(()=>fetchFearGreed(),   1500);       // t=1.5s
-  setTimeout(()=>fetchGas(),         3000);       // t=3s
-  setTimeout(()=>loadNews('ALL'),    4500);       // t=4.5s
-  setTimeout(()=>fetchGlobal(),      6000);       // t=6s  (CoinGecko global, low priority)
+  // Stagger all API calls — 2s apart to avoid rate limit
+  fetchCryptoWithRetry();
+  setTimeout(()=>fetchGlobal(), 2000);
+  setTimeout(()=>fetchFearGreed(), 4000);
+  setTimeout(()=>fetchGas(), 5000);
+  setTimeout(()=>loadNews('ALL'), 6000);
 
-  // Live countdown timers
-  setInterval(tick, 1000);
+  // Timers
+  setInterval(tick,1000);
 
-  // Auto-refresh cycles
-  setInterval(()=>fetchCryptoWithRetry(1),  60000);
-  setInterval(()=>fetchGlobalFromCoinCap(), 62000);
-  setInterval(()=>fetchFearGreed(),        300000);
-  setInterval(()=>fetchGas(),              300000);
-  setInterval(()=>loadNews('ALL'),         180000);
+  // Auto-refresh (staggered too)
+  setInterval(()=>fetchCryptoWithRetry(), 65000);
+  setInterval(()=>fetchGlobal(), 67000);
+  setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
+  setInterval(()=>loadNews('ALL'), 180000);
 }
 
-// Wait for DOM before running
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', init);
-}else{
-  init();
+// ======================================================
+//  DEX TRENDING PAIRS — DexScreener API
+// ======================================================
+let dexAllPairs = [];
+let dexChainFilter = 'all';
+
+async function loadDexPairs(){
+  const body = document.getElementById('dexPairsBody');
+  if(dexAllPairs.length){renderDexPairs();return;}
+  body.innerHTML = '<div class="loading-dex"><div class="spin">⏳</div><br>Fetching live DEX data...</div>';
+  try{
+    // Fetch multiple trending searches
+    const searches = ['SOL','ETH','BTC','PEPE','DOGE'];
+    const results = [];
+    for(const q of searches){
+      try{
+        const r = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${q}`);
+        const d = await r.json();
+        if(d.pairs) results.push(...d.pairs.slice(0,8));
+      }catch(e){}
+      await new Promise(res=>setTimeout(res,300));
+    }
+    // Also fetch trending
+    try{
+      const r2 = await fetch('https://api.dexscreener.com/token-boosts/top/v1');
+      const boosts = await r2.json();
+      if(Array.isArray(boosts)){
+        for(const b of boosts.slice(0,6)){
+          try{
+            const r3 = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${b.tokenAddress}`);
+            const d3 = await r3.json();
+            if(d3.pairs&&d3.pairs[0]) results.push({...d3.pairs[0], boosted:true});
+          }catch(e){}
+        }
+      }
+    }catch(e){}
+    // Deduplicate by pairAddress
+    const seen = new Set();
+    dexAllPairs = results.filter(p=>{
+      if(!p||!p.pairAddress||seen.has(p.pairAddress)) return false;
+      seen.add(p.pairAddress);
+      return true;
+    }).sort((a,b)=>(parseFloat(b.volume?.h24||0))-(parseFloat(a.volume?.h24||0)));
+    document.getElementById('dexLastUpdate').textContent = 'Updated: '+new Date().toLocaleTimeString();
+    renderDexPairs();
+  }catch(e){
+    body.innerHTML = `<div class="loading-dex">⚠️ Failed to load DEX data. <span onclick="dexAllPairs=[];loadDexPairs()" style="color:var(--blue);cursor:pointer">Retry</span></div>`;
+  }
 }
+
+function filterDex(chain, btn){
+  dexChainFilter = chain;
+  document.querySelectorAll('#pg-dex .chain-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDexPairs();
+}
+
+function renderDexPairs(){
+  const body = document.getElementById('dexPairsBody');
+  let pairs = dexAllPairs;
+  if(dexChainFilter!=='all') pairs = pairs.filter(p=>(p.chainId||'').toLowerCase().includes(dexChainFilter));
+  if(!pairs.length){body.innerHTML='<div class="loading-dex">No pairs found for this chain.</div>';return;}
+  body.innerHTML = pairs.slice(0,50).map(p=>{
+    const price = parseFloat(p.priceUsd||0);
+    const ch5m = parseFloat(p.priceChange?.m5||0);
+    const ch1h = parseFloat(p.priceChange?.h1||0);
+    const vol24 = parseFloat(p.volume?.h24||0);
+    const liq = parseFloat(p.liquidity?.usd||0);
+    const chain = (p.chainId||'').replace('_',' ');
+    const base = p.baseToken?.symbol||'?';
+    const quote = p.quoteToken?.symbol||'?';
+    const dex = p.dexId||'';
+    return `<div class="pair-row" onclick="window.open('${p.url||'https://dexscreener.com'}','_blank')">
+      <div>
+        <div class="pair-name">${base}/${quote}</div>
+        <div class="pair-sub">${dex.toUpperCase()}</div>
+        <div class="pair-chain">${chain.toUpperCase()}</div>
+      </div>
+      <div><div class="dex-val">$${fmtP(price)}</div></div>
+      <div><div class="dex-val ${ch5m>=0?'up':'down'}">${ch5m>=0?'+':''}${ch5m.toFixed(2)}%</div></div>
+      <div><div class="dex-val ${ch1h>=0?'up':'down'}">${ch1h>=0?'+':''}${ch1h.toFixed(2)}%</div></div>
+      <div><div class="dex-val">$${fmt(vol24,true)}</div></div>
+      <div><div class="dex-val">$${fmt(liq,true)}</div></div>
+      <div>${p.boosted?'<span class="boost-badge">🚀 BOOST</span>':''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ======================================================
+//  NEW TOKENS — GeckoTerminal API
+// ======================================================
+let newTokAll = [];
+let newTokChain = 'all';
+
+const GECKO_NETWORKS = {
+  eth:'eth', bsc:'bsc', solana:'solana', base:'base', arbitrum:'arbitrum'
+};
+
+async function loadNewTokens(){
+  const grid = document.getElementById('newTokensGrid');
+  if(newTokAll.length){renderNewTokens();return;}
+  grid.innerHTML = '<div class="loading-dex"><div class="spin">⏳</div><br>Fetching new tokens from GeckoTerminal...</div>';
+  try{
+    const networks = ['eth','bsc','solana','base','arbitrum'];
+    const all = [];
+    for(const net of networks){
+      try{
+        const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/${net}/new_pools?page=1`,{headers:{Accept:'application/json;version=20230302'}});
+        const d = await r.json();
+        if(d.data) all.push(...d.data.map(p=>({...p, network:net})));
+      }catch(e){}
+      await new Promise(res=>setTimeout(res,400));
+    }
+    newTokAll = all.sort((a,b)=>new Date(b.attributes?.pool_created_at||0)-new Date(a.attributes?.pool_created_at||0));
+    document.getElementById('newTokLastUpdate').textContent = 'Updated: '+new Date().toLocaleTimeString();
+    renderNewTokens();
+  }catch(e){
+    grid.innerHTML = `<div class="loading-dex">⚠️ Failed. <span onclick="newTokAll=[];loadNewTokens()" style="color:var(--blue);cursor:pointer">Retry</span></div>`;
+  }
+}
+
+function filterNewTok(chain, btn){
+  newTokChain = chain;
+  document.querySelectorAll('#pg-newtokens .chain-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderNewTokens();
+}
+
+function renderNewTokens(){
+  const grid = document.getElementById('newTokensGrid');
+  let tokens = newTokAll;
+  if(newTokChain!=='all') tokens = tokens.filter(t=>t.network===newTokChain);
+  if(!tokens.length){grid.innerHTML='<div class="loading-dex">No tokens found for this chain.</div>';return;}
+  grid.innerHTML = tokens.slice(0,40).map(t=>{
+    const a = t.attributes||{};
+    const price = parseFloat(a.base_token_price_usd||0);
+    const vol24 = parseFloat(a.volume_usd?.h24||0);
+    const liq = parseFloat(a.reserve_in_usd||0);
+    const ch24 = parseFloat(a.price_change_percentage?.h24||0);
+    const name = a.name||'Unknown Pool';
+    const created = a.pool_created_at ? timeAgo(new Date(a.pool_created_at).getTime()/1000) : '?';
+    const net = (t.network||'').toUpperCase();
+    const url = `https://www.geckoterminal.com/${t.network}/pools/${a.address}`;
+    return `<div class="pool-card" onclick="window.open('${url}','_blank')">
+      <div class="pool-hdr">
+        <div>
+          <div class="pool-name">${name}</div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <span class="pair-chain">${net}</span>
+            <span class="new-badge">🕐 ${created}</span>
+          </div>
+        </div>
+        <div class="dex-val ${ch24>=0?'up':'down'}" style="font-size:14px">${ch24>=0?'+':''}${ch24.toFixed(2)}%</div>
+      </div>
+      <div class="pool-stats">
+        <div><div class="pool-stat-l">Price</div><div class="pool-stat-v">$${fmtP(price)}</div></div>
+        <div><div class="pool-stat-l">Vol 24h</div><div class="pool-stat-v">$${fmt(vol24,true)}</div></div>
+        <div><div class="pool-stat-l">Liquidity</div><div class="pool-stat-v">$${fmt(liq,true)}</div></div>
+        <div><div class="pool-stat-l">Txns 24h</div><div class="pool-stat-v">${(a.transactions?.h24?.buys||0)+(a.transactions?.h24?.sells||0)}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ======================================================
+//  RUG CHECKER — Honeypot.is API
+// ======================================================
+async function runRugCheck(){
+  const addr = document.getElementById('rugAddress').value.trim();
+  const chain = document.getElementById('rugChain').value;
+  const res = document.getElementById('rugResult');
+  if(!addr){res.innerHTML='<div class="loading-dex" style="color:var(--red)">⚠️ Please enter a contract address</div>';return;}
+  res.innerHTML = '<div class="loading-dex"><div class="spin">🔍</div><br>Analyzing token...</div>';
+  try{
+    const chainMap = {eth:'1',bsc:'56',base:'8453'};
+    const chainId = chainMap[chain]||'1';
+    // Honeypot.is
+    const [hpRes, dsRes] = await Promise.allSettled([
+      fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${addr}&chainID=${chainId}`).then(r=>r.json()),
+      fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`).then(r=>r.json())
+    ]);
+    const hp = hpRes.status==='fulfilled' ? hpRes.value : null;
+    const ds = dsRes.status==='fulfilled' && dsRes.value.pairs ? dsRes.value.pairs[0] : null;
+    const isHoneypot = hp?.honeypotResult?.isHoneypot;
+    const buyTax = hp?.simulationResult?.buyTax||0;
+    const sellTax = hp?.simulationResult?.sellTax||0;
+    const holders = hp?.token?.totalHolders||ds?.holders||'N/A';
+    const tokenName = hp?.token?.name||ds?.baseToken?.name||addr.slice(0,8)+'...';
+    const tokenSymbol = hp?.token?.symbol||ds?.baseToken?.symbol||'?';
+    const price = ds ? parseFloat(ds.priceUsd||0) : 0;
+    const vol24 = ds ? parseFloat(ds.volume?.h24||0) : 0;
+    const liq = ds ? parseFloat(ds.liquidity?.usd||0) : 0;
+    // Risk scoring
+    let riskScore = 0;
+    let risks = [];
+    if(isHoneypot){riskScore+=50;risks.push('🚨 HONEYPOT DETECTED');}
+    if(buyTax>10){riskScore+=15;risks.push(`⚠️ High buy tax: ${buyTax}%`);}
+    if(sellTax>10){riskScore+=25;risks.push(`🚨 High sell tax: ${sellTax}%`);}
+    if(liq>0&&liq<10000){riskScore+=10;risks.push('⚠️ Very low liquidity');}
+    if(vol24<1000&&vol24>0){riskScore+=5;risks.push('⚠️ Very low volume');}
+    const safeScore = Math.max(0,100-riskScore);
+    const scoreClass = safeScore>=80?'rug-safe':safeScore>=50?'rug-warn':'rug-danger';
+    const scoreLabel = safeScore>=80?'✅ SAFE':safeScore>=50?'⚠️ CAUTION':'🚨 HIGH RISK';
+    res.innerHTML = `
+      <div class="rug-result">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <div>
+            <div style="font-size:18px;font-weight:800">${tokenName} <span style="color:var(--text2);font-size:13px">${tokenSymbol}</span></div>
+            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px">${addr}</div>
+          </div>
+          <div class="rug-score ${scoreClass}" style="font-size:16px">${scoreLabel} &nbsp; ${safeScore}/100</div>
+        </div>
+        <div class="rug-grid">
+          <div class="rug-stat"><div class="rug-stat-lbl">Honeypot</div><div class="rug-stat-val ${isHoneypot?'down':'up'}">${isHoneypot?'🚨 YES':'✅ NO'}</div></div>
+          <div class="rug-stat"><div class="rug-stat-lbl">Buy Tax</div><div class="rug-stat-val ${buyTax>10?'down':'up'}">${buyTax}%</div></div>
+          <div class="rug-stat"><div class="rug-stat-lbl">Sell Tax</div><div class="rug-stat-val ${sellTax>10?'down':'up'}">${sellTax}%</div></div>
+          <div class="rug-stat"><div class="rug-stat-lbl">Holders</div><div class="rug-stat-val">${typeof holders==='number'?holders.toLocaleString():holders}</div></div>
+          <div class="rug-stat"><div class="rug-stat-lbl">Liquidity</div><div class="rug-stat-val">$${fmt(liq,true)}</div></div>
+          <div class="rug-stat"><div class="rug-stat-lbl">Vol 24h</div><div class="rug-stat-val">$${fmt(vol24,true)}</div></div>
+        </div>
+        ${risks.length?`<div style="background:rgba(255,48,85,0.06);border:1px solid rgba(255,48,85,0.15);border-radius:8px;padding:12px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--red);margin-bottom:8px">Risk Flags</div>
+          ${risks.map(r=>`<div style="font-size:12.5px;margin-bottom:5px">${r}</div>`).join('')}
+        </div>`:'<div style="color:var(--green);font-size:13px;font-weight:700">✅ No major risk flags detected</div>'}
+        ${ds?`<div style="margin-top:12px;text-align:right"><a href="${ds.url}" target="_blank" style="color:var(--blue);font-size:11px;font-weight:700">View on DexScreener ↗</a></div>`:''}
+      </div>`;
+  }catch(e){
+    res.innerHTML = `<div class="loading-dex" style="color:var(--red)">⚠️ Error analyzing token. Check the address and try again.<br><small>${e.message}</small></div>`;
+  }
+}
+
+async function loadRugTrending(){
+  const el = document.getElementById('rugTrending');
+  if(el.dataset.loaded) return;
+  try{
+    const r = await fetch('https://api.dexscreener.com/token-boosts/top/v1');
+    const boosts = await r.json();
+    if(!Array.isArray(boosts)){el.innerHTML='<div class="loading-dex">No data</div>';return;}
+    el.dataset.loaded = '1';
+    el.innerHTML = '<div class="card">' + boosts.slice(0,15).map(b=>{
+      const chain = (b.chainId||'').toUpperCase();
+      const addr = b.tokenAddress||'';
+      return `<div class="pair-row" style="grid-template-columns:3fr 1fr 1fr 1fr" onclick="document.getElementById('rugAddress').value='${addr}';document.getElementById('rugChain').value='${b.chainId==='bsc'?'bsc':b.chainId==='base'?'base':'eth'}';runRugCheck()">
+        <div><div class="pair-name">${b.description||addr.slice(0,12)+'...'}</div><div class="pair-sub">${addr.slice(0,14)}...</div><div class="pair-chain">${chain}</div></div>
+        <div><div class="dex-val" style="color:orange">${b.totalAmount||0} boosts</div></div>
+        <div><span class="boost-badge">🚀 BOOSTED</span></div>
+        <div><span style="color:var(--blue);font-size:11px;font-weight:700;cursor:pointer">Check →</span></div>
+      </div>`;
+    }).join('') + '</div>';
+  }catch(e){
+    el.innerHTML = '<div class="loading-dex">Load top boosted tokens above to analyze them.</div>';
+  }
+}
+
+// ======================================================
+//  TRENDING POOLS — GeckoTerminal API
+// ======================================================
+let poolsAll = [];
+let poolsChain = 'all';
+
+async function loadTrendingPools(){
+  const grid = document.getElementById('trendingPoolsGrid');
+  if(poolsAll.length){renderTrendingPools();return;}
+  grid.innerHTML = '<div class="loading-dex"><div class="spin">⏳</div><br>Fetching trending pools...</div>';
+  try{
+    const networks = ['eth','bsc','solana','base','arbitrum','polygon_pos'];
+    const all = [];
+    for(const net of networks){
+      try{
+        const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/${net}/trending_pools?page=1`,{headers:{Accept:'application/json;version=20230302'}});
+        const d = await r.json();
+        if(d.data) all.push(...d.data.map(p=>({...p,network:net})));
+      }catch(e){}
+      await new Promise(res=>setTimeout(res,400));
+    }
+    poolsAll = all.sort((a,b)=>parseFloat(b.attributes?.volume_usd?.h24||0)-parseFloat(a.attributes?.volume_usd?.h24||0));
+    document.getElementById('poolsLastUpdate').textContent = 'Updated: '+new Date().toLocaleTimeString();
+    renderTrendingPools();
+  }catch(e){
+    grid.innerHTML = `<div class="loading-dex">⚠️ Failed. <span onclick="poolsAll=[];loadTrendingPools()" style="color:var(--blue);cursor:pointer">Retry</span></div>`;
+  }
+}
+
+function filterPools(chain, btn){
+  poolsChain = chain;
+  document.querySelectorAll('#pg-trendingpools .chain-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTrendingPools();
+}
+
+function renderTrendingPools(){
+  const grid = document.getElementById('trendingPoolsGrid');
+  let pools = poolsAll;
+  if(poolsChain!=='all') pools = pools.filter(p=>p.network===poolsChain);
+  if(!pools.length){grid.innerHTML='<div class="loading-dex">No pools found for this network.</div>';return;}
+  grid.innerHTML = pools.slice(0,40).map(p=>{
+    const a = p.attributes||{};
+    const price = parseFloat(a.base_token_price_usd||0);
+    const vol24 = parseFloat(a.volume_usd?.h24||0);
+    const liq = parseFloat(a.reserve_in_usd||0);
+    const ch24 = parseFloat(a.price_change_percentage?.h24||0);
+    const ch1h = parseFloat(a.price_change_percentage?.h1||0);
+    const name = a.name||'Unknown Pool';
+    const net = (p.network||'').toUpperCase().replace('_POS','');
+    const buys = a.transactions?.h24?.buys||0;
+    const sells = a.transactions?.h24?.sells||0;
+    const total = buys+sells;
+    const buyPct = total>0 ? Math.round((buys/total)*100) : 50;
+    const url = `https://www.geckoterminal.com/${p.network}/pools/${a.address}`;
+    return `<div class="pool-card" onclick="window.open('${url}','_blank')">
+      <div class="pool-hdr">
+        <div>
+          <div class="pool-name">${name}</div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <span class="pair-chain">${net}</span>
+            <span class="age-badge">1h: ${ch1h>=0?'+':''}${ch1h.toFixed(1)}%</span>
+          </div>
+        </div>
+        <div class="dex-val ${ch24>=0?'up':'down'}" style="font-size:15px">${ch24>=0?'+':''}${ch24.toFixed(2)}%</div>
+      </div>
+      <div class="pool-stats">
+        <div><div class="pool-stat-l">Price</div><div class="pool-stat-v">$${fmtP(price)}</div></div>
+        <div><div class="pool-stat-l">Vol 24h</div><div class="pool-stat-v">$${fmt(vol24,true)}</div></div>
+        <div><div class="pool-stat-l">Liquidity</div><div class="pool-stat-v">$${fmt(liq,true)}</div></div>
+        <div><div class="pool-stat-l">Txns</div><div class="pool-stat-v">${total.toLocaleString()}</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px">
+          <span style="color:var(--green)">🟢 Buys ${buyPct}%</span>
+          <span style="color:var(--red)">Sells ${100-buyPct}% 🔴</span>
+        </div>
+        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${buyPct}%;background:var(--green);border-radius:3px;transition:width 0.5s"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+init();
 </script>
 </body>
 </html>
