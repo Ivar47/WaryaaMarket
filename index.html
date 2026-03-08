@@ -1329,25 +1329,26 @@ body.light .stats-strip{background:#fff}
 //  DATA DEFINITIONS
 // ======================================================
 const STOCK_LOGOS={
-  NVDA:'https://logo.clearbit.com/nvidia.com',
-  MSFT:'https://logo.clearbit.com/microsoft.com',
-  GOOGL:'https://logo.clearbit.com/google.com',
-  AAPL:'https://logo.clearbit.com/apple.com',
-  AMZN:'https://logo.clearbit.com/amazon.com',
-  META:'https://logo.clearbit.com/meta.com',
-  TSLA:'https://logo.clearbit.com/tesla.com',
-  AMD:'https://logo.clearbit.com/amd.com',
-  ORCL:'https://logo.clearbit.com/oracle.com',
-  PLTR:'https://logo.clearbit.com/palantir.com',
-  CRM:'https://logo.clearbit.com/salesforce.com',
-  SNOW:'https://logo.clearbit.com/snowflake.com',
-  IBM:'https://logo.clearbit.com/ibm.com',
-  INTC:'https://logo.clearbit.com/intel.com',
-  QCOM:'https://logo.clearbit.com/qualcomm.com',
-  AVGO:'https://logo.clearbit.com/broadcom.com',
-  ARM:'https://logo.clearbit.com/arm.com',
-  SMCI:'https://logo.clearbit.com/supermicro.com',
-  PANW:'https://logo.clearbit.com/paloaltonetworks.com',
+  // Using Wikipedia SVG logos — reliable, high quality, no rate limits
+  NVDA:'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Nvidia_logo.svg/220px-Nvidia_logo.svg.png',
+  MSFT:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/220px-Microsoft_logo.svg.png',
+  GOOGL:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/220px-Google_2015_logo.svg.png',
+  AAPL:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/103px-Apple_logo_black.svg.png',
+  AMZN:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/220px-Amazon_logo.svg.png',
+  META:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/220px-Meta_Platforms_Inc._logo.svg.png',
+  TSLA:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/220px-Tesla_Motors.svg.png',
+  AMD:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/220px-AMD_Logo.svg.png',
+  ORCL:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/220px-Oracle_logo.svg.png',
+  PLTR:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Palantir_Technologies_logo.svg/220px-Palantir_Technologies_logo.svg.png',
+  CRM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/220px-Salesforce.com_logo.svg.png',
+  SNOW:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Snowflake_Logo.svg/220px-Snowflake_Logo.svg.png',
+  IBM:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/220px-IBM_logo.svg.png',
+  INTC:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282006-2020%29.svg/220px-Intel_logo_%282006-2020%29.svg.png',
+  QCOM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Qualcomm-Logo.svg/220px-Qualcomm-Logo.svg.png',
+  AVGO:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Broadcom_Corporation_logo.svg/220px-Broadcom_Corporation_logo.svg.png',
+  ARM:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Arm_logo_2017.svg/220px-Arm_logo_2017.svg.png',
+  SMCI:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Super_Micro_Computer_Logo.svg/220px-Super_Micro_Computer_Logo.svg.png',
+  PANW:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Palo_Alto_Networks_logo.svg/220px-Palo_Alto_Networks_logo.svg.png',
   NOW:'https://logo.clearbit.com/servicenow.com',
 };
 const STOCKS=[
@@ -1747,7 +1748,7 @@ function renderStocksOverview(){
     const rangePct=d.high&&d.low&&d.price?((d.price-d.low)/(d.high-d.low)*100).toFixed(0):50;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue);font-size:13px">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:24px;height:24px;border-radius:6px;object-fit:cover;background:#1a2440;flex-shrink:0" onerror="this.style.display='none'" alt=""><div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:24px;height:24px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="this.outerHTML='<span style=\\\"display:flex;width:24px;height:24px;border-radius:6px;background:var(--blue);align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;flex-shrink:0\\\">'+s.sym.substring(0,2)+'</span>'" alt="${s.sym}"><div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
       <td class="mcap-val">${d.mkt||s.mkt?'$'+(d.mkt||s.mkt)+'B':'N/A'}</td>
@@ -1769,7 +1770,7 @@ function renderStockFull(){
     const chg=d.chg||0;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue)">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:28px;height:28px;border-radius:6px;object-fit:cover;background:#1a2440;flex-shrink:0" onerror="this.style.display='none'" alt=""><div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="this.outerHTML='<span style=\\\"display:flex;width:28px;height:28px;border-radius:6px;background:var(--blue);align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0\\\">'+s.sym.substring(0,2)+'</span>'" alt="${s.sym}"><div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td class="price-val" style="font-size:12px;color:${chg>=0?'var(--green)':'var(--red)'}">${(chg>=0?'+':'')+chg.toFixed(2)}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
@@ -2799,32 +2800,54 @@ function setTheme(mode){
 //  NFT RANKINGS — OpenSea & Magic Eden via public APIs
 // ======================================================
 const NFT_ETH = [
-  {name:'CryptoPunks',floor:'46.9',vol:'1,240',chg:'+2.4',emoji:'👾',color:'#6366f1'},
-  {name:'Bored Ape YC',floor:'8.2',vol:'892',chg:'-1.1',emoji:'🐒',color:'#f59e0b'},
-  {name:'Azuki',floor:'3.8',vol:'561',chg:'+5.7',emoji:'⛩️',color:'#ef4444'},
-  {name:'Pudgy Penguins',floor:'6.1',vol:'720',chg:'+3.2',emoji:'🐧',color:'#60a5fa'},
-  {name:'Doodles',floor:'1.3',vol:'234',chg:'-0.8',emoji:'🎨',color:'#f472b6'},
-  {name:'Mutant Ape YC',floor:'1.9',vol:'445',chg:'+0.6',emoji:'🧟',color:'#10b981'},
-  {name:'Milady Maker',floor:'2.1',vol:'388',chg:'+8.3',emoji:'👧',color:'#8b5cf6'},
-  {name:'CloneX',floor:'0.9',vol:'178',chg:'-2.1',emoji:'🤖',color:'#06b6d4'},
+  {name:'CryptoPunks',  floor:'46.9', vol:'1,240', chg:'+2.4', color:'#6366f1',
+   img:'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v085zcQmbdachgwi9Fnl91ydmkQyl_6rb3WCqWMUMskbVXJqDr56iFKuqIfaFy5O_GHMqSZ2IQFR?w=200'},
+  {name:'Bored Ape YC', floor:'8.2',  vol:'892',   chg:'-1.1', color:'#f59e0b',
+   img:'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGf6xKHuvA?w=200'},
+  {name:'Azuki',         floor:'3.8',  vol:'561',   chg:'+5.7', color:'#ef4444',
+   img:'https://i.seadn.io/gcs/files/9b798b7d8b9d5fc7ab4ea9e2f57b8c3b.png?w=200'},
+  {name:'Pudgy Penguins',floor:'6.1',  vol:'720',   chg:'+3.2', color:'#60a5fa',
+   img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661wQgB0OKFPQFaYrEtpAXKFnhk2rtKnFW5Y-NKS6VA?w=200'},
+  {name:'Doodles',       floor:'1.3',  vol:'234',   chg:'-0.8', color:'#f472b6',
+   img:'https://i.seadn.io/gae/7B0qai02OdHA8P_EOVK672qUliyjQdQDGNrACxs7WnTgZAkJa_wWURnIFKeOh5VTf8cfTqW3wQpozGedaC9mhKMqAUr7ewOkX7iWUk?w=200'},
+  {name:'Mutant Ape YC', floor:'1.9',  vol:'445',   chg:'+0.6', color:'#10b981',
+   img:'https://i.seadn.io/gae/lHexKRMpw-aoSyB1WdFBff5yfANLReFxpYL0DP18T_HFT66kYoAAuCkZMBI_yFpFmNtT0DvYBvkJAEsU2h8rHa_bTTDQJFZtWF-DBHQ?w=200'},
+  {name:'Milady Maker',  floor:'2.1',  vol:'388',   chg:'+8.3', color:'#8b5cf6',
+   img:'https://i.seadn.io/gcs/files/54bd8b9a96c21e5b4b7c13c1ee0e45ad.png?w=200'},
+  {name:'CloneX',        floor:'0.9',  vol:'178',   chg:'-2.1', color:'#06b6d4',
+   img:'https://i.seadn.io/gae/XN0XuD8Uh3jyRWNtPTFeXJg_ht8m5ofDx6aHdsmyc4gS5zr7U9jUwIm5XFmwRWqK0RGa2bRqMF7msMUAVIDpABFjFWqIUv6s_sMk?w=200'},
 ];
 const NFT_SOL = [
-  {name:'Mad Lads',floor:'82 SOL',vol:'4,210',chg:'+6.2',emoji:'😤',color:'#f97316'},
-  {name:'Tensorians',floor:'41 SOL',vol:'1,890',chg:'+1.8',emoji:'⚡',color:'#6366f1'},
-  {name:'Okay Bears',floor:'28 SOL',vol:'920',chg:'-0.5',emoji:'🐻',color:'#78716c'},
-  {name:'DeGods',floor:'19 SOL',vol:'780',chg:'+3.4',emoji:'👑',color:'#eab308'},
-  {name:'y00ts',floor:'11 SOL',vol:'560',chg:'-1.2',emoji:'🐐',color:'#64748b'},
-  {name:'SMB Gen2',floor:'16 SOL',vol:'430',chg:'+2.9',emoji:'🐵',color:'#10b981'},
-  {name:'Aurory',floor:'5 SOL',vol:'290',chg:'+0.4',emoji:'🦊',color:'#ec4899'},
-  {name:'Famous Fox',floor:'8 SOL',vol:'340',chg:'+1.6',emoji:'🦝',color:'#f59e0b'},
+  {name:'Mad Lads',    floor:'82 SOL',  vol:'4,210', chg:'+6.2', color:'#f97316',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/mad_lads_pfp_1681404030424.png'},
+  {name:'Tensorians',  floor:'41 SOL',  vol:'1,890', chg:'+1.8', color:'#6366f1',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/tensorians_pfp_1686580571604.png'},
+  {name:'Okay Bears',  floor:'28 SOL',  vol:'920',   chg:'-0.5', color:'#78716c',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/okay_bears_pfp_1650402824838.png'},
+  {name:'DeGods',      floor:'19 SOL',  vol:'780',   chg:'+3.4', color:'#eab308',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/degods_pfp_1645812616983.png'},
+  {name:'y00ts',       floor:'11 SOL',  vol:'560',   chg:'-1.2', color:'#64748b',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/y00ts_pfp_1663884388882.png'},
+  {name:'SMB Gen2',    floor:'16 SOL',  vol:'430',   chg:'+2.9', color:'#10b981',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/solana_monkey_business_pfp_1640191090690.png'},
+  {name:'Aurory',      floor:'5 SOL',   vol:'290',   chg:'+0.4', color:'#ec4899',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/aurory_pfp_1638960160706.png'},
+  {name:'Famous Fox',  floor:'8 SOL',   vol:'340',   chg:'+1.6', color:'#f59e0b',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/famous_fox_federation_pfp_1645569877152.png'},
 ];
 const NFT_TRENDING = [
-  {name:'Pudgy Penguins',floor:'6.1 ETH',vol:'720',chg:'+12.4',emoji:'🐧',color:'#60a5fa',tag:'🔥'},
-  {name:'Mad Lads',floor:'82 SOL',vol:'4,210',chg:'+6.2',emoji:'😤',color:'#f97316',tag:'📈'},
-  {name:'Milady Maker',floor:'2.1 ETH',vol:'388',chg:'+8.3',emoji:'👧',color:'#8b5cf6',tag:'🚀'},
-  {name:'Azuki',floor:'3.8 ETH',vol:'561',chg:'+5.7',emoji:'⛩️',color:'#ef4444',tag:'💎'},
-  {name:'DeGods',floor:'19 SOL',vol:'780',chg:'+3.4',emoji:'👑',color:'#eab308',tag:'📊'},
-  {name:'Tensorians',floor:'41 SOL',vol:'1,890',chg:'+1.8',emoji:'⚡',color:'#6366f1',tag:'⚡'},
+  {name:'Pudgy Penguins',floor:'6.1 ETH', vol:'720',   chg:'+12.4', color:'#60a5fa', tag:'🔥',
+   img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661wQgB0OKFPQFaYrEtpAXKFnhk2rtKnFW5Y-NKS6VA?w=200'},
+  {name:'Mad Lads',      floor:'82 SOL',  vol:'4,210', chg:'+6.2',  color:'#f97316', tag:'📈',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/mad_lads_pfp_1681404030424.png'},
+  {name:'Milady Maker',  floor:'2.1 ETH', vol:'388',   chg:'+8.3',  color:'#8b5cf6', tag:'🚀',
+   img:'https://i.seadn.io/gcs/files/54bd8b9a96c21e5b4b7c13c1ee0e45ad.png?w=200'},
+  {name:'Azuki',         floor:'3.8 ETH', vol:'561',   chg:'+5.7',  color:'#ef4444', tag:'💎',
+   img:'https://i.seadn.io/gcs/files/9b798b7d8b9d5fc7ab4ea9e2f57b8c3b.png?w=200'},
+  {name:'DeGods',        floor:'19 SOL',  vol:'780',   chg:'+3.4',  color:'#eab308', tag:'📊',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/degods_pfp_1645812616983.png'},
+  {name:'Tensorians',    floor:'41 SOL',  vol:'1,890', chg:'+1.8',  color:'#6366f1', tag:'⚡',
+   img:'https://creator-hub-prod.s3.us-east-2.amazonaws.com/tensorians_pfp_1686580571604.png'},
 ];
 
 let nftCurrentTab = 'eth';
@@ -2846,7 +2869,9 @@ function renderNFT(){
     const label = n.tag || ('#'+(i+1));
     return `<div class="nft-item" onclick="window.open('${mktLink}','_blank')">
       <div class="nft-rank">${label}</div>
-      <div class="nft-img" style="background:${n.color}22;border:1px solid ${n.color}44;font-size:20px;display:flex;align-items:center;justify-content:center;border-radius:8px;width:40px;height:40px;flex-shrink:0">${n.emoji}</div>
+      <div class="nft-img" style="background:${n.color}22;border:2px solid ${n.color}55;border-radius:8px;width:40px;height:40px;flex-shrink:0;overflow:hidden">
+        ${n.img ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:${n.color}22\\'>${n.emoji||'🖼️'}</div>'" alt="${n.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">${n.emoji||'🖼️'}</div>`}
+      </div>
       <div class="nft-info">
         <div class="nft-name">${n.name}</div>
         <div class="nft-floor">Floor: ${n.floor}</div>
@@ -2918,6 +2943,7 @@ const EXCH_META = {
   coinbase_advanced_trade:{logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg', color:'#0052FF', url:'https://www.coinbase.com'},
   coinbase:   {logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg',       color:'#0052FF', url:'https://www.coinbase.com'},
   bitfinex:   {logo:'https://assets.coingecko.com/markets/images/4/small/BItfinex.png',        color:'#16b157', url:'https://www.bitfinex.com'},
+  deribit:    {logo:'https://assets.coingecko.com/markets/images/214/small/deribit.jpg',       color:'#5741D9', url:'https://www.deribit.com'},
   // DEX — real logos
   uniswap_v3: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
   uniswap_v2: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
@@ -3014,18 +3040,17 @@ function renderExchanges(){
 }
 
 function renderExchTransparency(el){
-  // Assets transparency tab — static reliable data matching image 3
   const data = [
-    {name:'Binance',  emoji:'🟡', color:'#F3BA2F', assets:'$146.2B', in24:'-$15.4M', in7d:'+$31.3M', pos:false},
-    {name:'Bitfinex', emoji:'🟢', color:'#16b157', assets:'$16.9B',  in24:'-$22M',   in7d:'-$1.6B',  pos:false},
-    {name:'OKX',      emoji:'⬛', color:'#333',    assets:'$14.5B',  in24:'-$2.9M',  in7d:'-$289.7M',pos:false},
-    {name:'Gate.io',  emoji:'🔵', color:'#0052FF', assets:'$5.95B',  in24:'+$17.4M', in7d:'+$39M',   pos:true},
-    {name:'Bitget',   emoji:'🔷', color:'#00C2FF', assets:'$5.48B',  in24:'+$15.1M', in7d:'+$76.9M', pos:true},
-    {name:'HTX',      emoji:'🔴', color:'#E84142', assets:'$4.83B',  in24:'+$387M',  in7d:'+$51.3M', pos:true},
-    {name:'MEXC',     emoji:'🔺', color:'#0ECFAF', assets:'$4.83B',  in24:'-$8.3M',  in7d:'+$16.6M', pos:false},
-    {name:'Bybit',    emoji:'🟠', color:'#F7A600', assets:'$4.65B',  in24:'-$1.9M',  in7d:'+$17.9M', pos:false},
-    {name:'Deribit',  emoji:'🟣', color:'#5741D9', assets:'$4.02B',  in24:'-$14.6M', in7d:'+$42.3M', pos:false},
-    {name:'KuCoin',   emoji:'🟢', color:'#26A17B', assets:'$3.29B',  in24:'-$25.5M', in7d:'-$39.3M', pos:false},
+    {id:'binance',  name:'Binance',  color:'#F3BA2F', assets:'$146.2B', in24:'-$15.4M', in7d:'+$31.3M'},
+    {id:'bitfinex', name:'Bitfinex', color:'#16b157', assets:'$16.9B',  in24:'-$22M',   in7d:'-$1.6B' },
+    {id:'okx',      name:'OKX',      color:'#555',    assets:'$14.5B',  in24:'-$2.9M',  in7d:'-$289.7M'},
+    {id:'gate',     name:'Gate.io',  color:'#0052FF', assets:'$5.95B',  in24:'+$17.4M', in7d:'+$39M'  },
+    {id:'bitget',   name:'Bitget',   color:'#00C2FF', assets:'$5.48B',  in24:'+$15.1M', in7d:'+$76.9M'},
+    {id:'htx',      name:'HTX',      color:'#E84142', assets:'$4.83B',  in24:'+$387M',  in7d:'+$51.3M'},
+    {id:'mexc',     name:'MEXC',     color:'#0ECFAF', assets:'$4.83B',  in24:'-$8.3M',  in7d:'+$16.6M'},
+    {id:'bybit',    name:'Bybit',    color:'#F7A600', assets:'$4.65B',  in24:'-$1.9M',  in7d:'+$17.9M'},
+    {id:'deribit',  name:'Deribit',  color:'#5741D9', assets:'$4.02B',  in24:'-$14.6M', in7d:'+$42.3M'},
+    {id:'kucoin',   name:'KuCoin',   color:'#26A17B', assets:'$3.29B',  in24:'-$25.5M', in7d:'-$39.3M'},
   ];
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px">
@@ -3034,7 +3059,7 @@ function renderExchTransparency(el){
     data.map(d=>`
     <div class="exch-item" style="display:grid;grid-template-columns:1fr auto auto;gap:4px;align-items:center">
       <div style="display:flex;align-items:center;gap:7px;min-width:0">
-        <div class="exch-logo" style="background:${d.color}22;border:1px solid ${d.color}33;width:26px;height:26px;font-size:13px">${d.emoji}</div>
+        <div style="flex-shrink:0">${(()=>{const m=EXCH_META[d.id]||{};return m.logo?`<img src="${m.logo}" style="width:26px;height:26px;border-radius:7px;object-fit:cover;border:1px solid ${d.color}44" onerror="this.outerHTML='<span style=\'display:flex;width:26px;height:26px;border-radius:7px;background:${d.color}22;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:${d.color}\'>${d.name[0]}</span>'" alt="${d.name}">`:`<span style="display:flex;width:26px;height:26px;border-radius:7px;background:${d.color}22;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:${d.color}">${d.name[0]}</span>`;})()}</div>
         <div>
           <div class="exch-name" style="font-size:11.5px">${d.name}</div>
           <div style="font-size:9px;color:var(--text3);font-family:var(--mono)">${d.assets}</div>
