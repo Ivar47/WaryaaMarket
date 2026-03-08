@@ -3,7 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WaryaaMarket | Crypto & AI Stock Intelligence</title>
+<title>WaryaaMarket | Real-Time Crypto & AI Market Intelligence</title>
+<meta name="description" content="WaryaaMarket - Real-time cryptocurrency prices, DEX trending pairs, NFT rankings, AI stock tracker, token rug checker, and market intelligence dashboard. Track Bitcoin, Ethereum, Solana and 2000+ crypto assets.">
+<meta name="keywords" content="crypto prices, bitcoin price, ethereum price, cryptocurrency dashboard, DEX screener, NFT rankings, crypto market, altcoin season, fear greed index, token rug checker, DeFi">
+<meta name="author" content="WaryaaMarket">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://waryaamarket.com/">
+
+<!-- Open Graph (for social sharing) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://waryaamarket.com/">
+<meta property="og:title" content="WaryaaMarket | Real-Time Crypto & AI Market Intelligence">
+<meta property="og:description" content="Track crypto prices, DEX pairs, NFT rankings, AI stocks and market sentiment in real-time. Free crypto dashboard powered by live data.">
+<meta property="og:site_name" content="WaryaaMarket">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WaryaaMarket | Crypto & AI Market Intelligence">
+<meta name="twitter:description" content="Real-time crypto prices, DEX trending pairs, NFT rankings, rug checker and more. Free crypto dashboard.">
+
+<!-- Schema.org structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "WaryaaMarket",
+  "url": "https://waryaamarket.com",
+  "description": "Real-time cryptocurrency and AI market intelligence dashboard",
+  "applicationCategory": "FinanceApplication",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -349,6 +379,27 @@ svg.spark{overflow:visible}
 .loading-dex{text-align:center;padding:40px;color:var(--text2);font-size:13px}
 .loading-dex .spin{display:inline-block;animation:spin 1s linear infinite;font-size:20px;margin-bottom:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* === EXCHANGE RANKINGS WIDGET === */
+.exch-tabs{display:flex;gap:1px;background:var(--bg);border-radius:6px;padding:3px;margin-bottom:12px}
+.exch-tab{flex:1;padding:5px 4px;border-radius:4px;font-size:10px;font-weight:700;color:var(--text2);text-align:center;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.exch-tab.on{background:var(--card2);color:var(--text)}
+.exch-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:opacity 0.12s}
+.exch-item:hover{opacity:0.8}
+.exch-item:last-child{border-bottom:none}
+.exch-rank{font-family:var(--mono);font-size:10px;color:var(--text3);width:16px;text-align:center;font-weight:700;flex-shrink:0}
+.exch-logo{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.exch-info{flex:1;min-width:0}
+.exch-name{font-weight:700;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exch-type{font-size:9px;color:var(--text3);margin-top:1px;font-family:var(--mono)}
+.exch-right{text-align:right;flex-shrink:0;min-width:60px}
+.exch-vol{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text)}
+.exch-score{display:inline-block;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;margin-top:2px}
+.score-hi{background:rgba(22,199,132,0.15);color:var(--green)}
+.score-md{background:rgba(246,184,126,0.15);color:var(--yellow)}
+.score-lo{background:rgba(234,57,67,0.12);color:var(--red)}
+.exch-vol-bar{height:2px;background:var(--bg);border-radius:1px;margin-top:5px;overflow:hidden}
+.exch-vol-fill{height:100%;border-radius:1px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width 0.9s ease}
 
 /* === THEME TOGGLE DROPDOWN === */
 .theme-dropdown{position:relative}
@@ -883,6 +934,25 @@ body.light .stats-strip{background:#fff}
 </div><!-- /content -->
 <!-- ===== SIDEBAR ===== -->
 <div class="sidebar">
+
+  <!-- Exchange Rankings Widget — TOP POSITION -->
+  <div class="widget">
+    <div class="w-hdr" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="w-title">🏦 Top Exchanges</div>
+      <span style="font-size:9px;color:var(--text3);font-family:var(--mono)" id="exchLastUpdate"></span>
+    </div>
+    <div class="w-body" style="padding-top:10px">
+      <div class="exch-tabs">
+        <div class="exch-tab on" onclick="switchExch('cex',this)">CEX</div>
+        <div class="exch-tab" onclick="switchExch('dex',this)">DEX</div>
+        <div class="exch-tab" onclick="switchExch('transparency',this)">Assets</div>
+      </div>
+      <div id="exchList"><div style="text-align:center;padding:16px;color:var(--text2);font-size:12px">⏳ Loading exchanges...</div></div>
+      <div style="text-align:center;margin-top:8px">
+        <a href="https://www.coingecko.com/en/exchanges" target="_blank" style="font-size:10.5px;color:var(--blue);font-weight:700">Full Rankings on CoinGecko ↗</a>
+      </div>
+    </div>
+  </div>
 
   <!-- Token Unlocks -->
   <div class="widget">
@@ -2088,6 +2158,8 @@ async function init(){
   setTimeout(()=>fetchGas(), 5000);
   setTimeout(()=>loadNews('ALL'), 6000);
   setTimeout(()=>renderNFT(), 1000);
+  setTimeout(()=>loadExchanges(), 3000);
+  setInterval(()=>loadExchanges(), 120000); // refresh every 2 min
 
   // Timers
   setInterval(tick,1000);
@@ -2573,6 +2645,170 @@ function openTC(section){
 function closeTCModal(){
   document.getElementById('tcModal').classList.remove('on');
   document.body.style.overflow = '';
+}
+
+// ======================================================
+//  EXCHANGE RANKINGS — CoinGecko API (free, no key)
+// ======================================================
+let exchData = {cex:[], dex:[]};
+let exchTab = 'cex';
+
+const EXCH_META = {
+  binance:    {emoji:'🟡', color:'#F3BA2F', url:'https://www.binance.com'},
+  okx:        {emoji:'⬛', color:'#333',    url:'https://www.okx.com'},
+  bybit:      {emoji:'🟠', color:'#F7A600', url:'https://www.bybit.com'},
+  kucoin:     {emoji:'🟢', color:'#26A17B', url:'https://www.kucoin.com'},
+  gate:       {emoji:'🔵', color:'#0052FF', url:'https://www.gate.io'},
+  whitebit:   {emoji:'⚫', color:'#1A1B1E', url:'https://whitebit.com'},
+  bitget:     {emoji:'🔷', color:'#00C2FF', url:'https://www.bitget.com'},
+  bingx:      {emoji:'🟦', color:'#1B4FFF', url:'https://bingx.com'},
+  mexc:       {emoji:'🔺', color:'#0ECFAF', url:'https://www.mexc.com'},
+  htx:        {emoji:'🔴', color:'#E84142', url:'https://www.htx.com'},
+  kraken:     {emoji:'🟣', color:'#5741D9', url:'https://www.kraken.com'},
+  coinbase_advanced_trade:{emoji:'🔵', color:'#0052FF', url:'https://www.coinbase.com'},
+  bitfinex:   {emoji:'🟢', color:'#16b157', url:'https://www.bitfinex.com'},
+  uniswap_v3: {emoji:'🦄', color:'#FF007A', url:'https://app.uniswap.org'},
+  uniswap_v2: {emoji:'🦄', color:'#FF007A', url:'https://app.uniswap.org'},
+  curve:      {emoji:'🌀', color:'#3498DB', url:'https://curve.fi'},
+  pancakeswap_new:{emoji:'🥞', color:'#FFD800', url:'https://pancakeswap.finance'},
+  dydx:       {emoji:'⚡', color:'#6966FF', url:'https://dydx.exchange'},
+  orca:       {emoji:'🐋', color:'#00C2FF', url:'https://www.orca.so'},
+};
+
+async function loadExchanges(){
+  try{
+    const [cexRes, dexRes] = await Promise.allSettled([
+      fetch('https://api.coingecko.com/api/v3/exchanges?per_page=15&page=1').then(r=>r.json()),
+      fetch('https://api.coingecko.com/api/v3/exchanges?per_page=10&page=1&type=dex').then(r=>r.json())
+    ]);
+    if(cexRes.status==='fulfilled' && Array.isArray(cexRes.value))
+      exchData.cex = cexRes.value.filter(e=>e.trade_volume_24h_btc>0).slice(0,10);
+    if(dexRes.status==='fulfilled' && Array.isArray(dexRes.value))
+      exchData.dex = dexRes.value.filter(e=>e.trade_volume_24h_btc>0).slice(0,10);
+    document.getElementById('exchLastUpdate').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    renderExchanges();
+  }catch(e){
+    // fallback to static data if API fails
+    renderExchangesFallback();
+  }
+}
+
+function switchExch(tab, btn){
+  exchTab = tab;
+  document.querySelectorAll('.exch-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  renderExchanges();
+}
+
+function renderExchanges(){
+  const el = document.getElementById('exchList');
+  if(!el) return;
+
+  if(exchTab === 'transparency'){
+    renderExchTransparency(el);
+    return;
+  }
+
+  const list = exchTab==='dex' ? exchData.dex : exchData.cex;
+  if(!list || !list.length){ renderExchangesFallback(); return; }
+
+  // Find max volume for bar scaling
+  const maxVol = Math.max(...list.map(e=>e.trade_volume_24h_btc||0));
+
+  el.innerHTML = list.map((e,i)=>{
+    const meta = EXCH_META[e.id] || {emoji:'🏦', color:'#3861FB', url:e.url||'#'};
+    const vol = e.trade_volume_24h_btc || 0;
+    const volBtc = vol >= 1000 ? (vol/1000).toFixed(1)+'K' : vol.toFixed(0);
+    // Estimate USD vol (BTC ~$67k)
+    const volUsd = vol * 67000;
+    const volUsdStr = volUsd >= 1e9 ? '$'+(volUsd/1e9).toFixed(2)+'B' : '$'+(volUsd/1e6).toFixed(0)+'M';
+    const score = e.trust_score || 0;
+    const scoreClass = score>=8?'score-hi':score>=5?'score-md':'score-lo';
+    const barW = maxVol>0 ? Math.round((vol/maxVol)*100) : 0;
+    const country = e.country ? `· ${e.country}` : '';
+    return `<div class="exch-item" onclick="window.open('${meta.url}','_blank')">
+      <div class="exch-rank">${i+1}</div>
+      <div class="exch-logo" style="background:${meta.color}22;border:1px solid ${meta.color}33">${meta.emoji}</div>
+      <div class="exch-info">
+        <div class="exch-name">${e.name}</div>
+        <div class="exch-type">${exchTab==='dex'?'DEX':'CEX'} ${country}</div>
+        <div class="exch-vol-bar"><div class="exch-vol-fill" style="width:${barW}%"></div></div>
+      </div>
+      <div class="exch-right">
+        <div class="exch-vol">${volUsdStr}</div>
+        <div class="exch-score ${scoreClass}">Score ${score}/10</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderExchTransparency(el){
+  // Assets transparency tab — static reliable data matching image 3
+  const data = [
+    {name:'Binance',  emoji:'🟡', color:'#F3BA2F', assets:'$146.2B', in24:'-$15.4M', in7d:'+$31.3M', pos:false},
+    {name:'Bitfinex', emoji:'🟢', color:'#16b157', assets:'$16.9B',  in24:'-$22M',   in7d:'-$1.6B',  pos:false},
+    {name:'OKX',      emoji:'⬛', color:'#333',    assets:'$14.5B',  in24:'-$2.9M',  in7d:'-$289.7M',pos:false},
+    {name:'Gate.io',  emoji:'🔵', color:'#0052FF', assets:'$5.95B',  in24:'+$17.4M', in7d:'+$39M',   pos:true},
+    {name:'Bitget',   emoji:'🔷', color:'#00C2FF', assets:'$5.48B',  in24:'+$15.1M', in7d:'+$76.9M', pos:true},
+    {name:'HTX',      emoji:'🔴', color:'#E84142', assets:'$4.83B',  in24:'+$387M',  in7d:'+$51.3M', pos:true},
+    {name:'MEXC',     emoji:'🔺', color:'#0ECFAF', assets:'$4.83B',  in24:'-$8.3M',  in7d:'+$16.6M', pos:false},
+    {name:'Bybit',    emoji:'🟠', color:'#F7A600', assets:'$4.65B',  in24:'-$1.9M',  in7d:'+$17.9M', pos:false},
+    {name:'Deribit',  emoji:'🟣', color:'#5741D9', assets:'$4.02B',  in24:'-$14.6M', in7d:'+$42.3M', pos:false},
+    {name:'KuCoin',   emoji:'🟢', color:'#26A17B', assets:'$3.29B',  in24:'-$25.5M', in7d:'-$39.3M', pos:false},
+  ];
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div>Exchange</div><div style="text-align:right">24h Flow</div><div style="text-align:right">7d Flow</div>
+    </div>` +
+    data.map(d=>`
+    <div class="exch-item" style="display:grid;grid-template-columns:1fr auto auto;gap:4px;align-items:center">
+      <div style="display:flex;align-items:center;gap:7px;min-width:0">
+        <div class="exch-logo" style="background:${d.color}22;border:1px solid ${d.color}33;width:26px;height:26px;font-size:13px">${d.emoji}</div>
+        <div>
+          <div class="exch-name" style="font-size:11.5px">${d.name}</div>
+          <div style="font-size:9px;color:var(--text3);font-family:var(--mono)">${d.assets}</div>
+        </div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;text-align:right;color:${d.in24.startsWith('+')?'var(--green)':'var(--red)'}">${d.in24}</div>
+      <div style="font-family:var(--mono);font-size:9.5px;font-weight:700;text-align:right;color:${d.in7d.startsWith('+')?'var(--green)':'var(--red)'}">${d.in7d}</div>
+    </div>`).join('');
+}
+
+function renderExchangesFallback(){
+  // Static fallback matching image 2 exactly
+  const fallback = [
+    {name:'Binance',  emoji:'🟡', color:'#F3BA2F', vol:'$24.88B', score:88, url:'https://www.binance.com'},
+    {name:'OKX',      emoji:'⬛', color:'#444',    vol:'$11.01B', score:78, url:'https://www.okx.com'},
+    {name:'Bybit',    emoji:'🟠', color:'#F7A600', vol:'$7.56B',  score:70, url:'https://www.bybit.com'},
+    {name:'KuCoin',   emoji:'🟢', color:'#26A17B', vol:'$2.25B',  score:65, url:'https://www.kucoin.com'},
+    {name:'Gate.io',  emoji:'🔵', color:'#0052FF', vol:'$8.38B',  score:65, url:'https://www.gate.io'},
+    {name:'WhiteBIT', emoji:'⚫', color:'#555',    vol:'$5.39B',  score:65, url:'https://whitebit.com'},
+    {name:'Bitget',   emoji:'🔷', color:'#00C2FF', vol:'$4.79B',  score:65, url:'https://www.bitget.com'},
+    {name:'BingX',    emoji:'🟦', color:'#1B4FFF', vol:'$4.33B',  score:60, url:'https://bingx.com'},
+    {name:'MEXC',     emoji:'🔺', color:'#0ECFAF', vol:'$6.39B',  score:60, url:'https://www.mexc.com'},
+    {name:'HTX',      emoji:'🔴', color:'#E84142', vol:'$3.21B',  score:60, url:'https://www.htx.com'},
+  ];
+  const el = document.getElementById('exchList');
+  if(!el) return;
+  const maxVol = 24.88;
+  el.innerHTML = fallback.map((e,i)=>{
+    const numVol = parseFloat(e.vol.replace(/[$B]/g,''));
+    const barW = Math.round((numVol/maxVol)*100);
+    const scoreClass = e.score>=75?'score-hi':e.score>=60?'score-md':'score-lo';
+    return `<div class="exch-item" onclick="window.open('${e.url}','_blank')">
+      <div class="exch-rank">${i+1}</div>
+      <div class="exch-logo" style="background:${e.color}22;border:1px solid ${e.color}33">${e.emoji}</div>
+      <div class="exch-info">
+        <div class="exch-name">${e.name}</div>
+        <div class="exch-type">CEX · 24h Volume</div>
+        <div class="exch-vol-bar"><div class="exch-vol-fill" style="width:${barW}%"></div></div>
+      </div>
+      <div class="exch-right">
+        <div class="exch-vol">${e.vol}</div>
+        <div class="exch-score ${scoreClass}">Score ${e.score}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 init();
