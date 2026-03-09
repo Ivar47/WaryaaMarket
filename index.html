@@ -39,6 +39,13 @@
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://waryaa-proxy.ucade2015.workers.dev">
+<link rel="dns-prefetch" href="https://s2.coinmarketcap.com">
+<link rel="dns-prefetch" href="https://upload.wikimedia.org">
+<link rel="dns-prefetch" href="https://i.seadn.io">
+<link rel="dns-prefetch" href="https://api.alternative.me">
+<link rel="dns-prefetch" href="https://min-api.cryptocompare.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -588,55 +595,328 @@ body.light .stats-strip{background:#fff}
 .cat-modal-title{font-size:17px;font-weight:700}
 .cat-modal-body{padding:20px 22px}
 
-/* === MOBILE RESPONSIVE === */
+
+/* ============================================================
+   SKELETON SCREENS — CoinMarketCap style shimmer
+   ============================================================ */
+@keyframes page-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.page-content{animation:page-in 0.2s ease}
+@keyframes sk-shimmer{
+  0%{background-position:-400px 0}
+  100%{background-position:400px 0}
+}
+.sk{
+  display:inline-block;
+  border-radius:6px;
+  background:linear-gradient(90deg,var(--card2) 25%,var(--card3) 50%,var(--card2) 75%);
+  background-size:800px 100%;
+  animation:sk-shimmer 1.4s infinite linear;
+}
+.sk-row td{border-bottom:1px solid rgba(255,255,255,0.025)!important}
+
+/* ============================================================
+   PROFESSIONAL RESPONSIVE — Tablet + Mobile
+   ============================================================ */
+@media(max-width:1024px){
+  .metrics-row{grid-template-columns:repeat(2,1fr)}
+  .main{padding:12px 16px}
+}
+
 @media(max-width:768px){
-  .h-inner{height:48px;gap:8px;padding:0 12px}
-  .logo img{height:34px}
-  .logo-mark{width:24px;height:24px;font-size:12px}
-  .nav{gap:0}
-  .nav-btn{padding:4px 8px;font-size:11px}
+  /* Header */
+  .h-inner{height:52px;padding:0 14px;gap:8px}
+  .logo img{height:30px}
   .live-pill{display:none}
-  .search{width:120px;padding:4px 8px}
-  .search input{font-size:11px}
-  .stats-strip{padding:0 8px}
-  .gs-item{padding:0 8px;font-size:10px}
-  .main{padding:8px 10px;gap:10px}
-  .metrics-row{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+  .search{width:130px}
+  .search input{font-size:11.5px}
+  .h-theme{padding:5px 10px;font-size:11px}
+
+  /* Nav — horizontal scroll, no wrap */
+  .nav{gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-btn{padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0}
+
+  /* Stats strip */
+  .stats-strip{padding:0 12px;gap:0}
+  .gs-item{padding:0 10px;font-size:10.5px;white-space:nowrap}
+
+  /* Main layout */
+  .main{padding:10px 12px;gap:10px}
+
+  /* Metrics grid — 2 col */
+  .metrics-row{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
   .metric-card{padding:10px 12px}
+  .mc-val{font-size:15px}
   .mc-label{font-size:9px}
-  .tbl th,.tbl td{padding:6px 8px;font-size:11px}
+
+  /* Table */
+  .tbl th,.tbl td{padding:7px 10px;font-size:11.5px}
+  .c-logo{width:24px;height:24px}
+  .c-name{font-size:12px}
+  .c-sym{font-size:9.5px}
+  .spark-cell,.hide-mob{display:none!important}
+
+  /* Cards full width */
+  .card{border-radius:10px}
+
+  /* Sections */
+  .sec-hdr{flex-wrap:wrap;gap:6px}
+  .sec-title{font-size:14px}
+
+  /* Sub tabs scroll */
+  .sub-tabs,.ul-tabs,.chart-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .sub-tabs::-webkit-scrollbar,.ul-tabs::-webkit-scrollbar,.chart-tabs::-webkit-scrollbar{display:none}
+
+  /* Tools grid 2 col */
+  .tools-grid{grid-template-columns:1fr 1fr!important}
+
+  /* News grid single col */
+  .news-grid{grid-template-columns:1fr!important}
+  .ng-img{height:100px}
+
+  /* Cat grid */
+  .cat-grid{grid-template-columns:repeat(2,1fr)!important}
+
+  /* Modal */
+  .modal{margin:0;border-radius:14px 14px 0 0;max-height:90vh;overflow-y:auto}
+  .m-hdr{padding:14px 16px;flex-wrap:wrap;gap:8px}
+  .m-price{font-size:22px;margin-left:0}
+  .m-name{font-size:16px}
+  .m-body{padding:14px 16px}
+  .m-tabs{padding:0 14px}
+
+  /* Cat modal */
+  .cat-modal{margin:10px;border-radius:12px}
+  .cat-modal-body{padding:14px}
+
+  /* Funding */
+  .fund-item{flex-direction:column;align-items:flex-start;gap:6px}
+
+  /* Stats grid */
+  .stats-g{grid-template-columns:repeat(2,1fr)}
+
+  /* Calendar */
+  .cal-ev{padding:12px}
+  .ct-val{font-size:16px}
+
+  /* Analyst bar */
+  .analyst-bar .ab-label{width:55px;font-size:10px}
+
+  /* Float button */
+  .wrc-float{bottom:14px;right:14px}
+  .wrc-pill{padding:6px 12px;gap:6px}
+}
+
+@media(max-width:480px){
+  /* Header tighter */
+  .h-inner{padding:0 10px}
+  .search{width:100px}
+  .h-theme span{display:none}
+
+  /* Metrics single col for very small */
+  .metrics-row{grid-template-columns:1fr 1fr}
+
+  /* Table — hide more columns */
+  .tbl th:nth-child(n+5),.tbl td:nth-child(n+5){display:none}
+  .tbl th:nth-child(4),.tbl td:nth-child(4){display:table-cell}
+
+  /* Nav font smaller */
+  .nav-btn{font-size:10.5px;padding:4px 8px}
+
+  /* Sections */
+  .sec-title{font-size:13px}
+  .main{padding:8px 10px;gap:8px}
+
+  /* Cat grid */
+  .cat-grid{grid-template-columns:1fr 1fr!important}
+  .news-grid{grid-template-columns:1fr!important}
+  .ng-img{height:80px}
+
+  /* Stats strip min font */
+  .gs-item{font-size:10px;padding:0 8px}
+
+  /* Float button smaller */
+  .wrc-float{bottom:10px;right:10px}
+
+  /* Tools */
+  .tools-grid{grid-template-columns:1fr!important}
+}
+
+@media(max-width:360px){
+  .metrics-row{grid-template-columns:1fr}
+  .h-inner{gap:6px}
+  .search{display:none}
+}
+
+/* === MOBILE RESPONSIVE (legacy kept for compatibility) === */
+/* legacy media queries removed — replaced by new responsive system above */
+
+/* ============================================================
+   CMC-GRADE RESPONSIVE OVERHAUL
+   ============================================================ */
+
+/* Smooth transitions everywhere */
+*{-webkit-tap-highlight-color:transparent}
+img{max-width:100%;height:auto}
+
+/* ── Ticker strip — always visible, smooth scroll ── */
+.ticker-wrap{overflow:hidden;white-space:nowrap}
+.ticker-inner{display:inline-flex;gap:0;animation:ticker-scroll 60s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── Stats strip — horizontal scroll on mobile ── */
+.stats-strip{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.stats-strip::-webkit-scrollbar{display:none}
+.gs-item{flex-shrink:0}
+
+/* ── Nav — pixel-perfect mobile ── */
+.nav{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 4px}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex-shrink:0;white-space:nowrap}
+
+/* ── Card hover lift — desktop only ── */
+@media(hover:hover){
+  .card:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+  .metric-card:hover{transform:translateY(-1px)}
+}
+
+/* ── Table: professional sticky header ── */
+.tbl thead th{position:sticky;top:0;z-index:2;backdrop-filter:blur(8px)}
+.tbl tbody tr{transition:background 0.1s}
+.tbl tbody tr:hover{background:rgba(255,255,255,0.03)}
+
+/* ── Overflow tables wrapped in scroll container ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:0 0 12px 12px}
+.tbl-wrap::-webkit-scrollbar{height:3px}
+.tbl-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── 1024px — tablet landscape ── */
+@media(max-width:1024px){
+  .main{grid-template-columns:1fr 280px!important}
+  .tbl th:nth-child(8),.tbl td:nth-child(8){display:none} /* hide vol col */
+}
+
+/* ── 900px — tablet portrait ── */
+@media(max-width:900px){
+  .main{grid-template-columns:1fr!important}
+  .sidebar{display:none!important}
+  .metrics-row{grid-template-columns:repeat(2,1fr)!important;gap:8px}
+  .exch-grid,.nft-grid{grid-template-columns:1fr!important}
+}
+
+/* ── 768px — large phone / small tablet ── */
+@media(max-width:768px){
+  body{font-size:13px}
+
+  /* Header */
+  .h-inner{height:50px;padding:0 12px}
+  .logo img{height:28px}
+  .live-pill,.h-right .h-theme span{display:none}
+  .search{width:120px}
+  .search input{font-size:11px}
+
+  /* Hide 7d and volume columns in table */
+  .tbl th:nth-child(6),.tbl td:nth-child(6),
+  .tbl th:nth-child(8),.tbl td:nth-child(8){display:none}
+  .spark-cell{display:none!important}
+
+  /* Metrics 2x2 */
+  .metrics-row{grid-template-columns:1fr 1fr!important}
+  .metric-card{padding:10px 12px}
+  .mc-val{font-size:15px}
+
+  /* Sections */
+  .sec-hdr{flex-wrap:wrap;gap:6px}
+  .sec-title{font-size:14px}
+  .sub-tabs,.ul-tabs,.chart-tabs,.nft-tabs,.exch-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .sub-tabs::-webkit-scrollbar,.ul-tabs::-webkit-scrollbar,.exch-tabs::-webkit-scrollbar,.nft-tabs::-webkit-scrollbar{display:none}
+
+  /* Modal bottom sheet on mobile */
+  .overlay{align-items:flex-end!important}
+  .modal{margin:0!important;border-radius:20px 20px 0 0!important;max-height:88vh;overflow-y:auto;width:100%!important}
+  .m-hdr{padding:16px 16px 10px}
+  .m-body{padding:12px 14px}
+
+  /* News single col */
+  .news-grid,.ng-grid{grid-template-columns:1fr!important}
+  .ng-img{height:90px}
+
+  /* Cat grid 2 col */
+  .cat-grid{grid-template-columns:1fr 1fr!important}
+
+  /* Tools 2 col */
+  .tools-grid{grid-template-columns:1fr 1fr!important}
+
+  /* Calendar */
+  .cal-g{grid-template-columns:1fr!important}
+
+  /* Funding */
+  .fund-item{flex-direction:column;gap:4px}
+  .fund-rate{margin-left:0!important}
+
+  /* Float button */
+  .wrc-float{bottom:12px;right:12px}
+  .wrc-pill{padding:6px 10px;gap:6px}
+  .wrc-bal{font-size:12px}
+}
+
+/* ── 480px — standard phone ── */
+@media(max-width:480px){
+  .h-inner{padding:0 10px;gap:6px}
+  .search{width:90px}
+
+  /* Table — name + price + 24h only on phone */
+  .tbl th:nth-child(n+4),.tbl td:nth-child(n+4){display:none}
+  .tbl th:nth-child(3),.tbl td:nth-child(3){display:table-cell} /* keep price */
+  .tbl th:nth-child(5),.tbl td:nth-child(5){display:table-cell} /* keep 24h */
   .c-logo{width:22px;height:22px}
   .c-name{font-size:11.5px}
   .c-sym{font-size:9px}
-  .spark-cell,.hide-mob{display:none!important}
-  .cat-grid{grid-template-columns:repeat(2,1fr)!important}
-  .tools-grid{grid-template-columns:1fr 1fr!important}
-  .news-grid{grid-template-columns:1fr}
-  .stats-g{grid-template-columns:repeat(2,1fr)}
-  .modal{margin:8px}
-  .m-hdr{padding:12px 14px;flex-wrap:wrap;gap:8px}
-  .m-price{font-size:20px;margin-left:0}
-  .m-name{font-size:17px}
-  .m-body{padding:12px 14px}
-  .m-tabs{padding:0 12px}
-  .cat-ev{padding:10px}
-  .ct-val{font-size:14px}
-  .sec-hdr{flex-wrap:wrap;gap:8px}
-  .sub-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .ul-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .chart-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .analyst-bar .ab-label{width:60px;font-size:10px}
-  .fund-item{flex-direction:column;align-items:flex-start;gap:4px}
-  .tbl-scroll{-webkit-overflow-scrolling:touch}
-  .cat-modal{margin:10px}
-  .cat-modal-body{padding:14px}
-}
-@media(max-width:480px){
-  .metrics-row{grid-template-columns:1fr}
-  .h-right .search{width:100px}
-  .cat-grid{grid-template-columns:1fr 1fr!important}
+
+  /* Metrics — 2 col compact */
+  .metrics-row{grid-template-columns:1fr 1fr!important;gap:6px}
+  .metric-card{padding:8px 10px}
+  .mc-val{font-size:13px}
+  .mc-label{font-size:8.5px}
+
+  /* Nav smaller */
+  .nav-btn{font-size:10px;padding:4px 8px}
+
+  /* Stats strip font */
+  .gs-item{font-size:9.5px;padding:0 7px}
+
+  /* Section titles */
+  .sec-title{font-size:13px}
+  .main{padding:8px 10px;gap:8px}
+
+  /* Tools single col */
+  .tools-grid{grid-template-columns:1fr!important}
+
+  /* News */
   .ng-img{height:70px}
-  .tbl th:nth-child(n+6),.tbl td:nth-child(n+6){display:none}
+
+  /* Float btn minimal */
+  .wrc-pill{padding:5px 10px}
+  .wrc-label{display:none}
+}
+
+/* ── 360px — small phones (Samsung Galaxy S series) ── */
+@media(max-width:360px){
+  .metrics-row{grid-template-columns:1fr 1fr!important}
+  .h-inner{gap:4px}
+  .search{display:none}
+  .h-theme span{display:none}
+  .nav-btn{font-size:9.5px;padding:3px 7px}
+}
+
+/* ── Touch device optimizations ── */
+@media(pointer:coarse){
+  .nav-btn,.tbl tbody tr,.card,.metric-card{cursor:default}
+  .tbl tbody tr:active{background:rgba(255,255,255,0.05)}
+  /* Bigger tap targets */
+  .nav-btn{min-height:36px;display:flex;align-items:center}
+  .sub-tabs button,.ul-tabs button{min-height:32px}
 }
 
 /* =====================================================
@@ -873,7 +1153,7 @@ body.light .stats-strip{background:#fff}
         <circle cx="100" cy="90" r="5" fill="white"/>
         <text x="100" y="78" class="gauge-num" fill="white" id="fgNum">--</text>
       </svg>
-      <div style="text-align:center;font-size:12px;font-weight:700;margin-top:-4px" id="fgLabel">Loading...</div>
+      <div style="text-align:center;font-size:12px;font-weight:700;margin-top:-4px" id="fgLabel"><div class="sk" style="width:80px;height:12px;margin:0 auto"></div></div>
       <div style="text-align:center;font-size:10px;color:var(--text2);margin-top:4px" id="fgCompare"></div>
     </div>
     <div class="metric-card">
@@ -909,7 +1189,7 @@ body.light .stats-strip{background:#fff}
       </div>
       <div class="alt-idx-bar"><div class="alt-idx-needle" id="altNeedle" style="left:40%"></div></div>
       <div class="alt-lbr"><span>₿ Season</span><span>Alt Season 🚀</span></div>
-      <div style="font-size:12px;font-weight:700;margin-top:8px" id="altStatus">Loading...</div>
+      <div style="font-size:12px;font-weight:700;margin-top:8px" id="altStatus"><div class="sk" style="width:90px;height:12px"></div></div>
       <div style="font-size:10px;color:var(--text2);margin-top:2px">75+ = Altcoin Season | Below = BTC Season</div>
     </div>
   </div>
@@ -942,7 +1222,107 @@ body.light .stats-strip{background:#fff}
             <th onclick="sortCrypto('vol')">Volume 24h</th>
             <th>7D Chart</th>
           </tr></thead>
-          <tbody id="cryptoBody"><tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text2)">Loading live data...</td></tr></tbody>
+          <tbody id="cryptoBody"><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr></tbody>
         </table>
       </div>
       <div id="catsView" style="display:none;padding:14px"><div class="cat-grid" id="catGrid"></div></div>
@@ -1071,7 +1451,107 @@ body.light .stats-strip{background:#fff}
     <div class="tbl-scroll">
       <table class="tbl">
         <thead><tr><th>#</th><th>Name</th><th>Price</th><th>1h %</th><th>24h %</th><th>7d %</th><th>Market Cap</th><th>Volume 24h</th><th>Circ. Supply</th><th>7D</th></tr></thead>
-        <tbody id="cryptoFullBody"><tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text2)">Loading...</td></tr></tbody>
+        <tbody id="cryptoFullBody"><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr><tr class="sk-row">
+  <td><div class="sk" style="width:20px;height:14px"></div></td>
+  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>
+  <td><div class="sk" style="width:70px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:45px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:13px"></div></td>
+  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td>
+</tr></tbody>
       </table>
     </div>
   </div>
@@ -1197,9 +1677,83 @@ body.light .stats-strip{background:#fff}
 </div>
 
 <!-- ===== FUNDING ===== -->
-<div class="pg" id="pg-funding">
-  <div class="sec-hdr"><div class="sec-title">💰 Recent Crypto Funding Rounds</div></div>
-  <div class="card card-p" id="fundingList"></div>
+<div class="pg page-content" id="pg-funding">
+  <div class="sec-hdr" style="margin-bottom:12px">
+    <div class="sec-title">💰 Funding & Derivatives</div>
+    <div style="display:flex;gap:6px">
+      <button class="ct-btn on" id="fundTab-rounds" onclick="switchFundTab('rounds',this)">Funding Rounds</button>
+      <button class="ct-btn" id="fundTab-rates" onclick="switchFundTab('rates',this)">Live Futures Rates</button>
+      <button class="ct-btn" id="fundTab-book" onclick="switchFundTab('book',this)">Order Book</button>
+    </div>
+  </div>
+
+  <!-- Funding Rounds -->
+  <div id="fundSection-rounds">
+    <div class="card card-p" id="fundingList"></div>
+  </div>
+
+  <!-- Live Futures Funding Rates -->
+  <div id="fundSection-rates" style="display:none">
+    <div class="card card-p">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+        <div>
+          <div style="font-size:13px;font-weight:700">Binance Perpetual Futures — Live Funding Rates</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Positive = longs pay shorts · Negative = shorts pay longs · Updates every 8h</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="frLastUpdate" style="font-size:10px;color:var(--text3)"></span>
+          <button onclick="loadFundingRates()" style="padding:5px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="frGrid" class="fr-grid">
+        ${Array(12).fill('<div class="fr-card"><div class="sk" style="width:60px;height:14px;margin-bottom:8px"></div><div class="sk" style="width:80px;height:22px;margin-bottom:6px"></div><div class="sk" style="width:100px;height:10px"></div></div>').join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Book -->
+  <div id="fundSection-book" style="display:none">
+    <div class="card card-p">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700">Live Order Book — Binance Spot</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <select id="obSymSelect" onchange="loadOrderBook(this.value)" style="padding:5px 10px;border-radius:7px;border:1px solid var(--border2);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer">
+            <option value="BTCUSDT">BTC/USDT</option>
+            <option value="ETHUSDT">ETH/USDT</option>
+            <option value="SOLUSDT">SOL/USDT</option>
+            <option value="BNBUSDT">BNB/USDT</option>
+            <option value="XRPUSDT">XRP/USDT</option>
+            <option value="DOGEUSDT">DOGE/USDT</option>
+            <option value="AVAXUSDT">AVAX/USDT</option>
+            <option value="LINKUSDT">LINK/USDT</option>
+          </select>
+          <button onclick="loadOrderBook(document.getElementById('obSymSelect').value)" style="padding:5px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer">↻</button>
+        </div>
+      </div>
+      <div id="obSpread" class="ob-spread">--</div>
+      <div class="ob-wrap">
+        <div class="ob-side ob-bid">
+          <div class="ob-hdr"><span>Price (USDT)</span><span>Amount</span><span>Total</span></div>
+          <div id="obBids"></div>
+        </div>
+        <div class="ob-side ob-ask">
+          <div class="ob-hdr"><span>Price (USDT)</span><span>Amount</span><span>Total</span></div>
+          <div id="obAsks"></div>
+        </div>
+      </div>
+      <!-- Live Trades below order book -->
+      <div style="margin-top:16px">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          ⚡ Recent Trades
+          <span id="tradesSymLabel" style="color:var(--text3);font-weight:400;font-size:11px"></span>
+        </div>
+        <div style="display:grid;grid-template-columns:80px 1fr 1fr 70px;padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);border-bottom:1px solid var(--border)">
+          <span>Time</span><span>Price</span><span>Amount</span><span>Side</span>
+        </div>
+        <div class="trades-list" id="tradesList"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== DEX TRENDING PAIRS PAGE ===== -->
@@ -1227,7 +1781,7 @@ body.light .stats-strip{background:#fff}
       <div>Liquidity</div>
       <div>Status</div>
     </div>
-    <div id="dexPairsBody"><div class="loading-dex"><div class="spin">⏳</div><br>Loading DEX pairs...</div></div>
+    <div id="dexPairsBody"><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div><div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:70px;height:10px"></div></div><div style="text-align:right"><div class="sk" style="width:70px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:50px;height:10px"></div></div></div></div>
   </div>
 </div>
 
@@ -1245,7 +1799,7 @@ body.light .stats-strip{background:#fff}
     <button class="chain-btn" onclick="filterNewTok('base',this)">Base</button>
     <button class="chain-btn" onclick="filterNewTok('arbitrum',this)">Arbitrum</button>
   </div>
-  <div id="newTokensGrid"><div class="loading-dex"><div class="spin">⏳</div><br>Loading new tokens from GeckoTerminal...</div></div>
+  <div id="newTokensGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px"><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:10px"></div><div class="sk" style="width:80px;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60px;height:11px;margin-bottom:8px"></div><div class="sk" style="width:90px;height:11px"></div></div></div>
 </div>
 
 <!-- ===== RUG CHECKER PAGE ===== -->
@@ -1267,7 +1821,7 @@ body.light .stats-strip{background:#fff}
   <div id="rugResult"></div>
   <!-- Recent checks -->
   <div class="sec-hdr" style="margin-top:10px"><div class="sec-title">📋 Trending Token Checks</div></div>
-  <div id="rugTrending"><div class="loading-dex"><div class="spin">⏳</div><br>Loading trending tokens...</div></div>
+  <div id="rugTrending"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:32px;height:32px;border-radius:50%;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div><div class="sk" style="width:60px;height:12px"></div></div></div>
 </div>
 
 <!-- ===== TRENDING POOLS PAGE ===== -->
@@ -1285,7 +1839,7 @@ body.light .stats-strip{background:#fff}
     <button class="chain-btn" onclick="filterPools('arbitrum',this)">Arbitrum</button>
     <button class="chain-btn" onclick="filterPools('polygon_pos',this)">Polygon</button>
   </div>
-  <div id="trendingPoolsGrid"><div class="loading-dex"><div class="spin">⏳</div><br>Loading trending pools from GeckoTerminal...</div></div>
+  <div id="trendingPoolsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px"><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div><div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:90%;height:13px;margin-bottom:7px"></div><div class="sk" style="width:70%;height:11px;margin-bottom:8px"></div><div class="sk" style="width:50%;height:20px;border-radius:6px"></div></div></div>
 </div>
 
 </div><!-- /content -->
@@ -1304,7 +1858,39 @@ body.light .stats-strip{background:#fff}
         <div class="exch-tab" onclick="switchExch('dex',this)">DEX</div>
         <div class="exch-tab" onclick="switchExch('transparency',this)">Assets</div>
       </div>
-      <div id="exchList"><div style="text-align:center;padding:16px;color:var(--text2);font-size:12px">⏳ Loading exchanges...</div></div>
+      <div id="exchList"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:90px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:55px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div>
+</div></div>
       <div style="text-align:center;margin-top:8px">
         <a href="https://www.coingecko.com/en/exchanges" target="_blank" style="font-size:10.5px;color:var(--blue);font-weight:700">Full Rankings on CoinGecko ↗</a>
       </div>
@@ -1361,7 +1947,31 @@ body.light .stats-strip{background:#fff}
         <div class="nft-tab" onclick="switchNFT('sol',this)">SOL</div>
         <div class="nft-tab" onclick="switchNFT('trending',this)">Trending</div>
       </div>
-      <div id="nftList"><div style="text-align:center;padding:20px;color:var(--text2);font-size:12px">⏳ Loading NFTs...</div></div>
+      <div id="nftList"><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div><div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+  <div class="sk" style="width:36px;height:36px;border-radius:8px;flex-shrink:0"></div>
+  <div style="flex:1"><div class="sk" style="width:100px;height:12px;margin-bottom:5px"></div><div class="sk" style="width:60px;height:10px"></div></div>
+  <div><div class="sk" style="width:50px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:35px;height:10px"></div></div>
+</div></div>
       <div style="text-align:center;margin-top:10px">
         <a href="https://opensea.io/rankings" target="_blank" style="font-size:11px;color:var(--blue);font-weight:700">OpenSea Rankings ↗</a>
         &nbsp;·&nbsp;
@@ -1385,7 +1995,7 @@ body.light .stats-strip{background:#fff}
     </div>
     <div class="cat-modal-body">
       <div id="catModalCoins">
-        <div style="text-align:center;padding:30px;color:var(--text2)">Loading coins in this category...</div>
+        <table class="tbl" style="width:100%"><tbody id="catCoinsBody"></tbody></table>
       </div>
     </div>
   </div>
@@ -1404,6 +2014,8 @@ body.light .stats-strip{background:#fff}
     </div>
     <div class="m-tabs">
       <button class="m-tab on" onclick="mTab('ov',this)">Overview</button>
+      <button class="m-tab" onclick="mTab('chart',this)">📈 OHLCV Chart</button>
+      <button class="m-tab" onclick="mTab('orderbook',this)">📊 Order Book</button>
       <button class="m-tab" onclick="mTab('onchain',this)">On-Chain</button>
       <button class="m-tab" onclick="mTab('markets',this)">Markets</button>
       <button class="m-tab" onclick="mTab('tokenomics',this)">Tokenomics</button>
@@ -1415,6 +2027,42 @@ body.light .stats-strip{background:#fff}
         <div class="stats-g" id="mStats"></div>
         <div id="mSupply"></div>
       </div>
+      <div class="m-content" id="mc-chart">
+        <div class="chart-toolbar" id="ohlcvToolbar">
+          <button class="ct-btn on" onclick="loadOHLCV(currentCoinSym,'1m',this)">1m</button>
+          <button class="ct-btn" onclick="loadOHLCV(currentCoinSym,'5m',this)">5m</button>
+          <button class="ct-btn" onclick="loadOHLCV(currentCoinSym,'15m',this)">15m</button>
+          <button class="ct-btn" onclick="loadOHLCV(currentCoinSym,'1h',this)">1h</button>
+          <button class="ct-btn" onclick="loadOHLCV(currentCoinSym,'4h',this)">4h</button>
+          <button class="ct-btn" onclick="loadOHLCV(currentCoinSym,'1d',this)">1d</button>
+        </div>
+        <canvas id="ohlcvChart"></canvas>
+        <div id="ohlcvInfo" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11px;font-family:var(--mono);color:var(--text2)"></div>
+      </div>
+      <div class="m-content" id="mc-orderbook">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700" id="obModalTitle">Order Book</div>
+          <button onclick="loadModalOrderBook(currentCoinSym)" style="padding:4px 12px;border-radius:7px;border:1px solid var(--border2);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer">↻ Refresh</button>
+        </div>
+        <div id="obModalSpread" class="ob-spread">--</div>
+        <div class="ob-wrap">
+          <div class="ob-side ob-bid">
+            <div class="ob-hdr"><span>Price</span><span>Amount</span><span>Total</span></div>
+            <div id="obModalBids"></div>
+          </div>
+          <div class="ob-side ob-ask">
+            <div class="ob-hdr"><span>Price</span><span>Amount</span><span>Total</span></div>
+            <div id="obModalAsks"></div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">⚡ Recent Trades</div>
+          <div style="display:grid;grid-template-columns:80px 1fr 1fr 70px;padding:5px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);border-bottom:1px solid var(--border)">
+            <span>Time</span><span>Price</span><span>Amount</span><span>Side</span>
+          </div>
+          <div class="trades-list" id="obModalTrades"></div>
+        </div>
+      </div>
       <div class="m-content" id="mc-onchain">
         <div class="stats-g" id="mOnchainStats"></div>
         <div id="mBtcChain"></div>
@@ -1422,13 +2070,13 @@ body.light .stats-strip{background:#fff}
         <div style="margin-top:14px" id="mExtLinks"></div>
       </div>
       <div class="m-content" id="mc-markets">
-        <div id="mMarkets"><div style="text-align:center;padding:30px;color:var(--text2)">Loading...</div></div>
+        <div id="mMarkets"><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:55%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:35%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:55%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:35%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:55%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:35%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:55%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:35%;height:10px"></div></div></div>
       </div>
       <div class="m-content" id="mc-tokenomics">
         <div id="mTokenomics"></div>
       </div>
       <div class="m-content" id="mc-coinnews">
-        <div id="mCoinNews"><div style="text-align:center;padding:30px;color:var(--text2)">Loading...</div></div>
+        <div id="mCoinNews"><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:90%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:40%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:90%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:40%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:90%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:40%;height:10px"></div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div class="sk" style="width:90%;height:12px;margin-bottom:6px"></div><div class="sk" style="width:40%;height:10px"></div></div></div>
       </div>
     </div>
   </div>
@@ -1614,7 +2262,7 @@ function goPage(page, btn){
   if(page==='unlocks') renderUnlocksFull();
   if(page==='crypto') renderCryptoFull();
   if(page==='stocks') renderStockFull();
-  if(page==='funding') renderFunding();
+  if(page==='funding'){ renderFunding(); switchFundTab('rounds', document.getElementById('fundTab-rounds')); }
 }
 
 // ======================================================
@@ -1627,6 +2275,7 @@ async function fetchCrypto(){ return fetchCryptoWithRetry(); }
 //  waryaa-proxy.ucade2015.workers.dev is your real URL
 // =====================================================
 const PROXY_BASE = 'https://waryaa-proxy.ucade2015.workers.dev';
+const CG_KEY = 'CG-V4TGe7sNdpuaPqoGrhHNU1UZ'; // CoinGecko Demo key
 
 async function proxyfetch(proxyPath, directUrl){
   if(PROXY_BASE){
@@ -1804,7 +2453,7 @@ function setCryptoTab(tab,el){
 
 async function loadCats(){
   const grid=document.getElementById('catGrid');
-  grid.innerHTML='<div style="grid-column:span 3;text-align:center;padding:20px;color:var(--text2)">Loading categories...</div>';
+  grid.innerHTML = Array(6).fill('<div style="background:var(--card2);border-radius:10px;padding:14px"><div class="sk" style="width:40px;height:40px;border-radius:50%;margin-bottom:8px"></div><div class="sk" style="width:80%;height:13px;margin-bottom:6px"></div><div class="sk" style="width:60%;height:11px"></div></div>').join('');
   try{
     const r=await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_desc');
     const cats=await r.json();
@@ -1851,7 +2500,7 @@ async function openCategory(catId,catName,mcap,numTokens,chg){
   document.getElementById('catModalCoins').innerHTML=
     wait>0
     ?`<div style="text-align:center;padding:30px;color:var(--text2)">⏳ Loading in ${(wait/1000).toFixed(1)}s...</div>`
-    :'<div style="text-align:center;padding:30px;color:var(--text2)">Loading coins...</div>';
+    :Array(5).fill('<tr class="sk-row"><td><div class="sk" style="width:20px;height:14px"></div></td><td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:24px;height:24px;border-radius:50%"></div><div class="sk" style="width:80px;height:12px"></div></div></td><td><div class="sk" style="width:70px;height:13px"></div></td><td><div class="sk" style="width:50px;height:13px"></div></td><td><div class="sk" style="width:50px;height:13px"></div></td></tr>').join('');
 
   await new Promise(r=>setTimeout(r,wait));
   lastCatFetch=Date.now();
@@ -2148,7 +2797,7 @@ async function loadStockNews(sym){
 async function loadNews(cats){
   const grid=document.getElementById('newsGrid');
   if(!grid) return;
-  grid.innerHTML='<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">Loading news...</div>';
+  grid.innerHTML = Array(6).fill('<div class="ng-item" style="pointer-events:none"><div class="sk" style="width:100%;height:120px;border-radius:8px;margin-bottom:10px"></div><div class="sk" style="width:60%;height:10px;margin-bottom:6px"></div><div class="sk" style="width:90%;height:13px;margin-bottom:5px"></div><div class="sk" style="width:80%;height:13px"></div></div>').join('');
   try{
     // Primary: CryptoCompare
     const url=`https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest${cats!=='ALL'?'&categories='+cats:''}`;
@@ -2530,6 +3179,7 @@ function timeAgo(ts){
 // ======================================================
 //  INIT — staggered fetches to avoid rate limiting
 // ======================================================
+const CRYPTO_SKELETON_HTML = '<tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr><tr class="sk-row">  <td><div class="sk" style="width:20px;height:14px"></div></td>  <td><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk" style="width:80px;height:12px;margin-bottom:4px"></div><div class="sk" style="width:40px;height:10px"></div></div></div></td>  <td><div class="sk" style="width:70px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:45px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:13px"></div></td>  <td><div class="sk" style="width:80px;height:28px;border-radius:4px"></div></td></tr>';
 async function fetchCryptoWithRetry(attempt=1){
   const tbody=document.getElementById('cryptoBody');
   try{
@@ -2563,16 +3213,478 @@ async function fetchCryptoWithRetry(attempt=1){
     updateTickerFromData();
     updateAltcoinIndex();
   }catch(e){
-    const wait=attempt*8000;
+    // Exponential backoff: 2s, 4s, 8s — silent, skeleton stays showing
+    const waits=[2000,4000,8000,15000,30000];
     const maxAttempts=5;
     if(attempt<=maxAttempts){
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading data... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
-      setTimeout(()=>fetchCryptoWithRetry(attempt+1),wait);
+      setTimeout(()=>fetchCryptoWithRetry(attempt+1), waits[attempt-1]||8000);
     }else{
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Could not load data. <span onclick="fetchCryptoWithRetry(1)" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
+      // After all retries — show clean refresh button, no ugly error text
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text2)">
+        <div style="font-size:32px;margin-bottom:10px">📡</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:6px">Unable to load market data</div>
+        <div style="font-size:12px;margin-bottom:14px;opacity:0.6">Check your connection or try again</div>
+        <button onclick="fetchCryptoWithRetry(1)" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">↻ Refresh</button>
+      </td></tr>`;
     }
   }
 }
+
+
+// ======================================================
+//  BINANCE DIRECT API HELPERS (no key, no proxy needed)
+// ======================================================
+const BINANCE = 'https://api.binance.com/api/v3';
+const BINANCE_FAPI = 'https://fapi.binance.com/fapi/v1';
+
+// Symbol map: coingecko id → binance symbol
+const CG_TO_BINANCE = {
+  bitcoin:'BTCUSDT',ethereum:'ETHUSDT',solana:'SOLUSDT','binancecoin':'BNBUSDT',
+  ripple:'XRPUSDT','cardano':'ADAUSDT',avalanche:'AVAXUSDT','chainlink':'LINKUSDT',
+  dogecoin:'DOGEUSDT',polkadot:'DOTUSDT',litecoin:'LTCUSDT',uniswap:'UNIUSDT',
+  'shiba-inu':'SHIBUSDT',polygon:'MATICUSDT',near:'NEARUSDT',cosmos:'ATOMUSDT',
+  stellar:'XLMUSDT',tron:'TRXUSDT','aptos':'APTUSDT','arbitrum':'ARBUSDT',
+  optimism:'OPUSDT',sui:'SUIUSDT'
+};
+
+let currentCoinSym = 'BTCUSDT';
+let ohlcvInterval = '1h';
+let obRefreshTimer = null;
+let tradesRefreshTimer = null;
+
+// ======================================================
+//  FUNDING TAB SWITCHER
+// ======================================================
+function switchFundTab(tab, btn){
+  ['rounds','rates','book'].forEach(t=>{
+    document.getElementById('fundSection-'+t).style.display = t===tab ? '' : 'none';
+    document.getElementById('fundTab-'+t).classList.toggle('on', t===tab);
+  });
+  if(tab==='rates') loadFundingRates();
+  if(tab==='book') loadOrderBook(document.getElementById('obSymSelect').value);
+}
+
+// ======================================================
+//  1. LIVE FUNDING RATES — Binance Futures
+// ======================================================
+async function loadFundingRates(){
+  const grid = document.getElementById('frGrid');
+  if(!grid) return;
+
+  // Skeleton while loading
+  grid.innerHTML = Array(12).fill(`<div class="fr-card"><div class="sk" style="width:60px;height:14px;margin-bottom:8px"></div><div class="sk" style="width:80px;height:22px;margin-bottom:6px"></div><div class="sk" style="width:100px;height:10px"></div></div>`).join('');
+
+  const symbols = [
+    'BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','DOGEUSDT',
+    'AVAXUSDT','LINKUSDT','ADAUSDT','MATICUSDT','DOTUSDT','NEARUSDT',
+    'ARBUSDT','OPUSDT','APTUSDT','SUIUSDT','ATOMUSDT','LTCUSDT',
+    'UNIUSDT','SHIBUSDT'
+  ];
+
+  try{
+    // Fetch all funding rates in one call (public endpoint)
+    const [ratesRes, pricesRes] = await Promise.all([
+      fetch(`${BINANCE_FAPI}/premiumIndex`),
+      fetch(`${BINANCE}/ticker/price`)
+    ]);
+
+    const allRates = await ratesRes.json();
+    const allPrices = await pricesRes.json();
+    const priceMap = {};
+    if(Array.isArray(allPrices)) allPrices.forEach(p=>priceMap[p.symbol]=parseFloat(p.price));
+
+    // Filter to our symbols
+    const filtered = symbols.map(sym=>{
+      const r = Array.isArray(allRates) ? allRates.find(x=>x.symbol===sym) : null;
+      return r ? {
+        symbol: sym.replace('USDT',''),
+        rate: parseFloat(r.lastFundingRate)*100,
+        nextTime: r.nextFundingTime,
+        markPrice: parseFloat(r.markPrice),
+        indexPrice: parseFloat(r.indexPrice),
+        spotPrice: priceMap[sym] || 0,
+      } : null;
+    }).filter(Boolean);
+
+    if(!filtered.length) throw new Error('no data');
+
+    // Sort by absolute rate descending (most extreme first)
+    filtered.sort((a,b)=>Math.abs(b.rate)-Math.abs(a.rate));
+
+    const now = Date.now();
+    grid.innerHTML = filtered.map(f=>{
+      const isPos = f.rate >= 0;
+      const rateClass = isPos ? 'pos' : 'neg';
+      const rateStr = (isPos?'+':'')+f.rate.toFixed(4)+'%';
+      const nextIn = f.nextTime ? Math.max(0,Math.floor((f.nextTime-now)/60000)) : null;
+      const nextStr = nextIn!==null ? `Next in ${nextIn}m` : '';
+      const annualized = (f.rate*3*365).toFixed(1); // 3x per day × 365
+      return `<div class="fr-card">
+        <div class="fr-symbol">${f.symbol}/USDT <span style="font-size:10px;color:var(--text3);font-weight:400">PERP</span></div>
+        <div class="fr-rate ${rateClass}">${rateStr}</div>
+        <div class="fr-last">Mark: $${fmtP(f.markPrice)}</div>
+        <div class="fr-meta">APR: ${(isPos?'+':'')}${annualized}% · ${nextStr}</div>
+        <div class="fr-interval">${isPos?'🔴 Longs pay':'🟢 Shorts pay'}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('frLastUpdate').textContent = 'Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }catch(e){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text2)">
+      <div style="font-size:28px;margin-bottom:8px">📡</div>
+      <div>Could not load funding rates</div>
+      <button onclick="loadFundingRates()" style="margin-top:10px;padding:6px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--card2);color:var(--text2);font-size:12px;cursor:pointer">↻ Try again</button>
+    </div>`;
+  }
+}
+
+// ======================================================
+//  2. ORDER BOOK — Binance Spot (standalone page)
+// ======================================================
+async function loadOrderBook(sym){
+  sym = sym || 'BTCUSDT';
+  document.getElementById('obSymSelect').value = sym;
+  document.getElementById('tradesSymLabel').textContent = sym.replace('USDT','/USDT');
+
+  // Skeleton rows
+  const skRow = (side) => `<div class="ob-row ob-${side}"><span class="ob-price-${side}"><div class="sk" style="width:70px;height:11px"></div></span><span><div class="sk" style="width:55px;height:11px"></div></span><span><div class="sk" style="width:60px;height:11px"></div></span></div>`;
+  document.getElementById('obBids').innerHTML = Array(12).fill(skRow('bid')).join('');
+  document.getElementById('obAsks').innerHTML = Array(12).fill(skRow('ask')).join('');
+  document.getElementById('obSpread').innerHTML = '<span class="ob-mid">Loading...</span>';
+  document.getElementById('tradesList').innerHTML = Array(8).fill('<div class="trade-row"><div class="sk" style="width:50px;height:11px"></div><div class="sk" style="width:70px;height:11px"></div><div class="sk" style="width:60px;height:11px"></div><div class="sk" style="width:30px;height:11px"></div></div>').join('');
+
+  try{
+    const [obRes, tradesRes] = await Promise.all([
+      fetch(`${BINANCE}/depth?symbol=${sym}&limit=15`),
+      fetch(`${BINANCE}/trades?symbol=${sym}&limit=20`)
+    ]);
+
+    const ob = await obRes.json();
+    const trades = await tradesRes.json();
+
+    renderOrderBook(ob, sym, 'obBids','obAsks','obSpread');
+    renderTrades(trades, 'tradesList');
+  }catch(e){
+    document.getElementById('obSpread').innerHTML = '<span style="color:var(--red)">Failed to load — check connection</span>';
+  }
+}
+
+// ======================================================
+//  ORDER BOOK — Coin modal version
+// ======================================================
+async function loadModalOrderBook(sym){
+  sym = sym || currentCoinSym;
+  document.getElementById('obModalTitle').textContent = `Order Book — ${sym.replace('USDT','/USDT')}`;
+
+  const skRow = (side) => `<div class="ob-row ob-${side}"><span class="ob-price-${side}"><div class="sk" style="width:70px;height:11px"></div></span><span><div class="sk" style="width:55px;height:11px"></div></span><span><div class="sk" style="width:60px;height:11px"></div></span></div>`;
+  document.getElementById('obModalBids').innerHTML = Array(12).fill(skRow('bid')).join('');
+  document.getElementById('obModalAsks').innerHTML = Array(12).fill(skRow('ask')).join('');
+  document.getElementById('obModalSpread').innerHTML = '<span class="ob-mid">Loading...</span>';
+  document.getElementById('obModalTrades').innerHTML = Array(6).fill('<div class="trade-row"><div class="sk" style="width:50px;height:11px"></div><div class="sk" style="width:70px;height:11px"></div><div class="sk" style="width:60px;height:11px"></div><div class="sk" style="width:30px;height:11px"></div></div>').join('');
+
+  try{
+    const [obRes, tradesRes] = await Promise.all([
+      fetch(`${BINANCE}/depth?symbol=${sym}&limit=12`),
+      fetch(`${BINANCE}/trades?symbol=${sym}&limit=15`)
+    ]);
+    const ob = await obRes.json();
+    const trades = await tradesRes.json();
+    renderOrderBook(ob, sym, 'obModalBids','obModalAsks','obModalSpread');
+    renderTrades(trades, 'obModalTrades');
+  }catch(e){
+    document.getElementById('obModalSpread').innerHTML = '<span style="color:var(--red)">Failed to load</span>';
+  }
+}
+
+// ── Order Book renderer ──────────────────────────────────
+function renderOrderBook(ob, sym, bidsId, asksId, spreadId){
+  if(!ob || !ob.bids || !ob.asks) return;
+
+  const bids = ob.bids.slice(0,12).map(([p,q])=>({p:parseFloat(p),q:parseFloat(q)}));
+  const asks = ob.asks.slice(0,12).map(([p,q])=>({p:parseFloat(p),q:parseFloat(q)}));
+
+  const maxBidVol = Math.max(...bids.map(b=>b.q));
+  const maxAskVol = Math.max(...asks.map(a=>a.q));
+
+  let bidTotal=0, askTotal=0;
+
+  document.getElementById(bidsId).innerHTML = bids.map(b=>{
+    bidTotal+=b.q;
+    const pct = (b.q/maxBidVol*100).toFixed(1);
+    return `<div class="ob-row ob-bid">
+      <span class="ob-price-bid">${fmtP(b.p)}</span>
+      <span>${b.q.toFixed(4)}</span>
+      <span>${bidTotal.toFixed(3)}</span>
+      <div class="ob-fill" style="width:${pct}%"></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById(asksId).innerHTML = asks.map(a=>{
+    askTotal+=a.q;
+    const pct = (a.q/maxAskVol*100).toFixed(1);
+    return `<div class="ob-row ob-ask">
+      <span class="ob-price-ask">${fmtP(a.p)}</span>
+      <span>${a.q.toFixed(4)}</span>
+      <span>${askTotal.toFixed(3)}</span>
+      <div class="ob-fill" style="width:${pct}%"></div>
+    </div>`;
+  }).join('');
+
+  const bestBid = bids[0]?.p || 0;
+  const bestAsk = asks[0]?.p || 0;
+  const spread = bestAsk - bestBid;
+  const spreadPct = bestBid ? (spread/bestBid*100).toFixed(3) : '0';
+  const mid = ((bestBid+bestAsk)/2);
+  document.getElementById(spreadId).innerHTML = `<span class="ob-mid">$${fmtP(mid)}</span> <span style="color:var(--text3);font-size:11px">Spread: $${spread.toFixed(2)} (${spreadPct}%)</span>`;
+}
+
+// ── Trades renderer ──────────────────────────────────────
+function renderTrades(trades, elId){
+  if(!Array.isArray(trades)) return;
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.innerHTML = trades.reverse().slice(0,20).map(t=>{
+    const isBuy = !t.isBuyerMaker;
+    const side = isBuy ? 'buy' : 'sell';
+    const time = new Date(t.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return `<div class="trade-row">
+      <span style="color:var(--text3)">${time}</span>
+      <span class="trade-${side}">$${fmtP(parseFloat(t.price))}</span>
+      <span>${parseFloat(t.qty).toFixed(4)}</span>
+      <span class="trade-${side}" style="font-weight:700;font-size:10px">${isBuy?'BUY':'SELL'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ======================================================
+//  3. OHLCV CHART — Canvas-based candlestick
+// ======================================================
+let ohlcvData = [];
+
+async function loadOHLCV(sym, interval, btn){
+  sym = sym || currentCoinSym;
+  interval = interval || ohlcvInterval;
+  ohlcvInterval = interval;
+
+  // Update toolbar active state
+  if(btn){
+    document.querySelectorAll('#ohlcvToolbar .ct-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+
+  const infoEl = document.getElementById('ohlcvInfo');
+  if(infoEl) infoEl.innerHTML = '<span style="color:var(--text3)">Loading chart data...</span>';
+
+  // Limit map: interval → number of candles to fetch
+  const limitMap = {'1m':120,'5m':120,'15m':100,'1h':120,'4h':120,'1d':120};
+  const limit = limitMap[interval] || 120;
+
+  try{
+    const r = await fetch(`${BINANCE}/klines?symbol=${sym}&interval=${interval}&limit=${limit}`);
+    const raw = await r.json();
+    if(!Array.isArray(raw) || !raw.length) throw new Error('no data');
+
+    ohlcvData = raw.map(k=>({
+      t: k[0],       // open time
+      o: parseFloat(k[1]), // open
+      h: parseFloat(k[2]), // high
+      l: parseFloat(k[3]), // low
+      c: parseFloat(k[4]), // close
+      v: parseFloat(k[5]), // volume
+    }));
+
+    drawCandlestick(ohlcvData, sym, interval);
+
+    // Show summary stats
+    const last = ohlcvData[ohlcvData.length-1];
+    const first = ohlcvData[0];
+    const chg = ((last.c-first.o)/first.o*100).toFixed(2);
+    const high = Math.max(...ohlcvData.map(c=>c.h));
+    const low = Math.min(...ohlcvData.map(c=>c.l));
+    const isUp = parseFloat(chg) >= 0;
+    if(infoEl) infoEl.innerHTML = `
+      <span>O: <b>$${fmtP(last.o)}</b></span>
+      <span>H: <b style="color:var(--green)">$${fmtP(last.h)}</b></span>
+      <span>L: <b style="color:var(--red)">$${fmtP(last.l)}</b></span>
+      <span>C: <b>$${fmtP(last.c)}</b></span>
+      <span>Change: <b style="color:${isUp?'var(--green)':'var(--red)'}">${isUp?'+':''}${chg}%</b></span>
+      <span>Vol: <b>${fmt(last.v,true)}</b></span>
+    `;
+  }catch(e){
+    if(infoEl) infoEl.innerHTML = '<span style="color:var(--red)">Chart unavailable for this pair</span>';
+    const canvas = document.getElementById('ohlcvChart');
+    if(canvas){
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.font = '14px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('No chart data available', canvas.width/2, canvas.height/2);
+    }
+  }
+}
+
+function drawCandlestick(data, sym, interval){
+  const canvas = document.getElementById('ohlcvChart');
+  if(!canvas || !data.length) return;
+
+  // Make canvas pixel-perfect on retina screens
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = rect.width;
+  const H = rect.height;
+  const PAD = {top:20, right:60, bottom:40, left:10};
+  const chartW = W - PAD.left - PAD.right;
+  const chartH = H - PAD.top - PAD.bottom;
+
+  // Colors
+  const C = {
+    bg:     '#0b0f19',
+    grid:   'rgba(255,255,255,0.04)',
+    text:   'rgba(255,255,255,0.35)',
+    up:     '#16C784',
+    dn:     '#EA3943',
+    wick:   '#666',
+    vol_up: 'rgba(22,199,132,0.25)',
+    vol_dn: 'rgba(234,57,67,0.25)',
+    cross:  'rgba(255,255,255,0.4)',
+  };
+
+  ctx.fillStyle = C.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const n = data.length;
+  const highs = data.map(d=>d.h);
+  const lows  = data.map(d=>d.l);
+  const vols  = data.map(d=>d.v);
+  const priceMax = Math.max(...highs) * 1.005;
+  const priceMin = Math.min(...lows)  * 0.995;
+  const volMax   = Math.max(...vols)  * 4;
+  const priceRange = priceMax - priceMin;
+
+  const toY = p => PAD.top + chartH - ((p - priceMin) / priceRange * chartH);
+  const toX = i => PAD.left + (i / n) * chartW;
+  const candleW = Math.max(1, chartW / n * 0.7);
+
+  // Grid lines
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  for(let i = 0; i <= 5; i++){
+    const y = PAD.top + (chartH / 5) * i;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    const price = priceMax - (priceRange / 5) * i;
+    ctx.fillStyle = C.text;
+    ctx.font = `10px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText('$'+fmtP(price), W - PAD.right + 4, y + 3);
+  }
+
+  // Volume bars (bottom 20% of chart)
+  const volH = chartH * 0.18;
+  data.forEach((d, i) => {
+    const x = toX(i) + (chartW / n) * 0.15;
+    const isUp = d.c >= d.o;
+    const vH = (d.v / volMax) * volH;
+    ctx.fillStyle = isUp ? C.vol_up : C.vol_dn;
+    ctx.fillRect(x, PAD.top + chartH - vH, candleW, vH);
+  });
+
+  // Candles
+  data.forEach((d, i) => {
+    const x = toX(i) + (chartW / n) * 0.5;
+    const isUp = d.c >= d.o;
+    const color = isUp ? C.up : C.dn;
+
+    // Wick
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, toY(d.h));
+    ctx.lineTo(x, toY(d.l));
+    ctx.stroke();
+
+    // Body
+    const bodyY = toY(Math.max(d.o, d.c));
+    const bodyH = Math.max(1, Math.abs(toY(d.o) - toY(d.c)));
+    ctx.fillStyle = isUp ? C.up : C.dn;
+    ctx.fillRect(x - candleW/2, bodyY, candleW, bodyH);
+  });
+
+  // Current price line
+  const last = data[data.length-1];
+  const lastY = toY(last.c);
+  const isLastUp = last.c >= last.o;
+  ctx.strokeStyle = isLastUp ? C.up : C.dn;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, lastY);
+  ctx.lineTo(W - PAD.right, lastY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Price label on right
+  ctx.fillStyle = isLastUp ? C.up : C.dn;
+  ctx.fillRect(W - PAD.right + 2, lastY - 8, PAD.right - 4, 16);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 9px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('$'+fmtP(last.c), W - PAD.right + (PAD.right/2), lastY + 3);
+
+  // X-axis time labels (every ~15 candles)
+  ctx.fillStyle = C.text;
+  ctx.font = '9px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(n / 8));
+  for(let i = 0; i < n; i += step){
+    const d = data[i];
+    const x = toX(i) + (chartW / n) * 0.5;
+    const dt = new Date(d.t);
+    let label;
+    if(interval==='1d') label = dt.toLocaleDateString([],{month:'short',day:'numeric'});
+    else if(interval==='4h'||interval==='1h') label = dt.toLocaleDateString([],{month:'numeric',day:'numeric'})+' '+dt.getHours()+'h';
+    else label = dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0');
+    ctx.fillText(label, x, H - 8);
+  }
+
+  // Title
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = 'bold 11px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(sym.replace('USDT','/USDT')+' · '+interval.toUpperCase(), PAD.left + 4, PAD.top - 6);
+}
+
+// ======================================================
+//  HOOK INTO openCoin — set currentCoinSym
+// ======================================================
+const _origOpenCoin = openCoin;
+openCoin = async function(id){
+  await _origOpenCoin(id);
+  const c = cryptoData.find(x=>x.id===id);
+  if(c){
+    currentCoinSym = CG_TO_BINANCE[c.id] || (c.symbol.toUpperCase()+'USDT');
+  }
+};
+
+// When user clicks OHLCV tab — auto-load chart
+const _origMTab = mTab;
+mTab = function(tab, btn){
+  _origMTab(tab, btn);
+  if(tab==='chart'){
+    loadOHLCV(currentCoinSym, ohlcvInterval, document.querySelector('#ohlcvToolbar .ct-btn.on'));
+    // If no active button, default to 1h
+    if(!document.querySelector('#ohlcvToolbar .ct-btn.on')){
+      const def = document.querySelector('#ohlcvToolbar .ct-btn');
+      if(def){ def.classList.add('on'); loadOHLCV(currentCoinSym,'1h',def); }
+    }
+  }
+  if(tab==='orderbook') loadModalOrderBook(currentCoinSym);
+};
 
 async function init(){
   // Ramadan / Eid banner — runs first, above everything
@@ -2587,24 +3699,24 @@ async function init(){
   renderFunding();
   renderWhales();
 
-  // Stagger all API calls — 2s apart to avoid rate limit
+  // Fire all API calls immediately — proxy handles caching & rate limits
   fetchCryptoWithRetry();
-  setTimeout(()=>fetchGlobal(), 2000);
-  setTimeout(()=>fetchFearGreed(), 4000);
-  setTimeout(()=>fetchGas(), 5000);
-  setTimeout(()=>loadNews('ALL'), 6000);
-  setTimeout(()=>renderNFT(), 1000);
-  setTimeout(()=>loadExchanges(), 3000);
-  setInterval(()=>loadExchanges(), 120000); // refresh every 2 min
+  fetchGlobal();
+  fetchFearGreed();
+  fetchGas();
+  renderNFT();
+  loadNews('ALL');
+  loadExchanges();
 
   // Timers
   setInterval(tick,1000);
 
-  // Auto-refresh (staggered too)
-  setInterval(()=>fetchCryptoWithRetry(), 65000);
-  setInterval(()=>fetchGlobal(), 67000);
+  // Auto-refresh
+  setInterval(()=>fetchCryptoWithRetry(), 60000);
+  setInterval(()=>fetchGlobal(), 90000);
   setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
   setInterval(()=>loadNews('ALL'), 180000);
+  setInterval(()=>loadExchanges(), 120000);
 }
 
 // ======================================================
@@ -2616,7 +3728,7 @@ let dexChainFilter = 'all';
 async function loadDexPairs(){
   const body = document.getElementById('dexPairsBody');
   if(dexAllPairs.length){renderDexPairs();return;}
-  body.innerHTML = '<div class="loading-dex"><div class="spin">⏳</div><br>Fetching live DEX data...</div>';
+  body.innerHTML = Array(8).fill('<div style="height:44px;background:linear-gradient(90deg,var(--card2) 25%,var(--card3) 50%,var(--card2) 75%);background-size:800px 100%;animation:sk-shimmer 1.4s infinite linear;border-radius:6px;margin-bottom:4px"></div>').join('');
   try{
     // Fetch multiple trending searches
     const searches = ['SOL','ETH','BTC','PEPE','DOGE'];
@@ -2708,7 +3820,7 @@ const GECKO_NETWORKS = {
 async function loadNewTokens(){
   const grid = document.getElementById('newTokensGrid');
   if(newTokAll.length){renderNewTokens();return;}
-  grid.innerHTML = '<div class="loading-dex"><div class="spin">⏳</div><br>Fetching new tokens from GeckoTerminal...</div>';
+  grid.innerHTML = Array(6).fill('<div style="height:80px;background:linear-gradient(90deg,var(--card2) 25%,var(--card3) 50%,var(--card2) 75%);background-size:800px 100%;animation:sk-shimmer 1.4s infinite linear;border-radius:10px;margin-bottom:6px"></div>').join('');
   try{
     const networks = ['eth','bsc','solana','base','arbitrum'];
     const all = [];
@@ -3064,7 +4176,7 @@ function renderNFT(){
     return `<div class="nft-item" onclick="window.open('${mktLink}','_blank')">
       <div class="nft-rank">${label}</div>
       <div class="nft-img" style="background:${n.color}22;border:2px solid ${n.color}55;border-radius:8px;width:40px;height:40px;flex-shrink:0;overflow:hidden">
-        ${n.img ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:${n.color}22\\'>${n.emoji||'🖼️'}</div>'" alt="${n.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">${n.emoji||'🖼️'}</div>`}
+        ${n.img ? `<img loading="lazy" src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:${n.color}22\\'>${n.emoji||'🖼️'}</div>'" alt="${n.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">${n.emoji||'🖼️'}</div>`}
       </div>
       <div class="nft-info">
         <div class="nft-name">${n.name}</div>
@@ -3215,7 +4327,7 @@ function renderExchanges(){
     const barW = maxVol>0 ? Math.round((vol/maxVol)*100) : 0;
     const country = e.country ? `· ${e.country}` : '';
     const logoHtml = meta.logo
-      ? `<img src="${meta.logo}" style="width:30px;height:30px;border-radius:8px;object-fit:cover;border:1px solid ${meta.color}44" onerror="this.style.display='none';this.nextSibling.style.display='flex'" alt=""><span style="display:none;width:30px;height:30px;border-radius:8px;background:${meta.color}22;align-items:center;justify-content:center;font-size:14px;border:1px solid ${meta.color}33">🏦</span>`
+      ? `<img loading="lazy" src="${meta.logo}" style="width:30px;height:30px;border-radius:8px;object-fit:cover;border:1px solid ${meta.color}44" onerror="this.style.display='none';this.nextSibling.style.display='flex'" alt=""><span style="display:none;width:30px;height:30px;border-radius:8px;background:${meta.color}22;align-items:center;justify-content:center;font-size:14px;border:1px solid ${meta.color}33">🏦</span>`
       : `<span style="display:flex;width:30px;height:30px;border-radius:8px;background:${meta.color}22;align-items:center;justify-content:center;font-size:14px">🏦</span>`;
     return `<div class="exch-item" onclick="window.open('${meta.url}','_blank')">
       <div class="exch-rank">${i+1}</div>
@@ -3287,7 +4399,7 @@ function renderExchangesFallback(){
     const scoreClass = e.score>=75?'score-hi':e.score>=60?'score-md':'score-lo';
     return `<div class="exch-item" onclick="window.open('${e.url}','_blank')">
       <div class="exch-rank">${i+1}</div>
-      <div class="exch-logo" style="background:none;border:none;padding:0">${e.logo?`<img src="${e.logo}" style="width:30px;height:30px;border-radius:8px;object-fit:cover" onerror="this.style.opacity=0.3">`:''}</div>
+      <div class="exch-logo" style="background:none;border:none;padding:0">${e.logo?`<img src="${e.logo}" style="width:30px;height:30px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:''}</div>
       <div class="exch-info">
         <div class="exch-name">${e.name}</div>
         <div class="exch-type">CEX · 24h Volume</div>
