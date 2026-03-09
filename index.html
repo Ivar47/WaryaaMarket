@@ -1469,28 +1469,28 @@ body.light .stats-strip{background:#fff}
 // ======================================================
 //  DATA DEFINITIONS
 // ======================================================
-// Stock logos — using logo.dev (reliable, no CORS, no hotlink block)
+// Stock logos — Wikipedia Commons + official brand CDNs (no hotlink blocking, no token needed)
 const STOCK_LOGOS={
-  NVDA:'https://img.logo.dev/nvidia.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  MSFT:'https://img.logo.dev/microsoft.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  GOOGL:'https://img.logo.dev/google.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  AAPL:'https://img.logo.dev/apple.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  AMZN:'https://img.logo.dev/amazon.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  META:'https://img.logo.dev/meta.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  TSLA:'https://img.logo.dev/tesla.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  AMD:'https://img.logo.dev/amd.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  ORCL:'https://img.logo.dev/oracle.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  PLTR:'https://img.logo.dev/palantir.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  CRM:'https://img.logo.dev/salesforce.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  SNOW:'https://img.logo.dev/snowflake.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  IBM:'https://img.logo.dev/ibm.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  INTC:'https://img.logo.dev/intel.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  QCOM:'https://img.logo.dev/qualcomm.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  AVGO:'https://img.logo.dev/broadcom.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  ARM:'https://img.logo.dev/arm.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  SMCI:'https://img.logo.dev/supermicro.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  PANW:'https://img.logo.dev/paloaltonetworks.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
-  NOW:'https://img.logo.dev/servicenow.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
+  NVDA:'https://upload.wikimedia.org/wikipedia/en/thumb/b/bb/Nvidia_image_logo.svg/200px-Nvidia_image_logo.svg.png',
+  MSFT:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/200px-Microsoft_logo.svg.png',
+  GOOGL:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/200px-Google_2015_logo.svg.png',
+  AAPL:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/100px-Apple_logo_black.svg.png',
+  AMZN:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/200px-Amazon_logo.svg.png',
+  META:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/200px-Meta_Platforms_Inc._logo.svg.png',
+  TSLA:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/200px-Tesla_Motors.svg.png',
+  AMD:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/200px-AMD_Logo.svg.png',
+  ORCL:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/200px-Oracle_logo.svg.png',
+  PLTR:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Palantir_Technologies_logo.svg/200px-Palantir_Technologies_logo.svg.png',
+  CRM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/200px-Salesforce.com_logo.svg.png',
+  SNOW:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Snowflake_Logo.svg/200px-Snowflake_Logo.svg.png',
+  IBM:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/200px-IBM_logo.svg.png',
+  INTC:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282006-2020%29.svg/200px-Intel_logo_%282006-2020%29.svg.png',
+  QCOM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Qualcomm-Logo.svg/200px-Qualcomm-Logo.svg.png',
+  AVGO:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Broadcom_logo.svg/200px-Broadcom_logo.svg.png',
+  ARM:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Arm_logo_2017.svg/200px-Arm_logo_2017.svg.png',
+  SMCI:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Supermicro_logo.svg/200px-Supermicro_logo.svg.png',
+  PANW:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Palo_Alto_Networks_2020_Logo.svg/200px-Palo_Alto_Networks_2020_Logo.svg.png',
+  NOW:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/ServiceNow_logo_2024.svg/200px-ServiceNow_logo_2024.svg.png',
 };
 const STOCKS=[
   {sym:'NVDA',name:'NVIDIA Corp',icon:'🟢',sector:'AI Chips',pe:'35.2',desc:'The engine of AI: H100/H200/Blackwell GPU monopoly for AI training and inference.',mkt:4350},
@@ -1772,7 +1772,7 @@ function renderCryptoFull(){
       tr.setAttribute('onclick',`openCoin('${c.id}')`);
       tr.innerHTML=`
       <td class="c-rank">${c.market_cap_rank}</td>
-      <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.src=''" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
+      <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.style.display='none'" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
       <td><span class="pct ${p1h>=0?'up':'dn'}">${(p1h>=0?'+':'')+p1h.toFixed(2)}%</span></td>
       <td><span class="pct ${p24>=0?'up':'dn'}">${(p24>=0?'+':'')+p24.toFixed(2)}%</span></td>
@@ -1886,7 +1886,7 @@ function renderCatCoins(coins){
           return`<tr onclick="document.getElementById('catModal').classList.remove('on');setTimeout(()=>openCoin('${c.id}'),200)">
             <td class="c-rank">${c.market_cap_rank||'—'}</td>
             <td><div class="cn-cell">
-              <img class="c-logo" src="${c.image}" onerror="this.src=''" alt="">
+              <img class="c-logo" src="${c.image}" onerror="this.style.display='none'" alt="">
               <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
             </div></td>
             <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -2995,53 +2995,53 @@ function setTheme(mode){
 // ======================================================
 const NFT_ETH = [
   {name:'CryptoPunks',  floor:'46.9', vol:'1,240', chg:'+2.4', color:'#6366f1', emoji:'👾',
-   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/CryptoPunks_Logo.png/200px-CryptoPunks_Logo.png'},
+   img:'https://i.seadn.io/gcs/files/f2a9a80da2668f6fb57888b6e7de1437.png'},
   {name:'Bored Ape YC', floor:'8.2',  vol:'892',   chg:'-1.1', color:'#f59e0b', emoji:'🦍',
-   img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Bored_Ape_Yacht_Club_logo.png/200px-Bored_Ape_Yacht_Club_logo.png'},
+   img:'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGf6xWdfQ'},
   {name:'Azuki',         floor:'3.8',  vol:'561',   chg:'+5.7', color:'#ef4444', emoji:'🌸',
-   img:'https://pbs.twimg.com/profile_images/1484209185350053896/x1bNOaUA_400x400.jpg'},
+   img:'https://i.seadn.io/gcs/files/d0353b1f4f948f3e0a6c35e19621c3c7.png'},
   {name:'Pudgy Penguins',floor:'6.1',  vol:'720',   chg:'+3.2', color:'#60a5fa', emoji:'🐧',
-   img:'https://pbs.twimg.com/profile_images/1504228135975448577/VK_BbV5e_400x400.jpg'},
+   img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46vsio6YDLqkCAh0ps3kMORM9BaNo5aA3GuxNqI98MnbEAcQq8zf5IerDqLm4b9YQ'},
   {name:'Doodles',       floor:'1.3',  vol:'234',   chg:'-0.8', color:'#f472b6', emoji:'🎨',
-   img:'https://pbs.twimg.com/profile_images/1467745163814486020/AaoeGfAH_400x400.jpg'},
+   img:'https://i.seadn.io/gae/7B0qai02OdHA8P_EOVK672qUliyjQdQDGNrACxs7WnTgZAkJa_wWURnIFKeOh5VTf8cfTqW3wQpozGedaC9mteKphEOtztls02RlWQ'},
   {name:'Mutant Ape YC', floor:'1.9',  vol:'445',   chg:'+0.6', color:'#10b981', emoji:'🧟',
-   img:'https://pbs.twimg.com/profile_images/1498085916891017218/uijQ_sF8_400x400.jpg'},
+   img:'https://i.seadn.io/gae/lHexKRMpw-aoSyB1WdFBff5yfANLReFxHzt1DOj_sg7mS14yARpuvYcUtsyyx-Nkpk6WTcUPFoG53vnGJyZrj95-Mh7Es6FkFpYoH_0'},
   {name:'Milady Maker',  floor:'2.1',  vol:'388',   chg:'+8.3', color:'#8b5cf6', emoji:'🪆',
-   img:'https://pbs.twimg.com/profile_images/1514507791699808256/O8-Kz_1r_400x400.jpg'},
+   img:'https://i.seadn.io/gcs/files/00df04b280fe7a57fd427d2a9f8f4666.png'},
   {name:'CloneX',        floor:'0.9',  vol:'178',   chg:'-2.1', color:'#06b6d4', emoji:'🤖',
-   img:'https://pbs.twimg.com/profile_images/1478686961567240192/OBJlvH3W_400x400.jpg'},
+   img:'https://i.seadn.io/gae/XN0XuD8Uh3jyRWNtPTFeXJg_ht8m5ofDx6aHqlOsHPhSKYDFfBs4UeHE1FpJSovt0tgJJ8YLZZY2dKFB7Xg3iiBc0WnSzBUbFhO'},
 ];
 const NFT_SOL = [
   {name:'Mad Lads',    floor:'82 SOL',  vol:'4,210', chg:'+6.2', color:'#f97316', emoji:'😤',
-   img:'https://pbs.twimg.com/profile_images/1656517218757476354/M3VPkHAj_400x400.jpg'},
+   img:'https://bafkreihrjyu6b3xpwpgpgifbhfhk74ek5ztlfm7gflm7oqv3v6ujdahucy.ipfs.nftstorage.link'},
   {name:'Tensorians',  floor:'41 SOL',  vol:'1,890', chg:'+1.8', color:'#6366f1', emoji:'🤖',
-   img:'https://pbs.twimg.com/profile_images/1686580637442342912/y63Rb8bw_400x400.jpg'},
+   img:'https://bafybeig6la3me5x3veull7jzxnqsistncueteiyzehg25ts6elwexepdvu.ipfs.nftstorage.link'},
   {name:'Okay Bears',  floor:'28 SOL',  vol:'920',   chg:'-0.5', color:'#78716c', emoji:'🐻',
-   img:'https://pbs.twimg.com/profile_images/1507744897498390534/BIaWwi7P_400x400.jpg'},
+   img:'https://bafkreibnq5yjd6rqaovrcfptxdl2jwomxdpcimvjnmkvyls6fdgqv7mhom.ipfs.nftstorage.link'},
   {name:'DeGods',      floor:'19 SOL',  vol:'780',   chg:'+3.4', color:'#eab308', emoji:'👑',
-   img:'https://pbs.twimg.com/profile_images/1591847295264542721/DCv3YGZS_400x400.jpg'},
+   img:'https://metadata.degods.com/g/9999-dead.png'},
   {name:'y00ts',       floor:'11 SOL',  vol:'560',   chg:'-1.2', color:'#64748b', emoji:'🐐',
-   img:'https://pbs.twimg.com/profile_images/1583892591552364544/XShfk4YG_400x400.jpg'},
+   img:'https://bafybeiha5zrlkzjb4zy3lsqkdgjnxzjflixy7b7bj3jkd7pj6v2r2irlfe.ipfs.nftstorage.link'},
   {name:'SMB Gen2',    floor:'16 SOL',  vol:'430',   chg:'+2.9', color:'#10b981', emoji:'🐒',
-   img:'https://pbs.twimg.com/profile_images/1430091827927011334/ba5hBSBf_400x400.jpg'},
+   img:'https://bafybeif4s7oom2ch6iv42yn7la4b3dnuhp6ozsqjzdmjnin5de5bpkqm5e.ipfs.nftstorage.link'},
   {name:'Aurory',      floor:'5 SOL',   vol:'290',   chg:'+0.4', color:'#ec4899', emoji:'🎮',
-   img:'https://pbs.twimg.com/profile_images/1435685518183071746/6OgNAA1c_400x400.jpg'},
+   img:'https://s2.coinmarketcap.com/static/img/coins/64x64/13622.png'},
   {name:'Famous Fox',  floor:'8 SOL',   vol:'340',   chg:'+1.6', color:'#f59e0b', emoji:'🦊',
-   img:'https://pbs.twimg.com/profile_images/1476720487682838531/v3UGkJXk_400x400.jpg'},
+   img:'https://bafybeihqnkob7v62i7gnxslzgfh7p3oig2qg4kqicbzgzsnksnqjbodvay.ipfs.nftstorage.link'},
 ];
 const NFT_TRENDING = [
   {name:'Pudgy Penguins',floor:'6.1 ETH', vol:'720',   chg:'+12.4', color:'#60a5fa', tag:'🔥', emoji:'🐧',
-   img:'https://pbs.twimg.com/profile_images/1504228135975448577/VK_BbV5e_400x400.jpg'},
+   img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46vsio6YDLqkCAh0ps3kMORM9BaNo5aA3GuxNqI98MnbEAcQq8zf5IerDqLm4b9YQ'},
   {name:'Mad Lads',      floor:'82 SOL',  vol:'4,210', chg:'+6.2',  color:'#f97316', tag:'📈', emoji:'😤',
-   img:'https://pbs.twimg.com/profile_images/1656517218757476354/M3VPkHAj_400x400.jpg'},
+   img:'https://bafkreihrjyu6b3xpwpgpgifbhfhk74ek5ztlfm7gflm7oqv3v6ujdahucy.ipfs.nftstorage.link'},
   {name:'Milady Maker',  floor:'2.1 ETH', vol:'388',   chg:'+8.3',  color:'#8b5cf6', tag:'🚀', emoji:'🪆',
-   img:'https://pbs.twimg.com/profile_images/1514507791699808256/O8-Kz_1r_400x400.jpg'},
+   img:'https://i.seadn.io/gcs/files/00df04b280fe7a57fd427d2a9f8f4666.png'},
   {name:'Azuki',         floor:'3.8 ETH', vol:'561',   chg:'+5.7',  color:'#ef4444', tag:'💎', emoji:'🌸',
-   img:'https://pbs.twimg.com/profile_images/1484209185350053896/x1bNOaUA_400x400.jpg'},
+   img:'https://i.seadn.io/gcs/files/d0353b1f4f948f3e0a6c35e19621c3c7.png'},
   {name:'DeGods',        floor:'19 SOL',  vol:'780',   chg:'+3.4',  color:'#eab308', tag:'📊', emoji:'👑',
-   img:'https://pbs.twimg.com/profile_images/1591847295264542721/DCv3YGZS_400x400.jpg'},
+   img:'https://metadata.degods.com/g/9999-dead.png'},
   {name:'Tensorians',    floor:'41 SOL',  vol:'1,890', chg:'+1.8',  color:'#6366f1', tag:'⚡', emoji:'🤖',
-   img:'https://pbs.twimg.com/profile_images/1686580637442342912/y63Rb8bw_400x400.jpg'},
+   img:'https://bafybeig6la3me5x3veull7jzxnqsistncueteiyzehg25ts6elwexepdvu.ipfs.nftstorage.link'},
 ];
 
 let nftCurrentTab = 'eth';
@@ -3122,37 +3122,37 @@ let exchData = {cex:[], dex:[]};
 let exchTab = 'cex';
 
 const EXCH_META = {
-  // CEX — real logos
-  binance:    {logo:'https://assets.coingecko.com/markets/images/52/small/binance.jpg',        color:'#F3BA2F', url:'https://www.binance.com'},
-  okx:        {logo:'https://assets.coingecko.com/markets/images/96/small/WeChat_Image_20220117220452.png', color:'#000', url:'https://www.okx.com'},
-  bybit:      {logo:'https://assets.coingecko.com/markets/images/698/small/bybit_spot.png',    color:'#F7A600', url:'https://www.bybit.com'},
-  kucoin:     {logo:'https://assets.coingecko.com/markets/images/61/small/kucoin.png',         color:'#26A17B', url:'https://www.kucoin.com'},
-  gate:       {logo:'https://assets.coingecko.com/markets/images/60/small/gate_io_logo1.jpg',  color:'#0052FF', url:'https://www.gate.io'},
-  whitebit:   {logo:'https://assets.coingecko.com/markets/images/1090/small/WhiteBIT.png',     color:'#1A1B1E', url:'https://whitebit.com'},
-  bitget:     {logo:'https://assets.coingecko.com/markets/images/591/small/bitget.jpg',        color:'#00C2FF', url:'https://www.bitget.com'},
-  bingx:      {logo:'https://assets.coingecko.com/markets/images/804/small/bingx.jpg',        color:'#1B4FFF', url:'https://bingx.com'},
-  mexc:       {logo:'https://assets.coingecko.com/markets/images/409/small/MEXC_logo_square.jpeg', color:'#0ECFAF', url:'https://www.mexc.com'},
-  htx:        {logo:'https://assets.coingecko.com/markets/images/25/small/huobi.jpg',          color:'#E84142', url:'https://www.htx.com'},
-  kraken:     {logo:'https://assets.coingecko.com/markets/images/29/small/kraken.jpg',         color:'#5741D9', url:'https://www.kraken.com'},
-  coinbase_advanced_trade:{logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg', color:'#0052FF', url:'https://www.coinbase.com'},
-  coinbase:   {logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg',       color:'#0052FF', url:'https://www.coinbase.com'},
-  bitfinex:   {logo:'https://assets.coingecko.com/markets/images/4/small/BItfinex.png',        color:'#16b157', url:'https://www.bitfinex.com'},
-  deribit:    {logo:'https://assets.coingecko.com/markets/images/214/small/deribit.jpg',       color:'#5741D9', url:'https://www.deribit.com'},
-  // DEX — real logos
-  uniswap_v3: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
-  uniswap_v2: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
-  uniswap:    {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
-  curve:      {logo:'https://assets.coingecko.com/markets/images/538/small/Curve.png',         color:'#3498DB', url:'https://curve.fi'},
-  curve_v2:   {logo:'https://assets.coingecko.com/markets/images/538/small/Curve.png',         color:'#3498DB', url:'https://curve.fi'},
-  pancakeswap_new:{logo:'https://assets.coingecko.com/markets/images/687/small/pancakeswap.jpeg', color:'#FFD800', url:'https://pancakeswap.finance'},
-  pancakeswap:{logo:'https://assets.coingecko.com/markets/images/687/small/pancakeswap.jpeg',  color:'#FFD800', url:'https://pancakeswap.finance'},
-  dydx:       {logo:'https://assets.coingecko.com/markets/images/584/small/dydx.jpg',          color:'#6966FF', url:'https://dydx.exchange'},
-  orca:       {logo:'https://assets.coingecko.com/markets/images/1007/small/orca.jpg',         color:'#00C2FF', url:'https://www.orca.so'},
-  aerodrome:  {logo:'https://assets.coingecko.com/markets/images/1124/small/aerodrome.jpg',    color:'#FF0420', url:'https://aerodrome.finance'},
-  velodrome:  {logo:'https://assets.coingecko.com/markets/images/988/small/velodrome.jpg',     color:'#FF0420', url:'https://velodrome.finance'},
-  sushiswap:  {logo:'https://assets.coingecko.com/markets/images/576/small/sushiswap.jpg',     color:'#FA52A0', url:'https://www.sushi.com'},
-  raydium:    {logo:'https://assets.coingecko.com/markets/images/722/small/raydium.jpg',       color:'#9945FF', url:'https://raydium.io'},
-  jupiter:    {logo:'https://assets.coingecko.com/markets/images/1098/small/jupiter.jpg',      color:'#C8A84B', url:'https://jup.ag'},
+  // CEX — logos from official sources / Wikipedia (no hotlink blocking)
+  binance:    {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Binance_Logo.svg/200px-Binance_Logo.svg.png',   color:'#F3BA2F', url:'https://www.binance.com'},
+  okx:        {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/OKX_Logo.svg/200px-OKX_Logo.svg.png',           color:'#000',    url:'https://www.okx.com'},
+  bybit:      {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Bybit_Logo.svg/200px-Bybit_Logo.svg.png',       color:'#F7A600', url:'https://www.bybit.com'},
+  kucoin:     {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/KuCoin_Logo.svg/200px-KuCoin_Logo.svg.png',     color:'#26A17B', url:'https://www.kucoin.com'},
+  gate:       {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Gate_io_Logo.svg/200px-Gate_io_Logo.svg.png',   color:'#0052FF', url:'https://www.gate.io'},
+  whitebit:   {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/425.png',                                          color:'#1A1B1E', url:'https://whitebit.com'},
+  bitget:     {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png',                                          color:'#00C2FF', url:'https://www.bitget.com'},
+  bingx:      {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png',                                          color:'#1B4FFF', url:'https://bingx.com'},
+  mexc:       {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png',                                          color:'#0ECFAF', url:'https://www.mexc.com'},
+  htx:        {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/HTX_exchange_logo.svg/200px-HTX_exchange_logo.svg.png', color:'#E84142', url:'https://www.htx.com'},
+  kraken:     {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Kraken_logo.svg/200px-Kraken_logo.svg.png',     color:'#5741D9', url:'https://www.kraken.com'},
+  coinbase_advanced_trade:{logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/24px-Coinbase_Wordmark.svg.png',    color:'#0052FF', url:'https://www.coinbase.com'},
+  coinbase:   {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/24px-Coinbase_Wordmark.svg.png',                color:'#0052FF', url:'https://www.coinbase.com'},
+  bitfinex:   {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/37.png',                                           color:'#16b157', url:'https://www.bitfinex.com'},
+  deribit:    {logo:'https://s2.coinmarketcap.com/static/img/exchanges/64x64/308.png',                                          color:'#5741D9', url:'https://www.deribit.com'},
+  // DEX — logos from token official domains / IPFS / reliable CDN
+  uniswap_v3: {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/200px-Uniswap_Logo.svg.png',  color:'#FF007A', url:'https://app.uniswap.org'},
+  uniswap_v2: {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/200px-Uniswap_Logo.svg.png',  color:'#FF007A', url:'https://app.uniswap.org'},
+  uniswap:    {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/200px-Uniswap_Logo.svg.png',  color:'#FF007A', url:'https://app.uniswap.org'},
+  curve:      {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Curve_Finance_Logo.svg/200px-Curve_Finance_Logo.svg.png', color:'#3498DB', url:'https://curve.fi'},
+  curve_v2:   {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Curve_Finance_Logo.svg/200px-Curve_Finance_Logo.svg.png', color:'#3498DB', url:'https://curve.fi'},
+  pancakeswap_new:{logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/PancakeSwap_Logo.svg/200px-PancakeSwap_Logo.svg.png', color:'#FFD800', url:'https://pancakeswap.finance'},
+  pancakeswap:{logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/PancakeSwap_Logo.svg/200px-PancakeSwap_Logo.svg.png', color:'#FFD800', url:'https://pancakeswap.finance'},
+  dydx:       {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/DYDX_logo.svg/200px-DYDX_logo.svg.png',        color:'#6966FF', url:'https://dydx.exchange'},
+  orca:       {logo:'https://s2.coinmarketcap.com/static/img/coins/64x64/11165.png',                                            color:'#00C2FF', url:'https://www.orca.so'},
+  aerodrome:  {logo:'https://s2.coinmarketcap.com/static/img/coins/64x64/29270.png',                                            color:'#FF0420', url:'https://aerodrome.finance'},
+  velodrome:  {logo:'https://s2.coinmarketcap.com/static/img/coins/64x64/20435.png',                                            color:'#FF0420', url:'https://velodrome.finance'},
+  sushiswap:  {logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/SushiSwap_Logo.svg/200px-SushiSwap_Logo.svg.png', color:'#FA52A0', url:'https://www.sushi.com'},
+  raydium:    {logo:'https://s2.coinmarketcap.com/static/img/coins/64x64/8526.png',                                             color:'#9945FF', url:'https://raydium.io'},
+  jupiter:    {logo:'https://s2.coinmarketcap.com/static/img/coins/64x64/29210.png',                                            color:'#C8A84B', url:'https://jup.ag'},
 };
 
 async function loadExchanges(){
