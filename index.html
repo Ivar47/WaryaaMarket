@@ -1738,12 +1738,24 @@ function renderCryptoTable(data){
 
 function renderCryptoFull(){
   if(!cryptoData.length) return;
-  document.getElementById('cryptoFullBody').innerHTML=cryptoData.map(c=>{
-    const p1h=c.price_change_percentage_1h_in_currency||0;
-    const p24=c.price_change_percentage_24h||0;
-    const p7d=c.price_change_percentage_7d_in_currency||0;
-    const sup=c.circulating_supply?fmt(c.circulating_supply)+' '+c.symbol.toUpperCase():'N/A';
-    return`<tr onclick="openCoin('${c.id}')">
+  const tbody=document.getElementById('cryptoFullBody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  // Render in chunks of 50 per animation frame so the UI never freezes
+  const CHUNK=50;
+  let idx=0;
+  function renderChunk(){
+    const frag=document.createDocumentFragment();
+    const end=Math.min(idx+CHUNK, cryptoData.length);
+    for(let i=idx;i<end;i++){
+      const c=cryptoData[i];
+      const p1h=c.price_change_percentage_1h_in_currency||0;
+      const p24=c.price_change_percentage_24h||0;
+      const p7d=c.price_change_percentage_7d_in_currency||0;
+      const sup=c.circulating_supply?fmt(c.circulating_supply)+' '+c.symbol.toUpperCase():'N/A';
+      const tr=document.createElement('tr');
+      tr.setAttribute('onclick',`openCoin('${c.id}')`);
+      tr.innerHTML=`
       <td class="c-rank">${c.market_cap_rank}</td>
       <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.src=''" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -1753,9 +1765,14 @@ function renderCryptoFull(){
       <td class="mcap-val">$${fmt(c.market_cap,true)}</td>
       <td class="mcap-val">$${fmt(c.total_volume,true)}</td>
       <td class="mcap-val" style="font-size:11px">${sup}</td>
-      <td class="spark-cell">${spark(c.sparkline_in_7d?.price,p7d>=0)}</td>
-    </tr>`;
-  }).join('');
+      <td class="spark-cell">${spark(c.sparkline_in_7d?.price,p7d>=0)}</td>`;
+      frag.appendChild(tr);
+    }
+    tbody.appendChild(frag);
+    idx=end;
+    if(idx<cryptoData.length) requestAnimationFrame(renderChunk);
+  }
+  requestAnimationFrame(renderChunk);
 }
 
 function setCryptoTab(tab,el){
@@ -2499,11 +2516,24 @@ function timeAgo(ts){
 //  INIT — staggered fetches to avoid rate limiting
 // ======================================================
 async function fetchCryptoWithRetry(attempt=1){
+  const tbody=document.getElementById('cryptoBody');
   try{
-    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
-    if(r.status===429) throw new Error('rate_limit');
-    cryptoData=await r.json();
-    if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
+    // Fetch all 5 pages (100 coins each = 500 total) in parallel.
+    // Pages are staggered by 200ms to be gentle on the free API.
+    const BASE='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d&page=';
+    const delay=ms=>new Promise(res=>setTimeout(res,ms));
+    const fetchPage=async(page)=>{
+      await delay((page-1)*200); // 0ms, 200ms, 400ms, 600ms, 800ms
+      const r=await fetch(BASE+page);
+      if(r.status===429) throw new Error('rate_limit');
+      const d=await r.json();
+      if(!Array.isArray(d)) throw new Error('bad_response');
+      return d;
+    };
+    const pages=await Promise.all([1,2,3,4,5].map(fetchPage));
+    const merged=pages.flat();
+    if(!merged.length) throw new Error('empty');
+    cryptoData=merged;
     renderCryptoTable();
     renderCryptoFull();
     updateTickerFromData();
@@ -2511,7 +2541,6 @@ async function fetchCryptoWithRetry(attempt=1){
   }catch(e){
     const wait=attempt*8000; // 8s, 16s, 24s...
     const maxAttempts=5;
-    const tbody=document.getElementById('cryptoBody');
     if(attempt<=maxAttempts){
       if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
       setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
@@ -3746,207 +3775,6 @@ function spawnBarSparkles(bar){
     bar.appendChild(spark);
     setTimeout(()=>spark.remove(), 1500);
   }
-}
-
-
-// ======================================================
-//  BINANCE ENRICHMENT — adds 500+ extra tokens to
-//  cryptoData AFTER CoinGecko has already loaded.
-//  Does NOT modify any existing code / functions.
-// ======================================================
-
-// Map Binance base symbols → CoinGecko-style image URLs
-// Uses jsdelivr/spothq (800+ coins, no API key needed)
-function getBinanceImg(sym) {
-  const s = sym.toLowerCase();
-  const knownImgs = {
-    btc:'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-    eth:'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
-    bnb:'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
-    sol:'https://assets.coingecko.com/coins/images/4128/small/solana.png',
-    xrp:'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
-    usdt:'https://assets.coingecko.com/coins/images/325/small/Tether.png',
-    usdc:'https://assets.coingecko.com/coins/images/6319/small/usdc.png',
-    ada:'https://assets.coingecko.com/coins/images/975/small/cardano.png',
-    avax:'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
-    doge:'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
-    dot:'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
-    matic:'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
-    trx:'https://assets.coingecko.com/coins/images/1094/small/tron-logo.png',
-    link:'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
-    ton:'https://assets.coingecko.com/coins/images/17980/small/ton_symbol.png',
-    shib:'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
-    ltc:'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
-    uni:'https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png',
-    atom:'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',
-    xlm:'https://assets.coingecko.com/coins/images/100/small/Stellar_symbol_black_RGB.png',
-    bch:'https://assets.coingecko.com/coins/images/780/small/bitcoin-cash-circle.png',
-    etc:'https://assets.coingecko.com/coins/images/453/small/ethereum-classic-logo.png',
-    near:'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
-    apt:'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
-    arb:'https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg',
-    op:'https://assets.coingecko.com/coins/images/25244/small/Optimism.png',
-    fil:'https://assets.coingecko.com/coins/images/12817/small/filecoin.png',
-    algo:'https://assets.coingecko.com/coins/images/4380/small/download.png',
-    vet:'https://assets.coingecko.com/coins/images/1167/small/VeChain-Logo-768x768.png',
-    icp:'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png',
-    hbar:'https://assets.coingecko.com/coins/images/3688/small/hbar.png',
-    aave:'https://assets.coingecko.com/coins/images/12645/small/AAVE.png',
-    mkr:'https://assets.coingecko.com/coins/images/1364/small/Mark_Maker.png',
-    grt:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png',
-    inj:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png',
-    sui:'https://assets.coingecko.com/coins/images/26375/small/sui_asset.jpeg',
-    sei:'https://assets.coingecko.com/coins/images/28205/small/Sei_Logo_-_Transparent.png',
-    pepe:'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg',
-    wif:'https://assets.coingecko.com/coins/images/33566/small/dogwifhat.jpg',
-    floki:'https://assets.coingecko.com/coins/images/16746/small/PNG_image.png',
-    bonk:'https://assets.coingecko.com/coins/images/28600/small/bonk.jpg',
-    tia:'https://assets.coingecko.com/coins/images/31967/small/tia.jpg',
-    pyth:'https://assets.coingecko.com/coins/images/31924/small/pyth.png',
-    jup:'https://assets.coingecko.com/coins/images/34188/small/jup.png',
-    wld:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg',
-    strk:'https://assets.coingecko.com/coins/images/26433/small/starknet.png',
-    render:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
-    rndr:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
-    fet:'https://assets.coingecko.com/coins/images/5681/small/Fetch.jpg',
-    kas:'https://assets.coingecko.com/coins/images/25751/small/kaspa-icon-exchanges.png',
-    not:'https://assets.coingecko.com/coins/images/36447/small/notcoin.jpg',
-    pendle:'https://assets.coingecko.com/coins/images/15069/small/Pendle_Logo_Normal-03.png',
-    xmr:'https://assets.coingecko.com/coins/images/69/small/monero_logo.png',
-    ftm:'https://assets.coingecko.com/coins/images/4001/small/Fantom_round.png',
-    sand:'https://assets.coingecko.com/coins/images/12129/small/sandbox_logo.jpg',
-    mana:'https://assets.coingecko.com/coins/images/878/small/decentraland-mana.png',
-    axs:'https://assets.coingecko.com/coins/images/13029/small/axie_infinity_logo.png',
-    imx:'https://assets.coingecko.com/coins/images/17233/small/immutableX-symbol-BLK-RGB.png',
-    blur:'https://assets.coingecko.com/coins/images/28453/small/blur.png',
-    ens:'https://assets.coingecko.com/coins/images/19785/small/acatxTm8_400x400.jpg',
-    bat:'https://assets.coingecko.com/coins/images/677/small/basic-attention-token.png',
-    zrx:'https://assets.coingecko.com/coins/images/863/small/0x.png',
-    ankr:'https://assets.coingecko.com/coins/images/4755/small/Ankr_enlargedfinallogo-01.png',
-    comp:'https://assets.coingecko.com/coins/images/10775/small/COMP.png',
-    snx:'https://assets.coingecko.com/coins/images/3406/small/SNX.png',
-    sushi:'https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png',
-    crv:'https://assets.coingecko.com/coins/images/12124/small/Curve.png',
-    gmx:'https://assets.coingecko.com/coins/images/18323/small/arbit.png',
-    dydx:'https://assets.coingecko.com/coins/images/17500/small/hjnIm9bV.jpg',
-    wbtc:'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png',
-    dai:'https://assets.coingecko.com/coins/images/9956/small/Badge_Dai.png',
-    paxg:'https://assets.coingecko.com/coins/images/9519/small/paxg.PNG',
-    ocean:'https://assets.coingecko.com/coins/images/3687/small/ocean-protocol-logo.jpg',
-    ar:'https://assets.coingecko.com/coins/images/4343/small/oRt6SiEN_400x400.jpg',
-    hnt:'https://assets.coingecko.com/coins/images/4284/small/Helium_HNT_white_TNS.jpg',
-    kava:'https://assets.coingecko.com/coins/images/9761/small/kava.png',
-    agix:'https://assets.coingecko.com/coins/images/2138/small/singularityai.jpg',
-    theta:'https://assets.coingecko.com/coins/images/2538/small/theta-token-logo.png',
-    jasmy:'https://assets.coingecko.com/coins/images/13876/small/JASMY200x200.jpg',
-    chz:'https://assets.coingecko.com/coins/images/8834/small/Chiliz.png',
-    enj:'https://assets.coingecko.com/coins/images/1102/small/enjin-coin-logo.png',
-    gala:'https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png',
-    flow:'https://assets.coingecko.com/coins/images/13446/small/5f6294c0c7a8cda55cb1c936_Flow_Wordmark.png',
-    lrc:'https://assets.coingecko.com/coins/images/913/small/LRC.png',
-    steth:'https://assets.coingecko.com/coins/images/13442/small/steth_logo.png',
-    neo:'https://assets.coingecko.com/coins/images/480/small/NEO_512_512.png',
-    waves:'https://assets.coingecko.com/coins/images/425/small/waves.png',
-    zil:'https://assets.coingecko.com/coins/images/2687/small/Zilliqa-logo.png',
-    iost:'https://assets.coingecko.com/coins/images/2523/small/IOST.png',
-    dcr:'https://assets.coingecko.com/coins/images/329/small/decred.png',
-    ont:'https://assets.coingecko.com/coins/images/3447/small/ONT.png',
-    qtum:'https://assets.coingecko.com/coins/images/684/small/qtum.png',
-    nano:'https://assets.coingecko.com/coins/images/756/small/nano-coin-logo.png',
-    zec:'https://assets.coingecko.com/coins/images/486/small/circle-zcash-color.png',
-    dash:'https://assets.coingecko.com/coins/images/19/small/dash-logo.png',
-    xtz:'https://assets.coingecko.com/coins/images/976/small/Tezos-logo.png',
-    band:'https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token_detailed.png',
-    ray:'https://assets.coingecko.com/coins/images/13928/small/PSigc4ie_400x400.jpg',
-    axl:'https://assets.coingecko.com/coins/images/27277/small/V-65_xQ1_400x400.jpeg',
-    skl:'https://assets.coingecko.com/coins/images/13245/small/SKALE_token_300x300.png',
-    ctsi:'https://assets.coingecko.com/coins/images/11038/small/cartesi.png',
-    storj:'https://assets.coingecko.com/coins/images/949/small/storj.png',
-    lpt:'https://assets.coingecko.com/coins/images/7137/small/livepeer-token.png',
-    api3:'https://assets.coingecko.com/coins/images/13256/small/api3.jpg',
-    uma:'https://assets.coingecko.com/coins/images/10951/small/UMA.png',
-    trb:'https://assets.coingecko.com/coins/images/9644/small/Tellor_logo.jpg',
-    rdnt:'https://assets.coingecko.com/coins/images/26536/small/radiant.png',
-    '1inch':'https://assets.coingecko.com/coins/images/13469/small/1inch-token.png',
-  };
-  return knownImgs[s]
-    || 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/' + s + '.png';
-}
-
-// Convert one raw Binance ticker into CoinGecko-compatible shape
-function binanceTickerToCoin(t) {
-  const sym = t.symbol.replace(/USDT$/i, '').toLowerCase();
-  const price = parseFloat(t.lastPrice) || 0;
-  const p24 = parseFloat(t.priceChangePercent) || 0;
-  const vol = parseFloat(t.quoteVolume) || 0;
-  return {
-    id: 'binance_' + sym,
-    symbol: sym,
-    name: sym.toUpperCase(),
-    current_price: price,
-    price_change_percentage_24h: p24,
-    price_change_percentage_1h_in_currency: 0,
-    price_change_percentage_7d_in_currency: 0,
-    market_cap: vol * price,
-    total_volume: vol,
-    circulating_supply: 0,
-    market_cap_rank: null,
-    image: getBinanceImg(sym),
-    sparkline_in_7d: { price: [] },
-    _fromBinance: true
-  };
-}
-
-// Called after CoinGecko data loads — fetches Binance 24hr tickers,
-// filters to USDT pairs not already in cryptoData, appends them,
-// then re-renders. Completely safe — only appends, never replaces.
-async function enrichWithBinance() {
-  try {
-    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-    if (!r.ok) return; // silently skip if Binance unavailable
-    const raw = await r.json();
-    if (!Array.isArray(raw)) return;
-
-    // Build a set of symbols already loaded from CoinGecko
-    const existing = new Set(cryptoData.map(c => c.symbol.toLowerCase()));
-
-    // Filter: USDT pairs only, meaningful volume, not already shown
-    const newCoins = raw
-      .filter(t =>
-        t.symbol.endsWith('USDT') &&
-        !t.symbol.startsWith('USDT') &&
-        parseFloat(t.quoteVolume) > 100000 &&
-        !existing.has(t.symbol.replace(/USDT$/i,'').toLowerCase())
-      )
-      .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
-      .slice(0, 500)
-      .map(binanceTickerToCoin);
-
-    if (!newCoins.length) return;
-
-    // Append to the existing cryptoData — do NOT replace it
-    cryptoData = cryptoData.concat(newCoins);
-
-    // Re-render both views so new coins are visible
-    renderCryptoTable();
-    renderCryptoFull();
-
-  } catch(e) {
-    // Binance unreachable — gracefully do nothing, site still works
-    console.warn('Binance enrichment skipped:', e.message);
-  }
-}
-
-// ── Patch init to also trigger Binance enrichment ──
-// We wrap the original init without replacing it.
-const _originalInit = init;
-async function init() {
-  await _originalInit();
-  // Fire Binance fetch 10s after page load — CoinGecko will have
-  // finished by then and cryptoData will be populated
-  setTimeout(enrichWithBinance, 10000);
-  // Refresh Binance extra coins every 5 minutes
-  setInterval(enrichWithBinance, 300000);
 }
 
 init();
