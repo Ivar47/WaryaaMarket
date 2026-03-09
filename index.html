@@ -39,131 +39,9 @@
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://api.coingecko.com" crossorigin>
-<link rel="preconnect" href="https://api.dexscreener.com" crossorigin>
-<link rel="dns-prefetch" href="https://min-api.cryptocompare.com">
-<link rel="dns-prefetch" href="https://api.geckoterminal.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ====================================================
-   PERFORMANCE & SMOOTHNESS — Senior Engineer Pass
-   GPU-accelerated, skeleton loading, smooth scroll
-   ==================================================== */
-
-/* Base GPU compositing hints */
 *{margin:0;padding:0;box-sizing:border-box}
-
-/* Skeleton shimmer animation */
-@keyframes skeleton-shimmer{
-  0%{background-position:-400px 0}
-  100%{background-position:400px 0}
-}
-.sk{
-  background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
-  background-size:800px 100%;
-  animation:skeleton-shimmer 1.4s ease infinite;
-  border-radius:6px;
-}
-.sk-row{height:14px;margin-bottom:8px}
-.sk-row.wide{width:100%}
-.sk-row.med{width:70%}
-.sk-row.short{width:40%}
-.sk-cell{height:12px;width:100%;border-radius:3px}
-
-/* Smooth page transitions */
-.pg{
-  display:none;
-  animation:pg-enter 0.22s cubic-bezier(0.4,0,0.2,1) forwards;
-}
-@keyframes pg-enter{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.pg.on{display:block}
-
-/* Smooth modal open */
-@keyframes modal-in{
-  from{opacity:0;transform:scale(0.97) translateY(8px)}
-  to{opacity:1;transform:scale(1) translateY(0)}
-}
-
-/* Hardware-accelerated hover interactions */
-.metric-card,.tool-c,.unlock-c,.story-card,.ng-item,.exch-item{
-  will-change:transform;
-  transform:translateZ(0);
-  backface-visibility:hidden;
-}
-
-/* Smooth table rows */
-.tbl tr{
-  transition:background 0.1s ease;
-  contain:layout style;
-}
-
-/* Defer off-screen content rendering */
-.section{content-visibility:auto;contain-intrinsic-size:0 400px}
-.widget{content-visibility:auto;contain-intrinsic-size:0 200px}
-
-/* Scrollbars — smooth */
-*{scroll-behavior:smooth}
-
-/* Image load smoothness */
-img{
-  loading:lazy;
-  transition:opacity 0.2s ease;
-}
-img[src=''],img:not([src]){opacity:0}
-
-/* Touch targets — Apple HIG minimum 44pt */
-.nav-btn,.sub-tab,.ul-tab{min-height:36px}
-button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-
-/* Eliminate layout shifts on load */
-.c-logo{width:28px;height:28px;background:var(--card2);border-radius:50%}
-#cryptoBody tr td:first-child{min-width:36px}
-
-/* Smooth ticker & marquee */
-.ticker-inner,.ramadan-scroll{
-  will-change:transform;
-  transform:translateZ(0);
-}
-
-/* Reduce motion for accessibility */
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation-duration:0.01ms!important;
-    animation-iteration-count:1!important;
-    transition-duration:0.01ms!important;
-  }
-}
-
-/* === LOADING OVERLAY — shown during initial data fetch === */
-#initLoadingBar{
-  position:fixed;top:0;left:0;height:2px;
-  background:linear-gradient(90deg,var(--blue),#00d2ff,var(--green));
-  z-index:9999;width:0%;
-  transition:width 0.4s ease;
-  border-radius:0 2px 2px 0;
-}
-
-/* Smooth number updates — prevent layout jump */
-.mc-val,.price-val,.pct{
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum";
-}
-
-/* Responsive fluid typography */
-@media(max-width:768px){
-  .mc-val{font-size:18px}
-  .gauge-num{font-size:22px}
-}
-
-/* Optimized card renders */
-.card,.widget,.metric-card{
-  transform:translateZ(0);
-  contain:paint layout;
-}
-
 :root{
   --bg:#06090f;--bg2:#0b0f19;--bg3:#101728;
   --card:#111927;--card2:#18243a;--card3:#1e2d44;
@@ -227,8 +105,7 @@ header{background:rgba(6,9,15,0.92);backdrop-filter:blur(24px);border-bottom:1px
 .logo{display:flex;align-items:center;flex-shrink:0;background:none!important}
 .logo img{height:44px;width:auto;display:block;filter:drop-shadow(0 0 8px rgba(56,97,251,0.35))}
 .logo-mark{display:none}
-.nav{display:flex;align-items:center;gap:1px;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none}
-.nav::-webkit-scrollbar{display:none}
+.nav{display:flex;align-items:center;gap:1px;flex:1;overflow-x:auto}
 .nav-btn{padding:5px 12px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--text2);transition:all 0.2s;white-space:nowrap}
 .nav-btn:hover{color:var(--text);background:var(--card)}
 .nav-btn.on{color:var(--blue);background:rgba(0,210,255,0.09);border:1px solid rgba(0,210,255,0.15)}
@@ -904,7 +781,6 @@ body.light .stats-strip{background:#fff}
 </style>
 </head>
 <body>
-<div id="initLoadingBar"></div>
 
 <!-- FIREWORKS CANVAS (full page - Eid day only) -->
 <canvas id="eidFireworks"></canvas>
@@ -1066,7 +942,7 @@ body.light .stats-strip{background:#fff}
             <th onclick="sortCrypto('vol')">Volume 24h</th>
             <th>7D Chart</th>
           </tr></thead>
-          <tbody id="cryptoBody"><tr><td colspan="9" style="padding:0"><div style="padding:8px 12px">${Array.from({length:8},(_,i)=>`<div style="display:grid;grid-template-columns:36px 200px 1fr 1fr 1fr 1fr 1fr 1fr 80px;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.025);align-items:center"><div class="sk sk-cell" style="width:24px;height:12px"></div><div style="display:flex;align-items:center;gap:9px"><div class="sk" style="width:28px;height:28px;border-radius:50%"></div><div><div class="sk sk-row" style="width:90px;margin-bottom:4px"></div><div class="sk sk-row" style="width:40px;height:10px"></div></div></div>${Array.from({length:7},()=>`<div class="sk sk-cell" style="height:12px"></div>`).join('')}</div>`).join('')}</div></td></tr></tbody>
+          <tbody id="cryptoBody"><tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text2)">Loading live data...</td></tr></tbody>
         </table>
       </div>
       <div id="catsView" style="display:none;padding:14px"><div class="cat-grid" id="catGrid"></div></div>
@@ -1742,35 +1618,30 @@ function goPage(page, btn){
 }
 
 // ======================================================
-// ======================================================
-//  CLOUDFLARE WORKER PROXY CONFIG
-//  ▶ After deploying waryaa-proxy-worker.js to Cloudflare,
-//    paste your worker URL below (no trailing slash).
-//  ▶ Example: 'https://waryaa-proxy.yourname.workers.dev'
-//  ▶ Leave as '' to fall back to direct API calls (dev mode)
-// ======================================================
-const PROXY_BASE = 'https://waryaa-proxy.ucade2015.workers.dev/'; // ← PASTE YOUR WORKER URL HERE
-
-// Smart fetch: routes through proxy when configured, falls back to direct API
-async function proxyfetch(proxyPath, directUrl, options = {}) {
-  if (PROXY_BASE) {
-    const r = await fetch(PROXY_BASE + proxyPath, options);
-    if (!r.ok) throw new Error('Proxy error: ' + r.status);
-    return r;
-  }
-  // Direct fallback (dev mode — will hit rate limits on production)
-  const r = await fetch(directUrl, options);
-  if (!r.ok) throw new Error('API error: ' + r.status);
-  return r;
-}
-
 //  FETCH
 // ======================================================
 async function fetchCrypto(){ return fetchCryptoWithRetry(); }
 
+// =====================================================
+//  CLOUDFLARE PROXY — set your worker URL here
+//  waryaa-proxy.ucade2015.workers.dev is your real URL
+// =====================================================
+const PROXY_BASE = 'https://waryaa-proxy.ucade2015.workers.dev';
+
+async function proxyfetch(proxyPath, directUrl){
+  if(PROXY_BASE){
+    const r=await fetch(PROXY_BASE+proxyPath);
+    if(!r.ok) throw new Error('proxy '+r.status);
+    return r;
+  }
+  const r=await fetch(directUrl);
+  if(!r.ok) throw new Error('api '+r.status);
+  return r;
+}
+
 async function fetchGlobal(){
   try{
-    const r = await proxyfetch('/api/global', 'https://api.coingecko.com/api/v3/global');
+    const r=await proxyfetch('/api/global','https://api.coingecko.com/api/v3/global');
     const d=(await r.json()).data;
     const btcD=d.market_cap_percentage.btc.toFixed(1);
     const ethD=d.market_cap_percentage.eth.toFixed(1);
@@ -1786,7 +1657,6 @@ async function fetchGlobal(){
     document.getElementById('btcDomPct').textContent=btcD+'%';
     document.getElementById('ethDomPct').textContent=ethD+'%';
     document.getElementById('btcDomTxt').textContent=btcD+'%';
-    // Arcs
     const total=264;
     const btcAmt=(parseFloat(btcD)/100*total).toFixed(1);
     const ethAmt=(parseFloat(ethD)/100*total).toFixed(1);
@@ -1798,7 +1668,7 @@ async function fetchGlobal(){
 
 async function fetchFearGreed(){
   try{
-    const r = await proxyfetch('/api/feargreed', 'https://api.alternative.me/fng/?limit=7');
+    const r=await proxyfetch('/api/feargreed','https://api.alternative.me/fng/?limit=7');
     const d=(await r.json()).data;
     const v=parseInt(d[0].value),y=parseInt(d[1].value),w=parseInt(d[6].value);
     const ang=(v/100)*180-90;
@@ -1820,7 +1690,7 @@ async function fetchFearGreed(){
 
 async function fetchGas(){
   try{
-    const r = await proxyfetch('/api/gas', 'https://api.etherscan.io/api?module=gastracker&action=gasoracle');
+    const r=await proxyfetch('/api/gas','https://api.etherscan.io/api?module=gastracker&action=gasoracle');
     const d=await r.json();
     if(d.result&&d.result.SafeGasPrice){
       document.getElementById('gasLow').textContent=d.result.SafeGasPrice;
@@ -1867,7 +1737,7 @@ function renderCryptoTable(data){
     return`<tr onclick="openCoin('${c.id}')" data-id="${c.id}">
       <td class="c-rank">${c.market_cap_rank||'—'}</td>
       <td><div class="cn-cell">
-        <img class="c-logo" src="${c.image}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%23334%22/></svg>'" alt="">
+        <img class="c-logo" src="${c.image}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%23334%22/></svg>'" alt="">
         <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
       </div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -1902,7 +1772,7 @@ function renderCryptoFull(){
       tr.setAttribute('onclick',`openCoin('${c.id}')`);
       tr.innerHTML=`
       <td class="c-rank">${c.market_cap_rank}</td>
-      <td><div class="cn-cell"><img class="c-logo" src="${c.image}" loading="lazy" onerror="this.src=''" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
+      <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.src=''" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
       <td><span class="pct ${p1h>=0?'up':'dn'}">${(p1h>=0?'+':'')+p1h.toFixed(2)}%</span></td>
       <td><span class="pct ${p24>=0?'up':'dn'}">${(p24>=0?'+':'')+p24.toFixed(2)}%</span></td>
@@ -2280,13 +2150,12 @@ async function loadNews(cats){
   if(!grid) return;
   grid.innerHTML='<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">Loading news...</div>';
   try{
-    // Primary: CryptoCompare — routed through proxy when available
-    const proxyPath = `/api/news?cat=${encodeURIComponent(cats==='ALL'?'ALL':cats)}`;
-    const directUrl = `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest${cats!=='ALL'?'&categories='+cats:''}`;
-    const r = await proxyfetch(proxyPath, directUrl);
+    // Primary: CryptoCompare
+    const url=`https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest${cats!=='ALL'?'&categories='+cats:''}`;
+    const r=await proxyfetch(`/api/news?cat=${cats==='ALL'?'ALL':cats}`,url);
     const articles=(await r.json()).Data||[];
 
-    // Secondary world news via RSS2JSON (free tier — not proxied, low frequency)
+    // Secondary world news via RSS2JSON (free tier)
     let worldArticles=[];
     if(cats==='ALL'||cats.includes('Geopolitics')){
       try{
@@ -2312,7 +2181,7 @@ async function loadNews(cats){
       const srcName=a.source_info?.name||a.source||'News';
       const srcIcon=a._world?'🌍':'📰';
       return`<div class="ng-item" onclick="window.open('${a.url}','_blank')">
-        ${a.imageurl?`<img class="ng-img" src="${a.imageurl}" alt="" loading="lazy" onerror="this.style.display='none'">`:''}
+        ${a.imageurl?`<img class="ng-img" src="${a.imageurl}" alt="" onerror="this.style.display='none'">`:''}
         <div class="ng-body">
           <div class="ng-source">${srcIcon} <b>${srcName}</b> <span style="color:var(--text3)">·</span> ${t}</div>
           <div class="ng-hl">${a.title}</div>
@@ -2664,34 +2533,29 @@ function timeAgo(ts){
 async function fetchCryptoWithRetry(attempt=1){
   const tbody=document.getElementById('cryptoBody');
   try{
-    // ── Proxy path: single request fetches all 5 pages server-side ──
-    // ── Direct fallback: fetch pages in parallel with stagger ────────
-    let merged = [];
-
+    let merged=[];
     if(PROXY_BASE){
-      // One call to proxy — worker handles pagination + caching
-      const r = await fetch(PROXY_BASE + '/api/markets?page=1&pages=5');
+      // Single call through proxy — worker fetches all 5 pages & caches them
+      const r=await fetch(PROXY_BASE+'/api/markets?page=1&pages=5');
       if(r.status===429) throw new Error('rate_limit');
-      if(!r.ok) throw new Error('proxy_error');
-      const data = await r.json();
+      if(!r.ok) throw new Error('proxy_error_'+r.status);
+      const data=await r.json();
       if(!Array.isArray(data)) throw new Error('bad_response');
-      merged = data;
+      merged=data;
     } else {
-      // Direct API fallback (dev mode)
+      // Direct fallback (dev only — will rate limit in production)
       const BASE='https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=true&price_change_percentage=1h,24h,7d&page=';
       const delay=ms=>new Promise(res=>setTimeout(res,ms));
-      const fetchPage=async(page)=>{
+      const pages=await Promise.all([1,2,3,4,5].map(async(page)=>{
         await delay((page-1)*200);
         const r=await fetch(BASE+page);
         if(r.status===429) throw new Error('rate_limit');
         const d=await r.json();
         if(!Array.isArray(d)) throw new Error('bad_response');
         return d;
-      };
-      const pages=await Promise.all([1,2,3,4,5].map(fetchPage));
+      }));
       merged=pages.flat();
     }
-
     if(!merged.length) throw new Error('empty');
     cryptoData=merged;
     renderCryptoTable();
@@ -2702,29 +2566,19 @@ async function fetchCryptoWithRetry(attempt=1){
     const wait=attempt*8000;
     const maxAttempts=5;
     if(attempt<=maxAttempts){
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
-      setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading data... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
+      setTimeout(()=>fetchCryptoWithRetry(attempt+1),wait);
     }else{
-      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Rate limited. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span>${!PROXY_BASE?' — <a href="#" onclick="alert(\'Set PROXY_BASE in the HTML to your Cloudflare Worker URL to fix rate limits permanently.\')" style="color:var(--yellow)">Set up proxy ↗</a>':''}</td></tr>`;
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Could not load data. <span onclick="fetchCryptoWithRetry(1)" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
     }
   }
 }
 
 async function init(){
-  // ── Progress bar ──────────────────────────────────────
-  const bar = document.getElementById('initLoadingBar');
-  const setProgress = (pct) => { if(bar) bar.style.width = pct + '%'; };
-  const finishProgress = () => {
-    if(!bar) return;
-    bar.style.width = '100%';
-    setTimeout(()=>{ bar.style.opacity='0'; setTimeout(()=>bar.remove(),400); }, 300);
-  };
-  setProgress(5);
-
   // Ramadan / Eid banner — runs first, above everything
   initRamadanBanner();
 
-  // Render static content first (no API needed — instant)
+  // Render static content first (no API needed)
   buildTicker();
   renderStocksOverview();
   renderSideUnlocks();
@@ -2732,37 +2586,24 @@ async function init(){
   renderCalFull();
   renderFunding();
   renderWhales();
-  setProgress(20);
 
-  // Priority 1: Critical above-fold data first
+  // Stagger all API calls — 2s apart to avoid rate limit
   fetchCryptoWithRetry();
-  setProgress(35);
+  setTimeout(()=>fetchGlobal(), 2000);
+  setTimeout(()=>fetchFearGreed(), 4000);
+  setTimeout(()=>fetchGas(), 5000);
+  setTimeout(()=>loadNews('ALL'), 6000);
+  setTimeout(()=>renderNFT(), 1000);
+  setTimeout(()=>loadExchanges(), 3000);
+  setInterval(()=>loadExchanges(), 120000); // refresh every 2 min
 
-  // Priority 2: Global stats (short stagger — feels faster)
-  setTimeout(()=>{ fetchGlobal(); setProgress(50); }, 800);
+  // Timers
+  setInterval(tick,1000);
 
-  // Priority 3: Fear & Greed + Gas — lower priority
-  setTimeout(()=>{ fetchFearGreed(); setProgress(65); }, 2000);
-  setTimeout(()=>{ fetchGas(); setProgress(75); }, 2500);
-
-  // Priority 4: News — deferred
-  setTimeout(()=>{ loadNews('ALL'); setProgress(85); }, 3500);
-
-  // Priority 5: Background data — fully deferred
-  setTimeout(()=>{ renderNFT(); setProgress(90); }, 1500);
-  setTimeout(()=>{ loadExchanges(); setProgress(95); }, 4000);
-  setTimeout(()=>{ finishProgress(); }, 5000);
-
-  // Exchange refresh every 2 min
-  setInterval(()=>loadExchanges(), 120000);
-
-  // Timers — lightweight, immediate
-  setInterval(tick, 1000);
-
-  // Auto-refresh — staggered to avoid rate limits
+  // Auto-refresh (staggered too)
   setInterval(()=>fetchCryptoWithRetry(), 65000);
   setInterval(()=>fetchGlobal(), 67000);
-  setInterval(()=>{ fetchFearGreed(); fetchGas(); }, 300000);
+  setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
   setInterval(()=>loadNews('ALL'), 180000);
 }
 
@@ -3317,7 +3158,7 @@ const EXCH_META = {
 async function loadExchanges(){
   try{
     const [cexRes] = await Promise.allSettled([
-      proxyfetch('/api/exchanges', 'https://api.coingecko.com/api/v3/exchanges?per_page=15&page=1').then(r=>r.json()),
+      proxyfetch('/api/exchanges','https://api.coingecko.com/api/v3/exchanges?per_page=15&page=1').then(r=>r.json()),
     ]);
     if(cexRes.status==='fulfilled' && Array.isArray(cexRes.value))
       exchData.cex = cexRes.value.filter(e=>e.trade_volume_24h_btc>0).slice(0,10);
@@ -4425,23 +4266,17 @@ init();
 //  WARYAACOIN + ALPHA SIGNALS SYSTEM
 // =============================================================
 
-// Admin password is NEVER stored in plaintext.
-// SHA-256 hash of the real password is stored here instead.
-// To change the password, compute: SHA-256("yournewpassword") and update the hash below.
-// Current password hash corresponds to the original password (contact site owner).
-const WRC_ADMIN_HASH = '8b33475cb4658eff3bb77b8ea9a07a1fd88b7eb80cd77d7703f5fdd41b5dd52e'; // SHA-256 of admin password — NEVER the raw password
+// Password stored as SHA-256 hash — never plaintext in source code
+const WRC_ADMIN_HASH = '8b33475cb4658eff3bb77b8ea9a07a1fd88b7eb80cd77d7703f5fdd41b5dd52e';
+async function hashPassword(pw){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 const WRC_UNLOCK_COST    = 50;
 const WRC_SHARE_REWARD   = 50;
 const WRC_STREAK_REWARD  = 10;
 const WRC_FIRST_REWARD   = 20;
 const REFERRAL_PARAM     = 'ref';
-
-// Secure password comparison — hashes input before comparing, never exposes plaintext
-async function hashPassword(pw){
-  const enc = new TextEncoder().encode(pw);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 
 // --- Persistence helpers ---
 function wrcGet(k,def){ try{ const v=localStorage.getItem('wrc_'+k); return v===null?def:JSON.parse(v); }catch(e){return def;} }
@@ -4547,21 +4382,14 @@ function unlockAlpha(){
 function getSignals(){ return wrcGet('admin_signals',[]); }
 function saveSignals(s){ wrcSet('admin_signals',s); }
 
-// --- Admin auth — password is NEVER compared in plaintext ---
-// Session-only auth flag: NOT stored in localStorage to prevent persistent exposure
+// Session-only auth — never stored in localStorage
 let _adminSessionAuth = false;
 function isAdminLoggedIn(){ return _adminSessionAuth; }
 async function adminLogin(pw){
-  try{
-    const h = await hashPassword(pw);
-    if(h === WRC_ADMIN_HASH){
-      _adminSessionAuth = true;
-      return true;
-    }
-  }catch(e){}
+  try{ const h=await hashPassword(pw); if(h===WRC_ADMIN_HASH){_adminSessionAuth=true;return true;} }catch(e){}
   return false;
 }
-function adminLogout(){ _adminSessionAuth = false; }
+function adminLogout(){ _adminSessionAuth=false; }
 
 // --- Modal open/close ---
 let currentAlphaTab = 'signals';
@@ -4738,7 +4566,7 @@ function renderAdminTab(){
       <div class="alpha-lock-icon" style="font-size:36px">🔑</div>
       <div class="admin-login-title">Admin Access</div>
       <div class="admin-login-sub">Enter the admin password to manage alpha signals.</div>
-      <input class="admin-input" type="password" id="adminPwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')adminLoginAttempt()" autocomplete="current-password">
+      <input class="admin-input" type="password" id="adminPwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')adminLoginAttempt()">
       <button class="admin-btn" onclick="adminLoginAttempt()">🔓 Login</button>
       <div id="adminLoginErr" style="font-size:11px;color:var(--red);display:none">Incorrect password.</div>
     </div>`;
@@ -4816,18 +4644,17 @@ function renderAdminTab(){
 
 // --- Admin actions ---
 async function adminLoginAttempt(){
-  const pw = document.getElementById('adminPwInput').value;
-  const btn = document.querySelector('.admin-btn');
-  if(btn){ btn.textContent = '🔒 Verifying...'; btn.disabled = true; }
-  const ok = await adminLogin(pw);
-  if(btn){ btn.textContent = '🔓 Login'; btn.disabled = false; }
-  if(ok){
-    renderAlphaBody('admin');
-  } else {
-    const err = document.getElementById('adminLoginErr');
+  const pw=document.getElementById('adminPwInput').value;
+  const btn=document.querySelector('.admin-btn');
+  if(btn){btn.textContent='🔒 Verifying...';btn.disabled=true;}
+  const ok=await adminLogin(pw);
+  if(btn){btn.textContent='🔓 Login';btn.disabled=false;}
+  if(ok){ renderAlphaBody('admin'); }
+  else{
+    const err=document.getElementById('adminLoginErr');
     if(err) err.style.display='block';
-    const inp = document.getElementById('adminPwInput');
-    if(inp){ inp.style.borderColor='var(--red)'; setTimeout(()=>inp.style.borderColor='',1500); }
+    const inp=document.getElementById('adminPwInput');
+    if(inp){inp.style.borderColor='var(--red)';setTimeout(()=>inp.style.borderColor='',1500);}
   }
 }
 function adminLogoutAction(){ adminLogout(); renderAlphaBody('admin'); }
