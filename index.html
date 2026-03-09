@@ -637,11 +637,146 @@ body.light .stats-strip{background:#fff}
   .cat-grid{grid-template-columns:1fr 1fr!important}
   .ng-img{height:70px}
   .tbl th:nth-child(n+6),.tbl td:nth-child(n+6){display:none}
-  /* Stocks table: on very small screens hide P/E and Range columns */
-  #stockBodyFull th:nth-child(n+5),#stockBodyFull td:nth-child(n+5){display:none}
-  .sector-badge{font-size:8.5px;padding:1px 4px}
-  .pair-row{grid-template-columns:2fr 1fr 1fr!important}
-  .pair-row>*:nth-child(n+4){display:none!important}
+}
+
+/* =====================================================
+   WARYAACOIN + ALPHA SIGNALS SYSTEM
+   ===================================================== */
+.wrc-nav-btn{background:linear-gradient(135deg,rgba(255,165,0,0.12),rgba(255,100,0,0.08))!important;border:1px solid rgba(255,165,0,0.25)!important;color:#FFB347!important}
+.wrc-nav-btn:hover{background:linear-gradient(135deg,rgba(255,165,0,0.22),rgba(255,100,0,0.18))!important;border-color:rgba(255,165,0,0.5)!important}
+.wrc-nav-badge{font-family:var(--mono);font-size:9.5px;font-weight:800;background:rgba(255,165,0,0.18);padding:1px 6px;border-radius:10px;margin-left:4px;color:#FFD700;border:1px solid rgba(255,165,0,0.3)}
+.wrc-float{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.wrc-pill{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a1200,#2d1e00);border:1px solid rgba(255,165,0,0.35);border-radius:50px;padding:8px 14px;cursor:pointer;box-shadow:0 4px 24px rgba(255,165,0,0.12);transition:all 0.2s}
+.wrc-pill:hover{border-color:rgba(255,165,0,0.6);transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,165,0,0.2)}
+.wrc-coin{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#FF8C00);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 8px rgba(255,165,0,0.4);flex-shrink:0}
+.wrc-info{display:flex;flex-direction:column}
+.wrc-bal{font-family:var(--mono);font-weight:800;font-size:13px;color:#FFD700;line-height:1}
+.wrc-label{font-size:9px;color:rgba(255,165,0,0.6);font-weight:600;letter-spacing:0.5px;margin-top:1px}
+.wrc-earn-toast{background:linear-gradient(135deg,#1a1200,#2d1e00);border:1px solid rgba(255,165,0,0.5);border-radius:12px;padding:10px 14px;font-size:12px;color:#FFD700;font-weight:700;animation:wrc-slide-in 0.4s ease,wrc-fade-out 0.4s ease 2.6s forwards;box-shadow:0 4px 20px rgba(255,165,0,0.2)}
+@keyframes wrc-slide-in{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wrc-fade-out{from{opacity:1}to{opacity:0;pointer-events:none}}
+.alpha-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px}
+.alpha-overlay.on{display:flex}
+.alpha-modal{background:var(--bg2);border:1px solid rgba(255,165,0,0.2);border-radius:18px;width:100%;max-width:920px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 80px rgba(0,0,0,0.7),0 0 60px rgba(255,165,0,0.06)}
+.alpha-hdr{padding:20px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.alpha-hdr-left{display:flex;align-items:center;gap:12px}
+.alpha-hdr-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#FFD700,#FF6B00);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(255,165,0,0.35);flex-shrink:0}
+.alpha-title{font-size:19px;font-weight:800}
+.alpha-subtitle{font-size:11.5px;color:var(--text2);margin-top:2px}
+.alpha-close{width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.alpha-close:hover{background:var(--red);color:#fff;border-color:transparent}
+.alpha-tabs-row{display:flex;padding:16px 24px 0;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;gap:0}
+.alpha-tab{padding:9px 16px;font-size:12.5px;font-weight:700;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;cursor:pointer;transition:all 0.15s}
+.alpha-tab:hover{color:var(--text)}
+.alpha-tab.on{color:#FFD700;border-bottom-color:#FFD700}
+.alpha-body{flex:1;overflow-y:auto;padding:20px 24px 24px}
+.alpha-lock-wall{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;gap:16px}
+.alpha-lock-icon{font-size:52px;line-height:1;filter:drop-shadow(0 0 20px rgba(255,165,0,0.3))}
+.alpha-lock-title{font-size:22px;font-weight:800}
+.alpha-lock-sub{font-size:13.5px;color:var(--text2);max-width:400px;line-height:1.6}
+.alpha-unlock-btn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FFD700,#FF6B00);color:#000;font-weight:800;font-size:14px;padding:13px 28px;border-radius:12px;cursor:pointer;border:none;transition:all 0.2s;box-shadow:0 4px 20px rgba(255,165,0,0.35)}
+.alpha-unlock-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(255,165,0,0.5)}
+.alpha-unlock-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.alpha-not-enough{font-size:12px;color:var(--red);font-weight:600;margin-top:-6px}
+.alpha-how-earn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;width:100%;max-width:420px;text-align:left}
+.alpha-how-earn-title{font-size:10.5px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text2);font-weight:700;margin-bottom:10px}
+.earn-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:12.5px}
+.earn-row:last-child{border-bottom:none}
+.earn-action{color:var(--text2)}
+.earn-coins{font-family:var(--mono);font-weight:800;color:#FFD700}
+.earn-tab-wrap{display:flex;flex-direction:column;gap:14px}
+.earn-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border 0.15s}
+.earn-card:hover{border-color:rgba(255,165,0,0.3)}
+.earn-card-left{display:flex;align-items:center;gap:12px}
+.earn-card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.earn-card-title{font-weight:700;font-size:13.5px}
+.earn-card-desc{font-size:11.5px;color:var(--text2);margin-top:2px}
+.earn-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.earn-reward{font-family:var(--mono);font-weight:800;font-size:16px;color:#FFD700}
+.earn-reward-lbl{font-size:9.5px;color:rgba(255,165,0,0.6);font-weight:600;letter-spacing:0.4px}
+.earn-action-btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all 0.15s}
+.earn-action-btn.primary{background:linear-gradient(135deg,#FFD700,#FF8C00);color:#000}
+.earn-action-btn.primary:hover{opacity:0.85}
+.earn-action-btn.done{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);cursor:default}
+.share-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.share-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);transition:all 0.15s;color:var(--text2);background:var(--card2)}
+.share-btn:hover{transform:translateY(-1px)}
+.share-btn.tw:hover{border-color:#1DA1F2;color:#1DA1F2}
+.share-btn.tg:hover{border-color:#29B6F6;color:#29B6F6}
+.share-btn.wa:hover{border-color:#25D366;color:#25D366}
+.share-btn.cp:hover{border-color:#FFD700;color:#FFD700}
+.wrc-progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:6px}
+.wrc-progress-fill{height:100%;background:linear-gradient(to right,#FFD700,#FF6B00);border-radius:3px;transition:width 0.5s ease}
+.wrc-progress-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-top:4px;font-family:var(--mono)}
+.alpha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+@media(max-width:600px){.alpha-grid{grid-template-columns:1fr}}
+.signal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.2s}
+.signal-card:hover{border-color:rgba(255,165,0,0.35);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3)}
+.signal-card-top{padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.signal-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.signal-coin{display:flex;align-items:center;gap:9px}
+.signal-coin-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.signal-coin-name{font-weight:800;font-size:14px}
+.signal-coin-ticker{font-size:10.5px;color:var(--text2);font-family:var(--mono);margin-top:1px}
+.signal-risk{font-size:9px;font-weight:800;padding:3px 8px;border-radius:5px;letter-spacing:0.5px;text-transform:uppercase;flex-shrink:0}
+.risk-low{background:rgba(0,255,136,0.12);color:var(--green)}
+.risk-med{background:rgba(255,214,0,0.12);color:#FFD600}
+.risk-high{background:rgba(255,48,85,0.12);color:var(--red)}
+.signal-return-val{font-family:var(--mono);font-size:26px;font-weight:800;color:#FFD700;line-height:1}
+.signal-return-lbl{font-size:10px;color:var(--text2);font-weight:600;margin-top:2px}
+.signal-card-mid{padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.signal-stat{background:var(--bg);border-radius:8px;padding:8px 10px}
+.signal-stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);font-weight:700;margin-bottom:3px}
+.signal-stat-val{font-family:var(--mono);font-size:12px;font-weight:700}
+.signal-card-bottom{padding:10px 16px 14px}
+.signal-notes{font-size:12px;color:var(--text2);line-height:1.55}
+.signal-meta-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.signal-date{font-size:9.5px;color:var(--text3);font-family:var(--mono)}
+.horizon-badge{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px}
+.horizon-short{background:rgba(255,48,85,0.1);color:var(--red)}
+.horizon-mid{background:rgba(255,214,0,0.1);color:#FFD600}
+.horizon-long{background:rgba(0,255,136,0.1);color:var(--green)}
+.alpha-empty{text-align:center;padding:48px 24px;color:var(--text2)}
+.alpha-empty-icon{font-size:40px;margin-bottom:12px}
+.alpha-empty-txt{font-size:14px;font-weight:600}
+.alpha-empty-sub{font-size:12px;margin-top:4px;color:var(--text3)}
+.admin-panel{display:flex;flex-direction:column;gap:18px}
+.admin-login{display:flex;flex-direction:column;gap:12px;max-width:340px;margin:0 auto;text-align:center}
+.admin-login-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.admin-login-sub{font-size:12px;color:var(--text2);margin-bottom:8px}
+.admin-input{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;width:100%}
+.admin-input:focus{border-color:rgba(255,165,0,0.5)}
+.admin-btn{padding:11px 20px;background:linear-gradient(135deg,#FFD700,#FF8C00);border-radius:8px;color:#000;font-weight:800;font-size:13px;cursor:pointer;border:none;transition:opacity 0.15s;width:100%}
+.admin-btn:hover{opacity:0.85}
+.admin-form-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.admin-form-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.admin-logout-btn{padding:6px 14px;border-radius:7px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.admin-logout-btn:hover{border-color:var(--red);color:var(--red)}
+.admin-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:550px){.admin-form-row{grid-template-columns:1fr}}
+.admin-field{display:flex;flex-direction:column;gap:5px}
+.admin-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2)}
+.admin-select{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--display);font-size:12.5px;outline:none}
+.admin-select:focus{border-color:rgba(255,165,0,0.5)}
+.admin-textarea{background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--display);font-size:12.5px;outline:none;resize:vertical;min-height:70px}
+.admin-textarea:focus{border-color:rgba(255,165,0,0.5)}
+.admin-submit{padding:11px 20px;background:linear-gradient(135deg,#FFD700,#FF8C00);border-radius:8px;color:#000;font-weight:800;font-size:13px;cursor:pointer;border:none;transition:opacity 0.15s}
+.admin-submit:hover{opacity:0.85}
+.admin-signals-list{display:flex;flex-direction:column;gap:10px}
+.admin-signals-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);margin-bottom:2px}
+.admin-signal-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.admin-signal-info{flex:1;min-width:0}
+.admin-signal-name{font-weight:700;font-size:13px}
+.admin-signal-meta{font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
+.admin-del-btn{padding:5px 12px;border-radius:6px;background:rgba(255,48,85,0.1);border:1px solid rgba(255,48,85,0.2);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.admin-del-btn:hover{background:rgba(255,48,85,0.2)}
+@media(max-width:600px){
+  .alpha-modal{max-height:100vh;border-radius:0;max-width:100%}
+  .alpha-overlay{padding:0}
+  .alpha-hdr{padding:16px 16px 0}
+  .alpha-tabs-row{padding:12px 16px 0}
+  .alpha-body{padding:16px}
+  .wrc-float{bottom:12px;right:12px}
 }
 </style>
 </head>
@@ -683,6 +818,7 @@ body.light .stats-strip{background:#fff}
       <button class="nav-btn" onclick="goPage('newtokens',this)">🌱 New Tokens</button>
       <button class="nav-btn" onclick="goPage('rugcheck',this)">🛡️ Rug Check</button>
       <button class="nav-btn" onclick="goPage('trendingpools',this)">📊 Trending Pools</button>
+      <button class="nav-btn wrc-nav-btn" onclick="openAlphaModal()">🔐 Alpha Signals <span class="wrc-nav-badge" id="wrcNavBadge">0 WRC</span></button>
     </nav>
     <div class="h-right">
       <div class="live-pill"><div class="live-dot"></div>LIVE</div>
@@ -1333,25 +1469,28 @@ body.light .stats-strip{background:#fff}
 // ======================================================
 //  DATA DEFINITIONS
 // ======================================================
-// Stock logo helper — tries Clearbit first, falls back to logo.dev, then initials
-function getStockLogoUrl(sym){
-  const domains={
-    NVDA:'nvidia.com',MSFT:'microsoft.com',GOOGL:'google.com',AAPL:'apple.com',
-    AMZN:'amazon.com',META:'meta.com',TSLA:'tesla.com',AMD:'amd.com',
-    ORCL:'oracle.com',PLTR:'palantir.com',CRM:'salesforce.com',SNOW:'snowflake.com',
-    IBM:'ibm.com',INTC:'intel.com',QCOM:'qualcomm.com',AVGO:'broadcom.com',
-    ARM:'arm.com',SMCI:'supermicro.com',PANW:'paloaltonetworks.com',NOW:'servicenow.com'
-  };
-  return domains[sym]?`https://logo.clearbit.com/${domains[sym]}`:'';
-}
 const STOCK_LOGOS={
-  NVDA:getStockLogoUrl('NVDA'),MSFT:getStockLogoUrl('MSFT'),GOOGL:getStockLogoUrl('GOOGL'),
-  AAPL:getStockLogoUrl('AAPL'),AMZN:getStockLogoUrl('AMZN'),META:getStockLogoUrl('META'),
-  TSLA:getStockLogoUrl('TSLA'),AMD:getStockLogoUrl('AMD'),ORCL:getStockLogoUrl('ORCL'),
-  PLTR:getStockLogoUrl('PLTR'),CRM:getStockLogoUrl('CRM'),SNOW:getStockLogoUrl('SNOW'),
-  IBM:getStockLogoUrl('IBM'),INTC:getStockLogoUrl('INTC'),QCOM:getStockLogoUrl('QCOM'),
-  AVGO:getStockLogoUrl('AVGO'),ARM:getStockLogoUrl('ARM'),SMCI:getStockLogoUrl('SMCI'),
-  PANW:getStockLogoUrl('PANW'),NOW:getStockLogoUrl('NOW')
+  // Using Wikipedia SVG logos — reliable, high quality, no rate limits
+  NVDA:'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Nvidia_logo.svg/220px-Nvidia_logo.svg.png',
+  MSFT:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/220px-Microsoft_logo.svg.png',
+  GOOGL:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/220px-Google_2015_logo.svg.png',
+  AAPL:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/103px-Apple_logo_black.svg.png',
+  AMZN:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/220px-Amazon_logo.svg.png',
+  META:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/220px-Meta_Platforms_Inc._logo.svg.png',
+  TSLA:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/220px-Tesla_Motors.svg.png',
+  AMD:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/220px-AMD_Logo.svg.png',
+  ORCL:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/220px-Oracle_logo.svg.png',
+  PLTR:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Palantir_Technologies_logo.svg/220px-Palantir_Technologies_logo.svg.png',
+  CRM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/220px-Salesforce.com_logo.svg.png',
+  SNOW:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Snowflake_Logo.svg/220px-Snowflake_Logo.svg.png',
+  IBM:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/220px-IBM_logo.svg.png',
+  INTC:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282006-2020%29.svg/220px-Intel_logo_%282006-2020%29.svg.png',
+  QCOM:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Qualcomm-Logo.svg/220px-Qualcomm-Logo.svg.png',
+  AVGO:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Broadcom_Corporation_logo.svg/220px-Broadcom_Corporation_logo.svg.png',
+  ARM:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Arm_logo_2017.svg/220px-Arm_logo_2017.svg.png',
+  SMCI:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Super_Micro_Computer_Logo.svg/220px-Super_Micro_Computer_Logo.svg.png',
+  PANW:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Palo_Alto_Networks_logo.svg/220px-Palo_Alto_Networks_logo.svg.png',
+  NOW:'https://logo.clearbit.com/servicenow.com',
 };
 const STOCKS=[
   {sym:'NVDA',name:'NVIDIA Corp',icon:'🟢',sector:'AI Chips',pe:'35.2',desc:'The engine of AI: H100/H200/Blackwell GPU monopoly for AI training and inference.',mkt:4350},
@@ -1743,24 +1882,6 @@ function sortCrypto(key){
 // ======================================================
 //  STOCKS
 // ======================================================
-// Stock logo helper — Clearbit CDN with graceful initials fallback
-function stockLogoImg(sym, size){
-  const url = STOCK_LOGOS[sym] || '';
-  const colors = {
-    NVDA:'#76b900',MSFT:'#00a4ef',GOOGL:'#4285f4',AAPL:'#555',AMZN:'#ff9900',
-    META:'#0866ff',TSLA:'#cc0000',AMD:'#ed1c24',ORCL:'#f80000',PLTR:'#101113',
-    CRM:'#00a1e0',SNOW:'#29b5e8',IBM:'#054ada',INTC:'#0068b5',QCOM:'#3253dc',
-    AVGO:'#cc0000',ARM:'#00acca',SMCI:'#ff6600',PANW:'#fa582d',NOW:'#62d84e'
-  };
-  const bg = colors[sym] || '#3861fb';
-  const initials = sym.substring(0,2);
-  const s = size || 28;
-  const radius = s >= 28 ? '8px' : '6px';
-  if(!url) return `<span style="display:flex;width:${s}px;height:${s}px;border-radius:${radius};background:${bg};align-items:center;justify-content:center;font-weight:900;font-size:${Math.round(s*0.38)}px;color:#fff;flex-shrink:0">${initials}</span>`;
-  return `<img src="${url}" style="width:${s}px;height:${s}px;border-radius:${radius};object-fit:contain;background:#fff;padding:2px;flex-shrink:0" alt="${sym}"
-    onerror="this.outerHTML='<span style=\\'display:flex;width:${s}px;height:${s}px;border-radius:${radius};background:${bg};align-items:center;justify-content:center;font-weight:900;font-size:${Math.round(s*0.38)}px;color:#fff;flex-shrink:0\\'>${initials}</span>'">`;
-}
-// ======================================================
 function renderStocksOverview(){
   document.getElementById('stockBody').innerHTML=STOCKS.slice(0,12).map(s=>{
     const d=STOCK_DATA[s.sym]||{};
@@ -1768,7 +1889,7 @@ function renderStocksOverview(){
     const rangePct=d.high&&d.low&&d.price?((d.price-d.low)/(d.high-d.low)*100).toFixed(0):50;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue);font-size:13px">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px">${stockLogoImg(s.sym,24)}<div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:24px;height:24px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="this.outerHTML='<span style=\\\"display:flex;width:24px;height:24px;border-radius:6px;background:var(--blue);align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;flex-shrink:0\\\">'+s.sym.substring(0,2)+'</span>'" alt="${s.sym}"><div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
       <td class="mcap-val">${d.mkt||s.mkt?'$'+(d.mkt||s.mkt)+'B':'N/A'}</td>
@@ -1790,7 +1911,7 @@ function renderStockFull(){
     const chg=d.chg||0;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue)">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px">${stockLogoImg(s.sym,28)}<div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="this.outerHTML='<span style=\\\"display:flex;width:28px;height:28px;border-radius:6px;background:var(--blue);align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0\\\">'+s.sym.substring(0,2)+'</span>'" alt="${s.sym}"><div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td class="price-val" style="font-size:12px;color:${chg>=0?'var(--green)':'var(--red)'}">${(chg>=0?'+':'')+chg.toFixed(2)}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
@@ -2820,22 +2941,22 @@ function setTheme(mode){
 //  NFT RANKINGS — OpenSea & Magic Eden via public APIs
 // ======================================================
 const NFT_ETH = [
-  {name:'CryptoPunks',  floor:'46.9', vol:'1,240', chg:'+2.4', color:'#6366f1', emoji:'👾',
-   img:'https://www.larvalabs.com/public/images/cryptopunks/punk8348.png'},
-  {name:'Bored Ape YC', floor:'8.2',  vol:'892',   chg:'-1.1', color:'#f59e0b', emoji:'🦍',
-   img:'https://ipfs.io/ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/1'},
-  {name:'Azuki',         floor:'3.8',  vol:'561',   chg:'+5.7', color:'#ef4444', emoji:'🌸',
-   img:'https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8ZR/0.png'},
-  {name:'Pudgy Penguins',floor:'6.1',  vol:'720',   chg:'+3.2', color:'#60a5fa', emoji:'🐧',
-   img:'https://assets.pudgypenguins.com/lil-pudgys/image/1.png'},
-  {name:'Doodles',       floor:'1.3',  vol:'234',   chg:'-0.8', color:'#f472b6', emoji:'🎨',
-   img:'https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4Bs/1'},
-  {name:'Mutant Ape YC', floor:'1.9',  vol:'445',   chg:'+0.6', color:'#10b981', emoji:'🧟',
-   img:'https://ipfs.io/ipfs/QmSK9FMFUhSrMBMCKrFJxVfMnfB8KdKZWxFmQGt5GUPBD/1'},
-  {name:'Milady Maker',  floor:'2.1',  vol:'388',   chg:'+8.3', color:'#8b5cf6', emoji:'🪆',
-   img:'https://ipfs.io/ipfs/QmfJt5tHHo8i2uKX4jDaJ17RREDh9VKGsBQGiDjNFnJkLt/1'},
-  {name:'CloneX',        floor:'0.9',  vol:'178',   chg:'-2.1', color:'#06b6d4', emoji:'🤖',
-   img:'https://clonex-assets.rtfkt.com/images/1.png'},
+  {name:'CryptoPunks',  floor:'46.9', vol:'1,240', chg:'+2.4', color:'#6366f1',
+   img:'https://i.seadn.io/gae/BdxvLseXcfl57BiuQcQYdJ64v085zcQmbdachgwi9Fnl91ydmkQyl_6rb3WCqWMUMskbVXJqDr56iFKuqIfaFy5O_GHMqSZ2IQFR?w=200'},
+  {name:'Bored Ape YC', floor:'8.2',  vol:'892',   chg:'-1.1', color:'#f59e0b',
+   img:'https://i.seadn.io/gae/Ju9CkWtV-1Okvf45wo8UctR-M9He2PjILP0oOvxE89AyiPPGtrR3gysu1Zgy0hjd2xKIgjJJtWIc0ybj4Vd7wv8t3pxDGf6xKHuvA?w=200'},
+  {name:'Azuki',         floor:'3.8',  vol:'561',   chg:'+5.7', color:'#ef4444',
+   img:'https://i.seadn.io/gcs/files/9b798b7d8b9d5fc7ab4ea9e2f57b8c3b.png?w=200'},
+  {name:'Pudgy Penguins',floor:'6.1',  vol:'720',   chg:'+3.2', color:'#60a5fa',
+   img:'https://i.seadn.io/gae/yNi-XdGxsgQCPpqSio4o31ygAV6wURdIdInWRcFIl46UjUQ1eV7BEndGe8L661wQgB0OKFPQFaYrEtpAXKFnhk2rtKnFW5Y-NKS6VA?w=200'},
+  {name:'Doodles',       floor:'1.3',  vol:'234',   chg:'-0.8', color:'#f472b6',
+   img:'https://i.seadn.io/gae/7B0qai02OdHA8P_EOVK672qUliyjQdQDGNrACxs7WnTgZAkJa_wWURnIFKeOh5VTf8cfTqW3wQpozGedaC9mhKMqAUr7ewOkX7iWUk?w=200'},
+  {name:'Mutant Ape YC', floor:'1.9',  vol:'445',   chg:'+0.6', color:'#10b981',
+   img:'https://i.seadn.io/gae/lHexKRMpw-aoSyB1WdFBff5yfANLReFxpYL0DP18T_HFT66kYoAAuCkZMBI_yFpFmNtT0DvYBvkJAEsU2h8rHa_bTTDQJFZtWF-DBHQ?w=200'},
+  {name:'Milady Maker',  floor:'2.1',  vol:'388',   chg:'+8.3', color:'#8b5cf6',
+   img:'https://i.seadn.io/gcs/files/54bd8b9a96c21e5b4b7c13c1ee0e45ad.png?w=200'},
+  {name:'CloneX',        floor:'0.9',  vol:'178',   chg:'-2.1', color:'#06b6d4',
+   img:'https://i.seadn.io/gae/XN0XuD8Uh3jyRWNtPTFeXJg_ht8m5ofDx6aHdsmyc4gS5zr7U9jUwIm5XFmwRWqK0RGa2bRqMF7msMUAVIDpABFjFWqIUv6s_sMk?w=200'},
 ];
 const NFT_SOL = [
   {name:'Mad Lads',    floor:'82 SOL',  vol:'4,210', chg:'+6.2', color:'#f97316',
@@ -2890,7 +3011,7 @@ function renderNFT(){
     return `<div class="nft-item" onclick="window.open('${mktLink}','_blank')">
       <div class="nft-rank">${label}</div>
       <div class="nft-img" style="background:${n.color}22;border:2px solid ${n.color}55;border-radius:8px;width:40px;height:40px;flex-shrink:0;overflow:hidden">
-        ${n.img ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" alt="${n.name}" onerror="this.style.display='none';this.parentNode.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px\\'>${n.emoji||'🖼️'}</div>'">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px">${n.emoji||'🖼️'}</div>`}
+        ${n.img ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:${n.color}22\\'>${n.emoji||'🖼️'}</div>'" alt="${n.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">${n.emoji||'🖼️'}</div>`}
       </div>
       <div class="nft-info">
         <div class="nft-name">${n.name}</div>
@@ -4050,5 +4171,501 @@ init();
   </div>
 </div>
 
+
+<!-- ===== FLOATING WRC WIDGET ===== -->
+<div class="wrc-float" id="wrcFloat">
+  <!-- toasts injected here by JS -->
+  <div class="wrc-pill" onclick="openAlphaModal()">
+    <div class="wrc-coin">🪙</div>
+    <div class="wrc-info">
+      <span class="wrc-bal" id="wrcBal">0</span>
+      <span class="wrc-label">WARYAACOINS</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALPHA SIGNALS MODAL ===== -->
+<div class="alpha-overlay" id="alphaOverlay" onclick="if(event.target===this)closeAlphaModal()">
+  <div class="alpha-modal">
+    <div class="alpha-hdr">
+      <div class="alpha-hdr-left">
+        <div class="alpha-hdr-icon">🔐</div>
+        <div>
+          <div class="alpha-title">Alpha Signals</div>
+          <div class="alpha-subtitle">Exclusive investment picks — powered by WaryaaCoins</div>
+        </div>
+      </div>
+      <button class="alpha-close" onclick="closeAlphaModal()">✕</button>
+    </div>
+    <div class="alpha-tabs-row" id="alphaTabsRow">
+      <div class="alpha-tab on" onclick="switchAlphaTab(\'signals\',this)">📡 Signals</div>
+      <div class="alpha-tab" onclick="switchAlphaTab(\'earn\',this)">🪙 Earn WRC</div>
+      <div class="alpha-tab" onclick="switchAlphaTab(\'admin\',this)">⚙️ Admin</div>
+    </div>
+    <div class="alpha-body" id="alphaBody">
+      <!-- JS rendered -->
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================================
+//  WARYAACOIN + ALPHA SIGNALS SYSTEM
+// =============================================================
+
+const WRC_ADMIN_PASSWORD = 'killer87';
+const WRC_UNLOCK_COST    = 50;
+const WRC_SHARE_REWARD   = 50;
+const WRC_STREAK_REWARD  = 10;
+const WRC_FIRST_REWARD   = 20;
+const REFERRAL_PARAM     = 'ref';
+
+// --- Persistence helpers ---
+function wrcGet(k,def){ try{ const v=localStorage.getItem('wrc_'+k); return v===null?def:JSON.parse(v); }catch(e){return def;} }
+function wrcSet(k,v){ try{ localStorage.setItem('wrc_'+k,JSON.stringify(v)); }catch(e){} }
+
+// --- State ---
+function getWRC(){ return wrcGet('balance',0); }
+function addWRC(n){
+  const bal = getWRC() + n;
+  wrcSet('balance', bal);
+  updateWRCUI();
+  showToast('+'+n+' WRC earned! 🪙');
+  return bal;
+}
+function spendWRC(n){
+  const bal = getWRC();
+  if(bal < n) return false;
+  wrcSet('balance', bal - n);
+  updateWRCUI();
+  return true;
+}
+
+function updateWRCUI(){
+  const bal = getWRC();
+  const el1 = document.getElementById('wrcBal');
+  const el2 = document.getElementById('wrcNavBadge');
+  if(el1) el1.textContent = bal;
+  if(el2) el2.textContent = bal + ' WRC';
+}
+
+function showToast(msg){
+  const float = document.getElementById('wrcFloat');
+  if(!float) return;
+  const toast = document.createElement('div');
+  toast.className = 'wrc-earn-toast';
+  toast.textContent = msg;
+  float.insertBefore(toast, float.firstChild);
+  setTimeout(()=>{ if(toast.parentNode) toast.parentNode.removeChild(toast); }, 3200);
+}
+
+// --- First visit bonus ---
+(function(){
+  if(!wrcGet('first_visit',false)){
+    wrcSet('first_visit',true);
+    setTimeout(()=>{ addWRC(WRC_FIRST_REWARD); showToast('Welcome! +'+WRC_FIRST_REWARD+' WRC bonus 🎉'); },1200);
+  }
+})();
+
+// --- Daily streak ---
+(function(){
+  const today = new Date().toDateString();
+  const last  = wrcGet('last_visit','');
+  const streak= wrcGet('streak',0);
+  if(last !== today){
+    const yesterday = new Date(Date.now()-86400000).toDateString();
+    const newStreak = last===yesterday ? streak+1 : 1;
+    wrcSet('last_visit', today);
+    wrcSet('streak', newStreak);
+    if(last !== ''){
+      setTimeout(()=>addWRC(WRC_STREAK_REWARD), 1800);
+    }
+  }
+})();
+
+// --- Referral detection ---
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const ref    = params.get(REFERRAL_PARAM);
+  if(ref && ref !== getReferralCode()){
+    const used = wrcGet('used_refs',[]);
+    if(!used.includes(ref)){
+      used.push(ref);
+      wrcSet('used_refs', used);
+      setTimeout(()=>addWRC(WRC_SHARE_REWARD), 1000);
+    }
+  }
+})();
+
+function getReferralCode(){
+  let code = wrcGet('ref_code','');
+  if(!code){
+    code = Math.random().toString(36).substring(2,8).toUpperCase();
+    wrcSet('ref_code', code);
+  }
+  return code;
+}
+
+function getReferralLink(){
+  return window.location.origin + window.location.pathname + '?' + REFERRAL_PARAM + '=' + getReferralCode();
+}
+
+// --- Alpha access ---
+function hasAlphaAccess(){ return wrcGet('alpha_access', false); }
+function unlockAlpha(){
+  if(spendWRC(WRC_UNLOCK_COST)){
+    wrcSet('alpha_access', true);
+    renderAlphaBody('signals');
+    showToast('Alpha Signals unlocked! 🔓');
+  }
+}
+
+// --- Admin signals store ---
+function getSignals(){ return wrcGet('admin_signals',[]); }
+function saveSignals(s){ wrcSet('admin_signals',s); }
+
+// --- Admin auth ---
+function isAdminLoggedIn(){ return wrcGet('admin_auth',false); }
+function adminLogin(pw){
+  if(pw === WRC_ADMIN_PASSWORD){
+    wrcSet('admin_auth', true);
+    return true;
+  }
+  return false;
+}
+function adminLogout(){ wrcSet('admin_auth', false); }
+
+// --- Modal open/close ---
+let currentAlphaTab = 'signals';
+
+function openAlphaModal(){
+  document.getElementById('alphaOverlay').classList.add('on');
+  document.body.style.overflow = 'hidden';
+  renderAlphaBody(currentAlphaTab);
+}
+function closeAlphaModal(){
+  document.getElementById('alphaOverlay').classList.remove('on');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAlphaModal(); });
+
+function switchAlphaTab(tab, btn){
+  currentAlphaTab = tab;
+  document.querySelectorAll('.alpha-tab').forEach(t=>t.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  renderAlphaBody(tab);
+}
+
+function renderAlphaBody(tab){
+  const body = document.getElementById('alphaBody');
+  if(!body) return;
+  if(tab==='signals')  body.innerHTML = renderSignalsTab();
+  else if(tab==='earn') body.innerHTML = renderEarnTab();
+  else if(tab==='admin') body.innerHTML = renderAdminTab();
+}
+
+// ---- SIGNALS TAB ----
+function renderSignalsTab(){
+  if(!hasAlphaAccess()){
+    const bal = getWRC();
+    const enough = bal >= WRC_UNLOCK_COST;
+    return `<div class="alpha-lock-wall">
+      <div class="alpha-lock-icon">🔐</div>
+      <div class="alpha-lock-title">Alpha Signals Locked</div>
+      <div class="alpha-lock-sub">Unlock exclusive investment picks, entry prices, estimated returns and expert analysis posted by the WaryaaMarket team.</div>
+      <div>
+        <button class="alpha-unlock-btn" onclick="unlockAlpha()" ${enough?'':'disabled'}>
+          🔓 Unlock for ${WRC_UNLOCK_COST} WRC
+        </button>
+        ${!enough ? '<div class="alpha-not-enough" style="margin-top:10px">You need '+(WRC_UNLOCK_COST-bal)+' more WRC — earn them below ↓</div>' : ''}
+      </div>
+      <div class="alpha-how-earn">
+        <div class="alpha-how-earn-title">⚡ How to earn WaryaaCoins</div>
+        <div class="earn-row"><span class="earn-action">🔗 Share link & someone visits</span><span class="earn-coins">+${WRC_SHARE_REWARD} WRC</span></div>
+        <div class="earn-row"><span class="earn-action">📅 Daily visit streak</span><span class="earn-coins">+${WRC_STREAK_REWARD} WRC/day</span></div>
+        <div class="earn-row"><span class="earn-action">🎉 First visit bonus</span><span class="earn-coins">+${WRC_FIRST_REWARD} WRC</span></div>
+      </div>
+    </div>`;
+  }
+
+  const signals = getSignals();
+  if(!signals.length){
+    return `<div class="alpha-empty">
+      <div class="alpha-empty-icon">📡</div>
+      <div class="alpha-empty-txt">No signals posted yet</div>
+      <div class="alpha-empty-sub">Check back soon — the admin will post new picks here.</div>
+    </div>`;
+  }
+
+  const riskClass = {Low:'risk-low',Medium:'risk-med',High:'risk-high'};
+  const horizonClass = {'Short-Term':'horizon-short','Mid-Term':'horizon-mid','Long-Term':'horizon-long'};
+  const icons = ['🟢','🔵','🟡','🔴','🟠','⚪','💎','🚀','⚡','🔥'];
+
+  return `<div class="alpha-grid">
+    ${signals.map((s,i)=>`
+    <div class="signal-card">
+      <div class="signal-card-top">
+        <div class="signal-card-hdr">
+          <div class="signal-coin">
+            <div class="signal-coin-icon" style="background:rgba(255,165,0,0.1)">${icons[i%icons.length]}</div>
+            <div>
+              <div class="signal-coin-name">${escHtml(s.name)}</div>
+              <div class="signal-coin-ticker">${escHtml(s.ticker)}</div>
+            </div>
+          </div>
+          <span class="signal-risk ${riskClass[s.risk]||'risk-med'}">${escHtml(s.risk)}</span>
+        </div>
+        <div class="signal-return-val">+${escHtml(s.target)}%</div>
+        <div class="signal-return-lbl">Estimated Return Target</div>
+      </div>
+      <div class="signal-card-mid">
+        <div class="signal-stat">
+          <div class="signal-stat-lbl">Entry Price</div>
+          <div class="signal-stat-val">${escHtml(s.entry)}</div>
+        </div>
+        <div class="signal-stat">
+          <div class="signal-stat-lbl">Time Horizon</div>
+          <div class="signal-stat-val">${escHtml(s.horizon)}</div>
+        </div>
+      </div>
+      <div class="signal-card-bottom">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);font-weight:700;margin-bottom:5px">Admin Notes</div>
+        <div class="signal-notes">${escHtml(s.notes)}</div>
+        <div class="signal-meta-row">
+          <span class="signal-date">${escHtml(s.date)}</span>
+          <span class="horizon-badge ${horizonClass[s.horizon]||'horizon-mid'}">${escHtml(s.horizon)}</span>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ---- EARN TAB ----
+function renderEarnTab(){
+  const streak  = wrcGet('streak',0);
+  const bal     = getWRC();
+  const pct     = Math.min(100, Math.round((bal/WRC_UNLOCK_COST)*100));
+  const link    = getReferralLink();
+  const code    = getReferralCode();
+  const refCount= wrcGet('used_refs',[]).length;
+
+  return `<div class="earn-tab-wrap">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-weight:700;font-size:13.5px">Your WaryaaCoins Balance</div>
+        <div style="font-family:var(--mono);font-weight:800;font-size:22px;color:#FFD700">${bal} WRC</div>
+      </div>
+      <div class="wrc-progress-bar"><div class="wrc-progress-fill" style="width:${pct}%"></div></div>
+      <div class="wrc-progress-lbl"><span>${bal} / ${WRC_UNLOCK_COST} WRC to unlock Alpha</span><span>${pct}%</span></div>
+    </div>
+
+    <div class="earn-card">
+      <div class="earn-card-left">
+        <div class="earn-card-icon" style="background:rgba(255,165,0,0.1)">🔗</div>
+        <div>
+          <div class="earn-card-title">Share WaryaaMarket</div>
+          <div class="earn-card-desc">Your code: <strong style="color:#FFD700;font-family:var(--mono)">${code}</strong> &nbsp;·&nbsp; ${refCount} referral${refCount!==1?'s':''} used</div>
+          <div class="share-links">
+            <button class="share-btn tw" onclick="shareOn('twitter','${escHtml(link)}')">𝕏 Twitter</button>
+            <button class="share-btn tg" onclick="shareOn('telegram','${escHtml(link)}')">✈️ Telegram</button>
+            <button class="share-btn wa" onclick="shareOn('whatsapp','${escHtml(link)}')">💬 WhatsApp</button>
+            <button class="share-btn cp" onclick="copyLink('${escHtml(link)}')">📋 Copy Link</button>
+          </div>
+        </div>
+      </div>
+      <div class="earn-card-right">
+        <div class="earn-reward">+${WRC_SHARE_REWARD}</div>
+        <div class="earn-reward-lbl">WRC PER REFERRAL</div>
+      </div>
+    </div>
+
+    <div class="earn-card">
+      <div class="earn-card-left">
+        <div class="earn-card-icon" style="background:rgba(0,255,136,0.1)">📅</div>
+        <div>
+          <div class="earn-card-title">Daily Visit Streak</div>
+          <div class="earn-card-desc">Visit every day to earn streak rewards.</div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;color:#FFD700;font-weight:700">
+            🔥 <span>${streak} day streak</span>
+          </div>
+        </div>
+      </div>
+      <div class="earn-card-right">
+        <div class="earn-reward">+${WRC_STREAK_REWARD}</div>
+        <div class="earn-reward-lbl">WRC PER DAY</div>
+        <span class="earn-action-btn done">✓ Earned Today</span>
+      </div>
+    </div>
+
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:11.5px;color:var(--text2);line-height:1.6">
+      ⚠️ <strong style="color:var(--text)">Note:</strong> WaryaaCoins are stored in your browser. Clearing browser data will reset your balance. Coins have no real monetary value — they unlock access to the Alpha Signals section only.
+    </div>
+  </div>`;
+}
+
+// ---- ADMIN TAB ----
+function renderAdminTab(){
+  if(!isAdminLoggedIn()){
+    return `<div class="admin-login">
+      <div class="alpha-lock-icon" style="font-size:36px">🔑</div>
+      <div class="admin-login-title">Admin Access</div>
+      <div class="admin-login-sub">Enter the admin password to manage alpha signals.</div>
+      <input class="admin-input" type="password" id="adminPwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')adminLoginAttempt()">
+      <button class="admin-btn" onclick="adminLoginAttempt()">🔓 Login</button>
+      <div id="adminLoginErr" style="font-size:11px;color:var(--red);display:none">Incorrect password.</div>
+    </div>`;
+  }
+
+  const signals = getSignals();
+  return `<div class="admin-panel">
+    <div class="admin-form-hdr">
+      <div class="admin-form-title">📡 Post New Alpha Signal</div>
+      <button class="admin-logout-btn" onclick="adminLogoutAction()">Logout</button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div class="admin-form-row">
+        <div class="admin-field">
+          <label class="admin-label">Coin / Token Name</label>
+          <input class="admin-input" id="af_name" placeholder="e.g. Solana">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Ticker Symbol</label>
+          <input class="admin-input" id="af_ticker" placeholder="e.g. SOL">
+        </div>
+      </div>
+      <div class="admin-form-row">
+        <div class="admin-field">
+          <label class="admin-label">Entry Price Range</label>
+          <input class="admin-input" id="af_entry" placeholder="e.g. $120 – $135">
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Estimated Return Target (%)</label>
+          <input class="admin-input" id="af_target" type="number" placeholder="e.g. 150">
+        </div>
+      </div>
+      <div class="admin-form-row">
+        <div class="admin-field">
+          <label class="admin-label">Risk Level</label>
+          <select class="admin-select" id="af_risk">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+          </select>
+        </div>
+        <div class="admin-field">
+          <label class="admin-label">Time Horizon</label>
+          <select class="admin-select" id="af_horizon">
+            <option>Short-Term</option>
+            <option selected>Mid-Term</option>
+            <option>Long-Term</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-field">
+        <label class="admin-label">Admin Notes / Reason</label>
+        <textarea class="admin-textarea" id="af_notes" placeholder="Why is this a good opportunity? Key catalysts, on-chain data, technicals..."></textarea>
+      </div>
+      <div id="adminFormErr" style="font-size:11px;color:var(--red);display:none"></div>
+      <button class="admin-submit" onclick="adminPostSignal()">📡 Post Signal</button>
+    </div>
+
+    ${signals.length > 0 ? `
+    <div>
+      <div class="admin-signals-lbl">Current Signals (${signals.length})</div>
+      <div class="admin-signals-list">
+        ${signals.map((s,i)=>`
+        <div class="admin-signal-item">
+          <div class="admin-signal-info">
+            <div class="admin-signal-name">${escHtml(s.name)} <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">${escHtml(s.ticker)}</span></div>
+            <div class="admin-signal-meta">+${escHtml(s.target)}% target · ${escHtml(s.risk)} risk · ${escHtml(s.horizon)} · ${escHtml(s.date)}</div>
+          </div>
+          <button class="admin-del-btn" onclick="adminDeleteSignal(${i})">Delete</button>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+  </div>`;
+}
+
+// --- Admin actions ---
+function adminLoginAttempt(){
+  const pw = document.getElementById('adminPwInput').value;
+  if(adminLogin(pw)){
+    renderAlphaBody('admin');
+  } else {
+    const err = document.getElementById('adminLoginErr');
+    if(err) err.style.display='block';
+    const inp = document.getElementById('adminPwInput');
+    if(inp){ inp.style.borderColor='var(--red)'; setTimeout(()=>inp.style.borderColor='',1500); }
+  }
+}
+function adminLogoutAction(){ adminLogout(); renderAlphaBody('admin'); }
+
+function adminPostSignal(){
+  const name    = document.getElementById('af_name').value.trim();
+  const ticker  = document.getElementById('af_ticker').value.trim().toUpperCase();
+  const entry   = document.getElementById('af_entry').value.trim();
+  const target  = document.getElementById('af_target').value.trim();
+  const risk    = document.getElementById('af_risk').value;
+  const horizon = document.getElementById('af_horizon').value;
+  const notes   = document.getElementById('af_notes').value.trim();
+  const errEl   = document.getElementById('adminFormErr');
+
+  if(!name||!ticker||!entry||!target||!notes){
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  const signals = getSignals();
+  signals.unshift({
+    name, ticker, entry, target, risk, horizon, notes,
+    date: new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
+  });
+  saveSignals(signals);
+  showToast('Signal posted! 📡');
+  renderAlphaBody('admin');
+}
+
+function adminDeleteSignal(idx){
+  const signals = getSignals();
+  signals.splice(idx,1);
+  saveSignals(signals);
+  renderAlphaBody('admin');
+}
+
+// --- Share helpers ---
+function shareOn(platform, link){
+  const msg = encodeURIComponent('🚀 I use WaryaaMarket for real-time crypto, AI stocks & alpha signals! Check it out: ' + link);
+  const urls = {
+    twitter:  'https://twitter.com/intent/tweet?text=' + msg,
+    telegram: 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('🚀 WaryaaMarket — real-time crypto & alpha signals'),
+    whatsapp: 'https://wa.me/?text=' + msg
+  };
+  if(urls[platform]) window.open(urls[platform], '_blank');
+}
+
+function copyLink(link){
+  navigator.clipboard.writeText(link).then(()=>{
+    showToast('Link copied! 📋');
+  }).catch(()=>{
+    const el = document.createElement('textarea');
+    el.value = link;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('Link copied! 📋');
+  });
+}
+
+function escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init UI on load
+document.addEventListener('DOMContentLoaded', updateWRCUI);
+updateWRCUI();
+</script>
 </body>
 </html>
