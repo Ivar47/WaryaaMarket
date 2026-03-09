@@ -1746,7 +1746,8 @@ async function fetchGas(){
 //  ALTCOIN INDEX
 // ======================================================
 function updateAltcoinIndex(){
-  if(!cryptoData || !cryptoData.length) return;
+  if(!binanceAllTickers || !binanceAllTickers.length) return;
+  if(!cryptoData.length) return;
   const top50=cryptoData.slice(0,50);
   const beating=top50.filter(c=>c.price_change_percentage_24h > (cryptoData.find(x=>x.id==='bitcoin')?.price_change_percentage_24h||0)).length;
   const idx=Math.round((beating/50)*100);
@@ -1773,7 +1774,7 @@ function renderCryptoTable(data){
     return`<tr onclick="openCoin('${c.id}')" data-id="${c.id}">
       <td class="c-rank">${c.market_cap_rank||'—'}</td>
       <td><div class="cn-cell">
-        <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:'+this.width+'px;height:'+this.width+'px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
+        <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
         <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
       </div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -1796,7 +1797,7 @@ function renderCryptoFull(){
     const sup=c.circulating_supply?fmt(c.circulating_supply)+' '+c.symbol.toUpperCase():'N/A';
     return`<tr onclick="openCoin('${c.id}')">
       <td class="c-rank">${c.market_cap_rank}</td>
-      <td><div class="cn-cell"><img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:'+this.width+'px;height:'+this.width+'px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" ><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
+      <td><div class="cn-cell"><img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" ><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
       <td><span class="pct ${p1h>=0?'up':'dn'}">${(p1h>=0?'+':'')+p1h.toFixed(2)}%</span></td>
       <td><span class="pct ${p24>=0?'up':'dn'}">${(p24>=0?'+':'')+p24.toFixed(2)}%</span></td>
@@ -1905,7 +1906,7 @@ function renderCatCoins(coins){
           return`<tr onclick="document.getElementById('catModal').classList.remove('on');setTimeout(()=>openCoin('${c.id}'),200)">
             <td class="c-rank">${c.market_cap_rank||'—'}</td>
             <td><div class="cn-cell">
-              <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:'+this.width+'px;height:'+this.width+'px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
+              <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
               <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
             </div></td>
             <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -2687,7 +2688,6 @@ function getCryptoImg(sym){
     FLOW:'https://assets.coingecko.com/coins/images/13446/small/5f6294c0c7a8cda55cb1c936_Flow_Wordmark.png',
     LRC:'https://assets.coingecko.com/coins/images/913/small/LRC.png',
     '1INCH':'https://assets.coingecko.com/coins/images/13469/small/1inch-token.png',
-    GRT:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png',
     STETH:'https://assets.coingecko.com/coins/images/13442/small/steth_logo.png',
     PAXG:'https://assets.coingecko.com/coins/images/9519/small/paxg.PNG',
     OCEAN:'https://assets.coingecko.com/coins/images/3687/small/ocean-protocol-logo.jpg',
