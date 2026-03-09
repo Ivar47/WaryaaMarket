@@ -786,7 +786,7 @@ body.light .stats-strip{background:#fff}
 <canvas id="eidFireworks"></canvas>
 
 <!-- RAMADAN / EID BANNER -->
-<div id="ramadanBar" style="display:flex">
+<div id="ramadanBar" style="display:none">
   <div class="ramadan-scroll" id="ramadanScroll">
     <!-- JS filled -->
   </div>
@@ -795,7 +795,6 @@ body.light .stats-strip{background:#fff}
 <!-- TICKER -->
 <div class="ticker-bar">
   <div class="ticker-inner" id="ticker">
-    <span class="t-item" style="color:var(--text2);font-size:11px;padding:0 16px">⏳ Loading live prices...</span>
     <!-- JS filled -->
   </div>
 </div>
@@ -852,10 +851,6 @@ body.light .stats-strip{background:#fff}
     <div class="gs-item"><span class="gs-label">Altcoin Season</span><span class="gs-val" id="gsAlt">--/100</span></div>
     <div class="gs-item"><span class="gs-label">DeFi TVL</span><span class="gs-val" id="gsTVL">$95B</span></div>
     <div class="gs-item"><span class="gs-label">Active Cryptos</span><span class="gs-val">2.4M+</span></div>
-    <div class="gs-item" id="binanceStatsBar" style="display:flex;gap:12px;align-items:center">
-      <span style="color:var(--text2);font-size:11px">Binance</span>
-      <span style="font-family:var(--mono);font-size:11px;color:var(--text2)">Loading...</span>
-    </div>
   </div>
 </div>
 
@@ -1078,35 +1073,6 @@ body.light .stats-strip{background:#fff}
         <thead><tr><th>#</th><th>Name</th><th>Price</th><th>1h %</th><th>24h %</th><th>7d %</th><th>Market Cap</th><th>Volume 24h</th><th>Circ. Supply</th><th>7D</th></tr></thead>
         <tbody id="cryptoFullBody"><tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text2)">Loading...</td></tr></tbody>
       </table>
-    </div>
-  </div>
-</div>
-
-<!-- ===== BINANCE LIVE SECTION ===== -->
-<div id="binanceLiveSection" style="margin-bottom:18px">
-  <div class="sec-hdr">
-    <div class="sec-title">
-      <span style="width:22px;height:22px;background:#F3BA2F;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#000">B</span>
-      Binance Live — All Pairs
-    </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <input id="binanceSearch" type="text" placeholder="Search 1500+ pairs..." style="background:var(--card2);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;color:var(--text);font-size:12px;outline:none;width:180px" oninput="filterBinancePairs(this.value)">
-      <div style="display:flex;gap:4px" id="binanceSortBtns">
-        <button class="chain-btn on" onclick="sortBinancePairs('volume',this)">Volume</button>
-        <button class="chain-btn" onclick="sortBinancePairs('gainers',this)">Gainers</button>
-        <button class="chain-btn" onclick="sortBinancePairs('losers',this)">Losers</button>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="pair-row hdr">
-      <div>Pair</div><div>Price</div><div>24h %</div><div>Volume</div><div>High</div><div>Low</div><div>Trades</div>
-    </div>
-    <div id="binancePairsBody">
-      <div style="text-align:center;padding:28px;color:var(--text2);font-size:12px">⏳ Loading Binance pairs...</div>
-    </div>
-    <div style="padding:10px 14px;text-align:center">
-      <span id="binanceLoadMore" onclick="loadMoreBinancePairs()" style="font-size:11px;color:var(--blue);font-weight:700;cursor:pointer">Load more pairs ↓</span>
     </div>
   </div>
 </div>
@@ -1526,23 +1492,6 @@ const STOCK_LOGOS={
   PANW:'https://img.logo.dev/paloaltonetworks.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
   NOW:'https://img.logo.dev/servicenow.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw&size=40',
 };
-// Brand colors for instant initials fallback
-const STOCK_COLORS={
-  NVDA:'#76b900',MSFT:'#00a4ef',GOOGL:'#4285f4',AAPL:'#1d1d1f',AMZN:'#ff9900',
-  META:'#0866ff',TSLA:'#e31937',AMD:'#ed1c24',ORCL:'#f80000',PLTR:'#101113',
-  CRM:'#00a1e0',SNOW:'#29b5e8',IBM:'#054ada',INTC:'#0068b5',QCOM:'#3253dc',
-  AVGO:'#cc0000',ARM:'#00acca',SMCI:'#ff6600',PANW:'#fa582d',NOW:'#62d84e'
-};
-function stockLogoImg(sym,size){
-  const url = STOCK_LOGOS[sym]||'';
-  const bg  = STOCK_COLORS[sym]||'#3861fb';
-  const s   = size||28;
-  const r   = s>=28?'8px':'6px';
-  const ini = sym.substring(0,2);
-  const fs  = Math.round(s*0.38);
-  if(!url) return `<span style="display:flex;width:${s}px;height:${s}px;border-radius:${r};background:${bg};align-items:center;justify-content:center;font-weight:900;font-size:${fs}px;color:#fff;flex-shrink:0">${ini}</span>`;
-  return `<img src="${url}" data-sym="${sym}" style="width:${s}px;height:${s}px;border-radius:${r};object-fit:contain;background:#fff;padding:2px;flex-shrink:0" alt="${sym}" onerror="var el=document.createElement('span');el.style.cssText='display:flex;width:${s}px;height:${s}px;border-radius:${r};background:${bg};align-items:center;justify-content:center;font-weight:900;font-size:${fs}px;color:#fff;flex-shrink:0';el.textContent='${ini}';this.parentNode.replaceChild(el,this)">`;
-}
 const STOCKS=[
   {sym:'NVDA',name:'NVIDIA Corp',icon:'🟢',sector:'AI Chips',pe:'35.2',desc:'The engine of AI: H100/H200/Blackwell GPU monopoly for AI training and inference.',mkt:4350},
   {sym:'MSFT',name:'Microsoft Corp',icon:'🔵',sector:'Cloud/AI',pe:'31.5',desc:'Azure cloud + $13B OpenAI partnership + Copilot AI embedded in every product.',mkt:3040},
@@ -1746,7 +1695,6 @@ async function fetchGas(){
 //  ALTCOIN INDEX
 // ======================================================
 function updateAltcoinIndex(){
-  if(!binanceAllTickers || !binanceAllTickers.length) return;
   if(!cryptoData.length) return;
   const top50=cryptoData.slice(0,50);
   const beating=top50.filter(c=>c.price_change_percentage_24h > (cryptoData.find(x=>x.id==='bitcoin')?.price_change_percentage_24h||0)).length;
@@ -1774,7 +1722,7 @@ function renderCryptoTable(data){
     return`<tr onclick="openCoin('${c.id}')" data-id="${c.id}">
       <td class="c-rank">${c.market_cap_rank||'—'}</td>
       <td><div class="cn-cell">
-        <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
+        <img class="c-logo" src="${c.image}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%23334%22/></svg>'" alt="">
         <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
       </div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -1797,7 +1745,7 @@ function renderCryptoFull(){
     const sup=c.circulating_supply?fmt(c.circulating_supply)+' '+c.symbol.toUpperCase():'N/A';
     return`<tr onclick="openCoin('${c.id}')">
       <td class="c-rank">${c.market_cap_rank}</td>
-      <td><div class="cn-cell"><img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" ><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
+      <td><div class="cn-cell"><img class="c-logo" src="${c.image}" onerror="this.src=''" alt=""><div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div></div></td>
       <td class="price-val">$${fmtP(c.current_price)}</td>
       <td><span class="pct ${p1h>=0?'up':'dn'}">${(p1h>=0?'+':'')+p1h.toFixed(2)}%</span></td>
       <td><span class="pct ${p24>=0?'up':'dn'}">${(p24>=0?'+':'')+p24.toFixed(2)}%</span></td>
@@ -1906,7 +1854,7 @@ function renderCatCoins(coins){
           return`<tr onclick="document.getElementById('catModal').classList.remove('on');setTimeout(()=>openCoin('${c.id}'),200)">
             <td class="c-rank">${c.market_cap_rank||'—'}</td>
             <td><div class="cn-cell">
-              <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
+              <img class="c-logo" src="${c.image}" onerror="this.src=''" alt="">
               <div><div class="c-name">${c.name}</div><div class="c-sym">${c.symbol.toUpperCase()}</div></div>
             </div></td>
             <td class="price-val">$${fmtP(c.current_price)}</td>
@@ -1941,7 +1889,7 @@ function renderStocksOverview(){
     const rangePct=d.high&&d.low&&d.price?((d.price-d.low)/(d.high-d.low)*100).toFixed(0):50;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue);font-size:13px">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px">${stockLogoImg(s.sym,24)}<div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" data-sym="${s.sym}" style="width:24px;height:24px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="var el=document.createElement('span');el.style.cssText='display:flex;width:24px;height:24px;border-radius:6px;background:#3861fb;align-items:center;justify-content:center;font-weight:900;font-size:10px;color:#fff;flex-shrink:0';el.textContent=this.dataset.sym.substring(0,2);this.parentNode.replaceChild(el,this)" alt="${s.sym}"><div style="font-weight:700;font-size:12.5px">${s.name}</div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
       <td class="mcap-val">${d.mkt||s.mkt?'$'+(d.mkt||s.mkt)+'B':'N/A'}</td>
@@ -1963,7 +1911,7 @@ function renderStockFull(){
     const chg=d.chg||0;
     return`<tr onclick="openStock('${s.sym}')">
       <td><span style="font-family:var(--mono);font-weight:700;color:var(--blue)">${s.sym}</span></td>
-      <td><div style="display:flex;align-items:center;gap:8px">${stockLogoImg(s.sym,28)}<div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><img src="${STOCK_LOGOS[s.sym]||''}" data-sym="${s.sym}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0" onerror="var el=document.createElement('span');el.style.cssText='display:flex;width:28px;height:28px;border-radius:6px;background:#3861fb;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0';el.textContent=this.dataset.sym.substring(0,2);this.parentNode.replaceChild(el,this)" alt="${s.sym}"><div><div style="font-weight:700;font-size:13px">${s.name}</div><div style="font-size:10px;color:var(--text2)">${s.desc.substring(0,55)}...</div></div></div></td>
       <td class="price-val">$${d.price?d.price.toFixed(2):'N/A'}</td>
       <td class="price-val" style="font-size:12px;color:${chg>=0?'var(--green)':'var(--red)'}">${(chg>=0?'+':'')+chg.toFixed(2)}</td>
       <td><span class="pct ${chg>=0?'up':'dn'}">${(chg>=0?'+':'')+chg.toFixed(2)}%</span></td>
@@ -2201,7 +2149,7 @@ async function loadNews(cats){
       const srcName=a.source_info?.name||a.source||'News';
       const srcIcon=a._world?'🌍':'📰';
       return`<div class="ng-item" onclick="window.open('${a.url}','_blank')">
-        ${a.imageurl?`<img class="ng-img" src="${a.imageurl}" alt="" onerror="this.onerror=null;this.style.display=\'none\';var fb=document.createElement(\'div\');fb.style.cssText=\'width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:52px;background:rgba(255,255,255,0.03);border-radius:8px\';fb.textContent=this.dataset.emoji||\'🖼️\';this.parentNode.insertBefore(fb,this)">`:''}
+        ${a.imageurl?`<img class="ng-img" src="${a.imageurl}" alt="" onerror="this.style.display='none'">`:''}
         <div class="ng-body">
           <div class="ng-source">${srcIcon} <b>${srcName}</b> <span style="color:var(--text3)">·</span> ${t}</div>
           <div class="ng-hl">${a.title}</div>
@@ -2310,7 +2258,7 @@ function renderSideUnlocks(){
     <div class="unlock-c">
       <div class="ul-hdr">
         <div class="ul-name">
-          <img class="ul-logo" src="${u.logo}" onerror="this.onerror=null;var _t=this.closest('tr')||this.closest('[data-sym]');var _sym=((_t&&_t.dataset&&_t.dataset.sym)||this.alt||'?').substring(0,2).toUpperCase();this.style.display='none';var _b=document.createElement('span');_b.style.cssText='display:inline-flex;width:22px;height:22px;border-radius:50%;background:#3861fb;align-items:center;justify-content:center;font-weight:800;font-size:8px;color:#fff';_b.textContent=_sym;this.parentNode.insertBefore(_b,this)" >
+          <img class="ul-logo" src="${u.logo}" onerror="this.src=''">
           ${u.name} <span style="font-family:var(--mono);color:var(--text2);font-size:10px">${u.token}</span>
         </div>
         <span class="ul-badge ub-${u.impact}">${u.impact}</span>
@@ -2383,22 +2331,18 @@ const TICKER_STATIC=[
   {sym:'PLTR',price:'$88.42',chg:'+2.59%',dir:1},
 ];
 function buildTicker(){
-  const tickerEl = document.getElementById('ticker');
-  if(!tickerEl) return;
   const items=TICKER_STATIC.map(t=>`<div class="t-item"><span class="t-sym">${t.sym}</span><span class="t-price">${t.price}</span><span class="${t.dir>0?'up':'down'}">${t.chg}</span></div>`).join('');
-  tickerEl.innerHTML=items+items; // duplicate for seamless
+  document.getElementById('ticker').innerHTML=items+items; // duplicate for seamless
 }
 function updateTickerFromData(){
-  if(!cryptoData || !cryptoData.length) return;
+  if(!cryptoData.length) return;
   const el=document.getElementById('ticker');
-  if(!el) return;
   const items=[...cryptoData.slice(0,10),...STOCKS.slice(0,8).map(s=>({symbol:s.sym,current_price:STOCK_DATA[s.sym]?.price||0,price_change_percentage_24h:STOCK_DATA[s.sym]?.chg||0}))];
   const html=items.map(c=>{
     const p=c.price_change_percentage_24h||0;
     const sym=c.symbol?.toUpperCase()||c.sym;
     const price=c.current_price?'$'+fmtP(c.current_price):'--';
-    const ico=getCryptoImg(sym);
-    return`<div class="t-item" style="display:flex;align-items:center;gap:5px"><img src="${ico}" style="width:16px;height:16px;border-radius:50%" onerror="this.style.display='none'"><span class="t-sym">${sym}</span><span class="t-price">${price}</span><span class="${p>=0?'up':'down'}">${(p>=0?'+':'')+p.toFixed(2)}%</span></div>`;
+    return`<div class="t-item"><span class="t-sym">${sym}</span><span class="t-price">${price}</span><span class="${p>=0?'up':'down'}">${(p>=0?'+':'')+p.toFixed(2)}%</span></div>`;
   }).join('');
   el.innerHTML=html+html;
 }
@@ -2554,256 +2498,27 @@ function timeAgo(ts){
 // ======================================================
 //  INIT — staggered fetches to avoid rate limiting
 // ======================================================
-
-
-
-// ── Binance 24hr ticker → maps to same cryptoData shape ──────
-const COIN_IDS = {
-  BTC:'bitcoin',ETH:'ethereum',BNB:'binancecoin',SOL:'solana',XRP:'ripple',
-  USDT:'tether',USDC:'usd-coin',ADA:'cardano',AVAX:'avalanche-2',DOGE:'dogecoin',
-  TRX:'tron',LINK:'chainlink',DOT:'polkadot',MATIC:'matic-network',SHIB:'shiba-inu',
-  LTC:'litecoin',UNI:'uniswap',ATOM:'cosmos',XLM:'stellar',ETC:'ethereum-classic',
-  BCH:'bitcoin-cash',NEAR:'near',APT:'aptos',ARB:'arbitrum',OP:'optimism',
-  FIL:'filecoin',ALGO:'algorand',VET:'vechain',ICP:'internet-computer',HBAR:'hedera',
-  AAVE:'aave',MKR:'maker',CRV:'curve-dao-token',COMP:'compound',SNX:'synthetix',
-  PEPE:'pepe',WIF:'dogwifhat',BONK:'bonk',FLOKI:'floki',MEME:'memecoin',
-  INJ:'injective-protocol',SUI:'sui',SEI:'sei-network',TIA:'celestia',PYTH:'pyth-network',
-  JUP:'jupiter',WLD:'worldcoin-wld',IMX:'immutable-x',SAND:'the-sandbox',MANA:'decentraland',
-  AXS:'axie-infinity',FLOW:'flow',CHZ:'chiliz',ENJ:'enjincoin',GALA:'gala',
-  FTM:'fantom',ONE:'harmony',CELO:'celo',ZIL:'zilliqa',IOTA:'iota',
-  XMR:'monero',ZEC:'zcash',DASH:'dash',EOS:'eos',XTZ:'tezos',
-  SUSHI:'sushi',YFI:'yearn-finance',BAL:'balancer',ZRX:'0x',BAT:'basic-attention-token',
-  GRT:'the-graph',LRC:'loopring',1INCH:'1inch',DYDX:'dydx',PERP:'perpetual-protocol'
-};
-
-// CoinGecko image IDs for 200+ top coins (used by Binance tab)
-const CG_IDS = {
-  BTC:'1',ETH:'279',BNB:'825',SOL:'4128',XRP:'44',USDT:'325',USDC:'6319',
-  ADA:'975',AVAX:'12559',DOGE:'5',TRX:'1094',LINK:'877',DOT:'12171',
-  MATIC:'4713',SHIB:'11939',LTC:'2',UNI:'12504',ATOM:'1481',XLM:'100',
-  BCH:'780',ETC:'453',NEAR:'10365',APT:'26455',ARB:'16547',OP:'25244',
-  FIL:'12817',ALGO:'4380',VET:'1167',ICP:'14495',HBAR:'3688',AAVE:'12645',
-  MKR:'1364',GRT:'13397',INJ:'12882',SUI:'26375',PEPE:'29850',WIF:'33566',
-  FLOKI:'16746',BONK:'28600',SEI:'28205',TIA:'31967',PYTH:'31924',
-  JUP:'34188',WLD:'31069',STRK:'26433',ZK:'38043',RENDER:'11636',
-  FET:'5681',OCEAN:'3687',AGIX:'2138',AR:'4343',KAS:'25751',NOT:'36447',
-  PENDLE:'15069',XMR:'69',DASH:'19',ZEC:'486',CRV:'12124',SUSHI:'12271',
-  SAND:'12129',MANA:'878',AXS:'13029',FLOW:'13446',CHZ:'8834',ENJ:'1102',
-  GALA:'12493',FTM:'4001',KAVA:'9761',GMX:'18323',DYDX:'17500',IMX:'17233',
-  BLUR:'28453',ENS:'19785',BAT:'677',ZRX:'863',ANKR:'4755',COMP:'10775',
-  SNX:'3406',YFI:'12124',BAL:'11683',LRC:'913',ATOM:'1481',WBTC:'7598',
-  STETH:'13442',DAI:'9956',UMA:'10951',THETA:'2538',HNT:'4284',
-  DOT:'12171',ONE:'3690',CELO:'13537',ZIL:'2687',IOTA:'1619',
-  EOS:'1765',XTZ:'2011',WAVES:'2196',NEO:'480',ONT:'3447',QTUM:'684',
-  PERP:'12381',CELR:'4379',API3:'13256',CTSI:'11038',LPT:'7137'
-};
-
-// Single authoritative getCryptoImg — CoinGecko ID lookup → spothq fallback
-function getCryptoImg(sym){
-  if(!sym) return '';
-  const clean = sym.toString().replace(/USDT$|BUSD$|USDC$|BTC$|ETH$|BNB$/i,'').toUpperCase();
-  const cleanL = clean.toLowerCase();
-  // CoinGecko image IDs (200 top coins)
-  const imgMap = {
-    BTC:'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-    ETH:'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
-    BNB:'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
-    SOL:'https://assets.coingecko.com/coins/images/4128/small/solana.png',
-    XRP:'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
-    USDT:'https://assets.coingecko.com/coins/images/325/small/Tether.png',
-    USDC:'https://assets.coingecko.com/coins/images/6319/small/usdc.png',
-    ADA:'https://assets.coingecko.com/coins/images/975/small/cardano.png',
-    AVAX:'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
-    DOGE:'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
-    TRX:'https://assets.coingecko.com/coins/images/1094/small/tron-logo.png',
-    LINK:'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
-    DOT:'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
-    MATIC:'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
-    SHIB:'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
-    LTC:'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
-    UNI:'https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png',
-    ATOM:'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',
-    XLM:'https://assets.coingecko.com/coins/images/100/small/Stellar_symbol_black_RGB.png',
-    BCH:'https://assets.coingecko.com/coins/images/780/small/bitcoin-cash-circle.png',
-    ETC:'https://assets.coingecko.com/coins/images/453/small/ethereum-classic-logo.png',
-    NEAR:'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
-    APT:'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
-    ARB:'https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg',
-    OP:'https://assets.coingecko.com/coins/images/25244/small/Optimism.png',
-    TON:'https://assets.coingecko.com/coins/images/17980/small/ton_symbol.png',
-    HBAR:'https://assets.coingecko.com/coins/images/3688/small/hbar.png',
-    AAVE:'https://assets.coingecko.com/coins/images/12645/small/AAVE.png',
-    MKR:'https://assets.coingecko.com/coins/images/1364/small/Mark_Maker.png',
-    GRT:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png',
-    INJ:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png',
-    SUI:'https://assets.coingecko.com/coins/images/26375/small/sui_asset.jpeg',
-    SEI:'https://assets.coingecko.com/coins/images/28205/small/Sei_Logo_-_Transparent.png',
-    PEPE:'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg',
-    WIF:'https://assets.coingecko.com/coins/images/33566/small/dogwifhat.jpg',
-    FLOKI:'https://assets.coingecko.com/coins/images/16746/small/PNG_image.png',
-    BONK:'https://assets.coingecko.com/coins/images/28600/small/bonk.jpg',
-    TIA:'https://assets.coingecko.com/coins/images/31967/small/tia.jpg',
-    PYTH:'https://assets.coingecko.com/coins/images/31924/small/pyth.png',
-    JUP:'https://assets.coingecko.com/coins/images/34188/small/jup.png',
-    WLD:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg',
-    STRK:'https://assets.coingecko.com/coins/images/26433/small/starknet.png',
-    ZK:'https://assets.coingecko.com/coins/images/38043/small/zksync.jpg',
-    RENDER:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
-    RNDR:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
-    FET:'https://assets.coingecko.com/coins/images/5681/small/Fetch.jpg',
-    KAS:'https://assets.coingecko.com/coins/images/25751/small/kaspa-icon-exchanges.png',
-    NOT:'https://assets.coingecko.com/coins/images/36447/small/notcoin.jpg',
-    PENDLE:'https://assets.coingecko.com/coins/images/15069/small/Pendle_Logo_Normal-03.png',
-    XMR:'https://assets.coingecko.com/coins/images/69/small/monero_logo.png',
-    FTM:'https://assets.coingecko.com/coins/images/4001/small/Fantom_round.png',
-    SAND:'https://assets.coingecko.com/coins/images/12129/small/sandbox_logo.jpg',
-    MANA:'https://assets.coingecko.com/coins/images/878/small/decentraland-mana.png',
-    AXS:'https://assets.coingecko.com/coins/images/13029/small/axie_infinity_logo.png',
-    IMX:'https://assets.coingecko.com/coins/images/17233/small/immutableX-symbol-BLK-RGB.png',
-    BLUR:'https://assets.coingecko.com/coins/images/28453/small/blur.png',
-    ENS:'https://assets.coingecko.com/coins/images/19785/small/acatxTm8_400x400.jpg',
-    BAT:'https://assets.coingecko.com/coins/images/677/small/basic-attention-token.png',
-    ZRX:'https://assets.coingecko.com/coins/images/863/small/0x.png',
-    ANKR:'https://assets.coingecko.com/coins/images/4755/small/Ankr_enlargedfinallogo-01.png',
-    COMP:'https://assets.coingecko.com/coins/images/10775/small/COMP.png',
-    SNX:'https://assets.coingecko.com/coins/images/3406/small/SNX.png',
-    SUSHI:'https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png',
-    CRV:'https://assets.coingecko.com/coins/images/12124/small/Curve.png',
-    GMX:'https://assets.coingecko.com/coins/images/18323/small/arbit.png',
-    DYDX:'https://assets.coingecko.com/coins/images/17500/small/hjnIm9bV.jpg',
-    WBTC:'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png',
-    DAI:'https://assets.coingecko.com/coins/images/9956/small/Badge_Dai.png',
-    FIL:'https://assets.coingecko.com/coins/images/12817/small/filecoin.png',
-    ALGO:'https://assets.coingecko.com/coins/images/4380/small/download.png',
-    VET:'https://assets.coingecko.com/coins/images/1167/small/VeChain-Logo-768x768.png',
-    ICP:'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png',
-    NEO:'https://assets.coingecko.com/coins/images/480/small/NEO_512_512.png',
-    WAVES:'https://assets.coingecko.com/coins/images/425/small/waves.png',
-    ZIL:'https://assets.coingecko.com/coins/images/2687/small/Zilliqa-logo.png',
-    THETA:'https://assets.coingecko.com/coins/images/2538/small/theta-token-logo.png',
-    JASMY:'https://assets.coingecko.com/coins/images/13876/small/JASMY200x200.jpg',
-    CHZ:'https://assets.coingecko.com/coins/images/8834/small/Chiliz.png',
-    ENJ:'https://assets.coingecko.com/coins/images/1102/small/enjin-coin-logo.png',
-    GALA:'https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png',
-    FLOW:'https://assets.coingecko.com/coins/images/13446/small/5f6294c0c7a8cda55cb1c936_Flow_Wordmark.png',
-    LRC:'https://assets.coingecko.com/coins/images/913/small/LRC.png',
-    '1INCH':'https://assets.coingecko.com/coins/images/13469/small/1inch-token.png',
-    STETH:'https://assets.coingecko.com/coins/images/13442/small/steth_logo.png',
-    PAXG:'https://assets.coingecko.com/coins/images/9519/small/paxg.PNG',
-    OCEAN:'https://assets.coingecko.com/coins/images/3687/small/ocean-protocol-logo.jpg',
-    AR:'https://assets.coingecko.com/coins/images/4343/small/oRt6SiEN_400x400.jpg',
-    HNT:'https://assets.coingecko.com/coins/images/4284/small/Helium_HNT_white_TNS.jpg',
-    KAVA:'https://assets.coingecko.com/coins/images/9761/small/kava.png',
-    AXSL:'https://assets.coingecko.com/coins/images/13029/small/axie_infinity_logo.png',
-    AGIX:'https://assets.coingecko.com/coins/images/2138/small/singularityai.jpg',
-  };
-  if(imgMap[clean]) return imgMap[clean];
-  // CG_IDS numeric lookup for 200+ more coins
-  if(typeof CG_IDS !== 'undefined' && CG_IDS[clean]){
-    return 'https://assets.coingecko.com/coins/images/'+CG_IDS[clean]+'/small/'+cleanL+'.png';
-  }
-  // spothq fallback — 800+ coin SVG icons
-  return 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+cleanL+'.png';
-}
-
-function normalizeBinanceTicker(t){
-  const sym = t.symbol.replace(/USDT$|BUSD$|BTC$/,'');
-  const price = parseFloat(t.lastPrice)||0;
-  const p24 = parseFloat(t.priceChangePercent)||0;
-  const vol  = parseFloat(t.quoteVolume)||0;
-  const id   = COIN_IDS[sym] || sym.toLowerCase();
-  // Build image URL: CoinGecko CDN by ID, fallback to spothq
-  const cgId = CG_IDS[sym];
-  const imgUrl = cgId
-    ? 'https://assets.coingecko.com/coins/images/'+cgId+'/small/'+sym.toLowerCase()+'.png'
-    : 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+sym.toLowerCase()+'.png';
-  return {
-    id, symbol: sym.toLowerCase(), name: sym,
-    current_price: price,
-    price_change_percentage_24h: p24,
-    price_change_percentage_1h_in_currency: 0,
-    price_change_percentage_7d_in_currency: 0,
-    market_cap: vol * price,
-    total_volume: vol,
-    circulating_supply: 0,
-    market_cap_rank: null,
-    image: imgUrl,
-    sparkline_in_7d: {price:[]},
-    _binance: true
-  };
-}
-
-let binanceAllTickers = []; // full 1500+ list
-
 async function fetchCryptoWithRetry(attempt=1){
   try{
-    // Primary: Binance — 1500+ USDT pairs, no key, no rate limit
-    // Try direct Binance API first (works in most browsers)
-    let r;
-    try {
-      r = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-    } catch(corsErr) {
-      // CORS fallback via proxy
-      r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.binance.com/api/v3/ticker/24hr'));
-    }
-    if(!r.ok) throw new Error('binance_fail');
-    const raw = await r.json();
-
-    // Store full list for search / browse
-    binanceAllTickers = raw
-      .filter(t => t.symbol.endsWith('USDT') && parseFloat(t.quoteVolume) > 50000)
-      .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
-
-    // Top 200 by volume for cryptoData (used by existing render functions)
-    cryptoData = binanceAllTickers.slice(0,200).map(normalizeBinanceTicker);
-
+    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
+    if(r.status===429) throw new Error('rate_limit');
+    cryptoData=await r.json();
+    if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
     renderCryptoTable();
     renderCryptoFull();
     updateTickerFromData();
     updateAltcoinIndex();
-    renderBinanceStats();
-    renderBinancePairs();
   }catch(e){
-    // Fallback: CoinGecko
-    try{
-      const r2 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h,24h,7d');
-      if(r2.status===429) throw new Error('rate_limit');
-      cryptoData = await r2.json();
-      if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
-      renderCryptoTable();
-      renderCryptoFull();
-      updateTickerFromData();
-      updateAltcoinIndex();
-    }catch(e2){
-      const wait = attempt*8000;
-      const maxAttempts = 5;
-      const tbody = document.getElementById('cryptoBody');
-      if(attempt <= maxAttempts){
-        if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading market data... retry ${attempt}/${maxAttempts}</td></tr>`;
-        setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
-      }else{
-        if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Unable to load data. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Retry</span></td></tr>`;
-      }
+    const wait=attempt*8000; // 8s, 16s, 24s...
+    const maxAttempts=5;
+    const tbody=document.getElementById('cryptoBody');
+    if(attempt<=maxAttempts){
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading... retry ${attempt}/${maxAttempts} in ${wait/1000}s</td></tr>`;
+      setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
+    }else{
+      if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ CoinGecko rate limited. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click to retry</span></td></tr>`;
     }
   }
-}
-
-// Binance exchange-wide stats widget
-function renderBinanceStats(){
-  if(!binanceAllTickers || !binanceAllTickers.length) return;
-  const total = binanceAllTickers.length;
-  const gainers = binanceAllTickers.filter(t=>parseFloat(t.priceChangePercent)>0).length;
-  const losers  = binanceAllTickers.filter(t=>parseFloat(t.priceChangePercent)<0).length;
-  const totalVol = binanceAllTickers.reduce((s,t)=>s+parseFloat(t.quoteVolume||0),0);
-  const el = document.getElementById('binanceStatsBar');
-  if(el) el.innerHTML = `
-    <span style="color:var(--text2);font-size:11px">Binance Live</span>
-    <span style="font-family:var(--mono);font-weight:700;color:var(--text)">${total} Pairs</span>
-    <span style="color:var(--green);font-family:var(--mono);font-weight:700">▲ ${gainers}</span>
-    <span style="color:var(--red);font-family:var(--mono);font-weight:700">▼ ${losers}</span>
-    <span style="color:var(--text2);font-size:11px">24h Vol</span>
-    <span style="font-family:var(--mono);font-weight:700;color:var(--text)">$${(totalVol/1e9).toFixed(1)}B</span>
-  `;
 }
 
 async function init(){
@@ -2837,81 +2552,6 @@ async function init(){
   setInterval(()=>fetchGlobal(), 67000);
   setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
   setInterval(()=>loadNews('ALL'), 180000);
-}
-
-
-// ── Binance pairs render ──────────────────────────────────────
-let binanceDisplayCount = 50;
-let binanceSortMode = 'volume';
-let binanceSearchQuery = '';
-
-function renderBinancePairs(){
-  if(!binanceAllTickers || !binanceAllTickers.length) return;
-  const el = document.getElementById('binancePairsBody');
-  if(!el || !binanceAllTickers.length) return;
-
-  let data = [...binanceAllTickers];
-
-  if(binanceSearchQuery){
-    const q = binanceSearchQuery.toUpperCase();
-    data = data.filter(t => t.symbol.includes(q));
-  }
-
-  if(binanceSortMode === 'gainers') data.sort((a,b)=>parseFloat(b.priceChangePercent)-parseFloat(a.priceChangePercent));
-  else if(binanceSortMode === 'losers') data.sort((a,b)=>parseFloat(a.priceChangePercent)-parseFloat(b.priceChangePercent));
-  else data.sort((a,b)=>parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume));
-
-  const slice = data.slice(0, binanceDisplayCount);
-
-  el.innerHTML = slice.map(t => {
-    const sym    = t.symbol.replace('USDT','');
-    const price  = parseFloat(t.lastPrice)||0;
-    const pct    = parseFloat(t.priceChangePercent)||0;
-    const vol    = parseFloat(t.quoteVolume)||0;
-    const high   = parseFloat(t.highPrice)||0;
-    const low    = parseFloat(t.lowPrice)||0;
-    const trades = parseInt(t.count)||0;
-    const up     = pct >= 0;
-    const icon   = getCryptoImg(sym);
-    return `<div class="pair-row" onclick="window.open('https://www.binance.com/en/trade/${sym}_USDT','_blank')">
-      <div>
-        <div style="display:flex;align-items:center;gap:7px">
-          <img src="${icon}" style="width:20px;height:20px;border-radius:50%;background:var(--card2)" onerror="this.style.display='none'">
-          <div>
-            <div class="pair-name">${sym}<span style="color:var(--text3);font-size:10px">/USDT</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="dex-val">$${price<0.001?price.toFixed(8):price<1?price.toFixed(4):price.toFixed(2)}</div>
-      <div><span class="pct ${up?'up':'dn'}">${(up?'+':'')+pct.toFixed(2)}%</span></div>
-      <div class="dex-val">$${(vol/1e6).toFixed(1)}M</div>
-      <div class="dex-val" style="color:var(--green)">$${high<1?high.toFixed(4):high.toFixed(2)}</div>
-      <div class="dex-val" style="color:var(--red)">$${low<1?low.toFixed(4):low.toFixed(2)}</div>
-      <div class="dex-val">${(trades/1000).toFixed(1)}K</div>
-    </div>`;
-  }).join('');
-
-  const lm = document.getElementById('binanceLoadMore');
-  if(lm) lm.style.display = data.length > binanceDisplayCount ? 'inline' : 'none';
-}
-
-function filterBinancePairs(q){
-  binanceSearchQuery = q;
-  binanceDisplayCount = 50;
-  renderBinancePairs();
-}
-
-function sortBinancePairs(mode, btn){
-  binanceSortMode = mode;
-  binanceDisplayCount = 50;
-  document.querySelectorAll('#binanceSortBtns .chain-btn').forEach(b=>b.classList.remove('on'));
-  if(btn) btn.classList.add('on');
-  renderBinancePairs();
-}
-
-function loadMoreBinancePairs(){
-  binanceDisplayCount += 50;
-  renderBinancePairs();
 }
 
 // ======================================================
@@ -3371,9 +3011,7 @@ function renderNFT(){
     return `<div class="nft-item" onclick="window.open('${mktLink}','_blank')">
       <div class="nft-rank">${label}</div>
       <div class="nft-img" style="background:${n.color}22;border:2px solid ${n.color}55;border-radius:8px;width:40px;height:40px;flex-shrink:0;overflow:hidden">
-        ${n.img
-  ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" alt="${n.name}" onerror="this.style.display='none';this.parentNode.innerHTML='<div style=\\"width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px\\">${n.emoji||'🖼️'}</div>'">`
-  : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px">${n.emoji||'🖼️'}</div>`}
+        ${n.img ? `<img src="${n.img}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:${n.color}22\\'>${n.emoji||'🖼️'}</div>'" alt="${n.name}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px">${n.emoji||'🖼️'}</div>`}
       </div>
       <div class="nft-info">
         <div class="nft-name">${n.name}</div>
@@ -3432,36 +3070,36 @@ let exchTab = 'cex';
 
 const EXCH_META = {
   // CEX — real logos
-  binance:    {logo:'https://img.logo.dev/binance.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#F3BA2F', url:'https://www.binance.com'},
-  okx:        {logo:'https://img.logo.dev/okx.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',        color:'#000',    url:'https://www.okx.com'},
-  bybit:      {logo:'https://img.logo.dev/bybit.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',      color:'#F7A600', url:'https://www.bybit.com'},
-  kucoin:     {logo:'https://img.logo.dev/kucoin.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',     color:'#26A17B', url:'https://www.kucoin.com'},
-  gate:       {logo:'https://img.logo.dev/gate.io?token=pk_DdEBpMHoRzGrMKqo6oQRCw',        color:'#0052FF', url:'https://www.gate.io'},
-  whitebit:   {logo:'https://img.logo.dev/whitebit.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',   color:'#1A1B1E', url:'https://whitebit.com'},
-  bitget:     {logo:'https://img.logo.dev/bitget.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',     color:'#00C2FF', url:'https://www.bitget.com'},
-  bingx:      {logo:'https://img.logo.dev/bingx.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',      color:'#1B4FFF', url:'https://bingx.com'},
-  mexc:       {logo:'https://img.logo.dev/mexc.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',       color:'#0ECFAF', url:'https://www.mexc.com'},
-  htx:        {logo:'https://img.logo.dev/htx.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',        color:'#E84142', url:'https://www.htx.com'},
-  kraken:     {logo:'https://img.logo.dev/kraken.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',     color:'#5741D9', url:'https://www.kraken.com'},
-  coinbase_advanced_trade:{logo:'https://img.logo.dev/coinbase.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw', color:'#0052FF', url:'https://www.coinbase.com'},
-  coinbase:   {logo:'https://img.logo.dev/coinbase.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',   color:'#0052FF', url:'https://www.coinbase.com'},
-  bitfinex:   {logo:'https://img.logo.dev/bitfinex.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',   color:'#16b157', url:'https://www.bitfinex.com'},
-  deribit:    {logo:'https://img.logo.dev/deribit.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#5741D9', url:'https://www.deribit.com'},
+  binance:    {logo:'https://assets.coingecko.com/markets/images/52/small/binance.jpg',        color:'#F3BA2F', url:'https://www.binance.com'},
+  okx:        {logo:'https://assets.coingecko.com/markets/images/96/small/WeChat_Image_20220117220452.png', color:'#000', url:'https://www.okx.com'},
+  bybit:      {logo:'https://assets.coingecko.com/markets/images/698/small/bybit_spot.png',    color:'#F7A600', url:'https://www.bybit.com'},
+  kucoin:     {logo:'https://assets.coingecko.com/markets/images/61/small/kucoin.png',         color:'#26A17B', url:'https://www.kucoin.com'},
+  gate:       {logo:'https://assets.coingecko.com/markets/images/60/small/gate_io_logo1.jpg',  color:'#0052FF', url:'https://www.gate.io'},
+  whitebit:   {logo:'https://assets.coingecko.com/markets/images/1090/small/WhiteBIT.png',     color:'#1A1B1E', url:'https://whitebit.com'},
+  bitget:     {logo:'https://assets.coingecko.com/markets/images/591/small/bitget.jpg',        color:'#00C2FF', url:'https://www.bitget.com'},
+  bingx:      {logo:'https://assets.coingecko.com/markets/images/804/small/bingx.jpg',        color:'#1B4FFF', url:'https://bingx.com'},
+  mexc:       {logo:'https://assets.coingecko.com/markets/images/409/small/MEXC_logo_square.jpeg', color:'#0ECFAF', url:'https://www.mexc.com'},
+  htx:        {logo:'https://assets.coingecko.com/markets/images/25/small/huobi.jpg',          color:'#E84142', url:'https://www.htx.com'},
+  kraken:     {logo:'https://assets.coingecko.com/markets/images/29/small/kraken.jpg',         color:'#5741D9', url:'https://www.kraken.com'},
+  coinbase_advanced_trade:{logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg', color:'#0052FF', url:'https://www.coinbase.com'},
+  coinbase:   {logo:'https://assets.coingecko.com/markets/images/23/small/coinbase.jpg',       color:'#0052FF', url:'https://www.coinbase.com'},
+  bitfinex:   {logo:'https://assets.coingecko.com/markets/images/4/small/BItfinex.png',        color:'#16b157', url:'https://www.bitfinex.com'},
+  deribit:    {logo:'https://assets.coingecko.com/markets/images/214/small/deribit.jpg',       color:'#5741D9', url:'https://www.deribit.com'},
   // DEX — real logos
-  uniswap_v3: {logo:'https://img.logo.dev/uniswap.org?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#FF007A', url:'https://app.uniswap.org'},
-  uniswap_v2: {logo:'https://img.logo.dev/uniswap.org?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#FF007A', url:'https://app.uniswap.org'},
-  uniswap:    {logo:'https://img.logo.dev/uniswap.org?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#FF007A', url:'https://app.uniswap.org'},
-  curve:      {logo:'https://img.logo.dev/curve.fi?token=pk_DdEBpMHoRzGrMKqo6oQRCw',         color:'#3498DB', url:'https://curve.fi'},
-  curve_v2:   {logo:'https://img.logo.dev/curve.fi?token=pk_DdEBpMHoRzGrMKqo6oQRCw',         color:'#3498DB', url:'https://curve.fi'},
-  pancakeswap_new:{logo:'https://img.logo.dev/pancakeswap.finance?token=pk_DdEBpMHoRzGrMKqo6oQRCw', color:'#FFD800', url:'https://pancakeswap.finance'},
-  pancakeswap:{logo:'https://img.logo.dev/pancakeswap.finance?token=pk_DdEBpMHoRzGrMKqo6oQRCw',  color:'#FFD800', url:'https://pancakeswap.finance'},
-  dydx:       {logo:'https://img.logo.dev/dydx.exchange?token=pk_DdEBpMHoRzGrMKqo6oQRCw',          color:'#6966FF', url:'https://dydx.exchange'},
-  orca:       {logo:'https://img.logo.dev/orca.so?token=pk_DdEBpMHoRzGrMKqo6oQRCw',         color:'#00C2FF', url:'https://www.orca.so'},
-  aerodrome:  {logo:'https://img.logo.dev/aerodrome.finance?token=pk_DdEBpMHoRzGrMKqo6oQRCw',    color:'#FF0420', url:'https://aerodrome.finance'},
-  velodrome:  {logo:'https://img.logo.dev/velodrome.finance?token=pk_DdEBpMHoRzGrMKqo6oQRCw',     color:'#FF0420', url:'https://velodrome.finance'},
-  sushiswap:  {logo:'https://img.logo.dev/sushi.com?token=pk_DdEBpMHoRzGrMKqo6oQRCw',     color:'#FA52A0', url:'https://www.sushi.com'},
-  raydium:    {logo:'https://img.logo.dev/raydium.io?token=pk_DdEBpMHoRzGrMKqo6oQRCw',       color:'#9945FF', url:'https://raydium.io'},
-  jupiter:    {logo:'https://img.logo.dev/jup.ag?token=pk_DdEBpMHoRzGrMKqo6oQRCw',      color:'#C8A84B', url:'https://jup.ag'},
+  uniswap_v3: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
+  uniswap_v2: {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
+  uniswap:    {logo:'https://assets.coingecko.com/markets/images/535/small/uniswap-v3.png',    color:'#FF007A', url:'https://app.uniswap.org'},
+  curve:      {logo:'https://assets.coingecko.com/markets/images/538/small/Curve.png',         color:'#3498DB', url:'https://curve.fi'},
+  curve_v2:   {logo:'https://assets.coingecko.com/markets/images/538/small/Curve.png',         color:'#3498DB', url:'https://curve.fi'},
+  pancakeswap_new:{logo:'https://assets.coingecko.com/markets/images/687/small/pancakeswap.jpeg', color:'#FFD800', url:'https://pancakeswap.finance'},
+  pancakeswap:{logo:'https://assets.coingecko.com/markets/images/687/small/pancakeswap.jpeg',  color:'#FFD800', url:'https://pancakeswap.finance'},
+  dydx:       {logo:'https://assets.coingecko.com/markets/images/584/small/dydx.jpg',          color:'#6966FF', url:'https://dydx.exchange'},
+  orca:       {logo:'https://assets.coingecko.com/markets/images/1007/small/orca.jpg',         color:'#00C2FF', url:'https://www.orca.so'},
+  aerodrome:  {logo:'https://assets.coingecko.com/markets/images/1124/small/aerodrome.jpg',    color:'#FF0420', url:'https://aerodrome.finance'},
+  velodrome:  {logo:'https://assets.coingecko.com/markets/images/988/small/velodrome.jpg',     color:'#FF0420', url:'https://velodrome.finance'},
+  sushiswap:  {logo:'https://assets.coingecko.com/markets/images/576/small/sushiswap.jpg',     color:'#FA52A0', url:'https://www.sushi.com'},
+  raydium:    {logo:'https://assets.coingecko.com/markets/images/722/small/raydium.jpg',       color:'#9945FF', url:'https://raydium.io'},
+  jupiter:    {logo:'https://assets.coingecko.com/markets/images/1098/small/jupiter.jpg',      color:'#C8A84B', url:'https://jup.ag'},
 };
 
 async function loadExchanges(){
@@ -4110,12 +3748,208 @@ function spawnBarSparkles(bar){
   }
 }
 
-// Wait for DOM to be ready before initializing
-if(document.readyState === "loading"){
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
+
+// ======================================================
+//  BINANCE ENRICHMENT — adds 500+ extra tokens to
+//  cryptoData AFTER CoinGecko has already loaded.
+//  Does NOT modify any existing code / functions.
+// ======================================================
+
+// Map Binance base symbols → CoinGecko-style image URLs
+// Uses jsdelivr/spothq (800+ coins, no API key needed)
+function getBinanceImg(sym) {
+  const s = sym.toLowerCase();
+  const knownImgs = {
+    btc:'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+    eth:'https://assets.coingecko.com/coins/images/279/small/ethereum.png',
+    bnb:'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',
+    sol:'https://assets.coingecko.com/coins/images/4128/small/solana.png',
+    xrp:'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png',
+    usdt:'https://assets.coingecko.com/coins/images/325/small/Tether.png',
+    usdc:'https://assets.coingecko.com/coins/images/6319/small/usdc.png',
+    ada:'https://assets.coingecko.com/coins/images/975/small/cardano.png',
+    avax:'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',
+    doge:'https://assets.coingecko.com/coins/images/5/small/dogecoin.png',
+    dot:'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',
+    matic:'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',
+    trx:'https://assets.coingecko.com/coins/images/1094/small/tron-logo.png',
+    link:'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',
+    ton:'https://assets.coingecko.com/coins/images/17980/small/ton_symbol.png',
+    shib:'https://assets.coingecko.com/coins/images/11939/small/shiba.png',
+    ltc:'https://assets.coingecko.com/coins/images/2/small/litecoin.png',
+    uni:'https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png',
+    atom:'https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png',
+    xlm:'https://assets.coingecko.com/coins/images/100/small/Stellar_symbol_black_RGB.png',
+    bch:'https://assets.coingecko.com/coins/images/780/small/bitcoin-cash-circle.png',
+    etc:'https://assets.coingecko.com/coins/images/453/small/ethereum-classic-logo.png',
+    near:'https://assets.coingecko.com/coins/images/10365/small/near.jpg',
+    apt:'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
+    arb:'https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg',
+    op:'https://assets.coingecko.com/coins/images/25244/small/Optimism.png',
+    fil:'https://assets.coingecko.com/coins/images/12817/small/filecoin.png',
+    algo:'https://assets.coingecko.com/coins/images/4380/small/download.png',
+    vet:'https://assets.coingecko.com/coins/images/1167/small/VeChain-Logo-768x768.png',
+    icp:'https://assets.coingecko.com/coins/images/14495/small/Internet_Computer_logo.png',
+    hbar:'https://assets.coingecko.com/coins/images/3688/small/hbar.png',
+    aave:'https://assets.coingecko.com/coins/images/12645/small/AAVE.png',
+    mkr:'https://assets.coingecko.com/coins/images/1364/small/Mark_Maker.png',
+    grt:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png',
+    inj:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png',
+    sui:'https://assets.coingecko.com/coins/images/26375/small/sui_asset.jpeg',
+    sei:'https://assets.coingecko.com/coins/images/28205/small/Sei_Logo_-_Transparent.png',
+    pepe:'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg',
+    wif:'https://assets.coingecko.com/coins/images/33566/small/dogwifhat.jpg',
+    floki:'https://assets.coingecko.com/coins/images/16746/small/PNG_image.png',
+    bonk:'https://assets.coingecko.com/coins/images/28600/small/bonk.jpg',
+    tia:'https://assets.coingecko.com/coins/images/31967/small/tia.jpg',
+    pyth:'https://assets.coingecko.com/coins/images/31924/small/pyth.png',
+    jup:'https://assets.coingecko.com/coins/images/34188/small/jup.png',
+    wld:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg',
+    strk:'https://assets.coingecko.com/coins/images/26433/small/starknet.png',
+    render:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
+    rndr:'https://assets.coingecko.com/coins/images/11636/small/rndr.png',
+    fet:'https://assets.coingecko.com/coins/images/5681/small/Fetch.jpg',
+    kas:'https://assets.coingecko.com/coins/images/25751/small/kaspa-icon-exchanges.png',
+    not:'https://assets.coingecko.com/coins/images/36447/small/notcoin.jpg',
+    pendle:'https://assets.coingecko.com/coins/images/15069/small/Pendle_Logo_Normal-03.png',
+    xmr:'https://assets.coingecko.com/coins/images/69/small/monero_logo.png',
+    ftm:'https://assets.coingecko.com/coins/images/4001/small/Fantom_round.png',
+    sand:'https://assets.coingecko.com/coins/images/12129/small/sandbox_logo.jpg',
+    mana:'https://assets.coingecko.com/coins/images/878/small/decentraland-mana.png',
+    axs:'https://assets.coingecko.com/coins/images/13029/small/axie_infinity_logo.png',
+    imx:'https://assets.coingecko.com/coins/images/17233/small/immutableX-symbol-BLK-RGB.png',
+    blur:'https://assets.coingecko.com/coins/images/28453/small/blur.png',
+    ens:'https://assets.coingecko.com/coins/images/19785/small/acatxTm8_400x400.jpg',
+    bat:'https://assets.coingecko.com/coins/images/677/small/basic-attention-token.png',
+    zrx:'https://assets.coingecko.com/coins/images/863/small/0x.png',
+    ankr:'https://assets.coingecko.com/coins/images/4755/small/Ankr_enlargedfinallogo-01.png',
+    comp:'https://assets.coingecko.com/coins/images/10775/small/COMP.png',
+    snx:'https://assets.coingecko.com/coins/images/3406/small/SNX.png',
+    sushi:'https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png',
+    crv:'https://assets.coingecko.com/coins/images/12124/small/Curve.png',
+    gmx:'https://assets.coingecko.com/coins/images/18323/small/arbit.png',
+    dydx:'https://assets.coingecko.com/coins/images/17500/small/hjnIm9bV.jpg',
+    wbtc:'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png',
+    dai:'https://assets.coingecko.com/coins/images/9956/small/Badge_Dai.png',
+    paxg:'https://assets.coingecko.com/coins/images/9519/small/paxg.PNG',
+    ocean:'https://assets.coingecko.com/coins/images/3687/small/ocean-protocol-logo.jpg',
+    ar:'https://assets.coingecko.com/coins/images/4343/small/oRt6SiEN_400x400.jpg',
+    hnt:'https://assets.coingecko.com/coins/images/4284/small/Helium_HNT_white_TNS.jpg',
+    kava:'https://assets.coingecko.com/coins/images/9761/small/kava.png',
+    agix:'https://assets.coingecko.com/coins/images/2138/small/singularityai.jpg',
+    theta:'https://assets.coingecko.com/coins/images/2538/small/theta-token-logo.png',
+    jasmy:'https://assets.coingecko.com/coins/images/13876/small/JASMY200x200.jpg',
+    chz:'https://assets.coingecko.com/coins/images/8834/small/Chiliz.png',
+    enj:'https://assets.coingecko.com/coins/images/1102/small/enjin-coin-logo.png',
+    gala:'https://assets.coingecko.com/coins/images/12493/small/GALA-COINGECKO.png',
+    flow:'https://assets.coingecko.com/coins/images/13446/small/5f6294c0c7a8cda55cb1c936_Flow_Wordmark.png',
+    lrc:'https://assets.coingecko.com/coins/images/913/small/LRC.png',
+    steth:'https://assets.coingecko.com/coins/images/13442/small/steth_logo.png',
+    neo:'https://assets.coingecko.com/coins/images/480/small/NEO_512_512.png',
+    waves:'https://assets.coingecko.com/coins/images/425/small/waves.png',
+    zil:'https://assets.coingecko.com/coins/images/2687/small/Zilliqa-logo.png',
+    iost:'https://assets.coingecko.com/coins/images/2523/small/IOST.png',
+    dcr:'https://assets.coingecko.com/coins/images/329/small/decred.png',
+    ont:'https://assets.coingecko.com/coins/images/3447/small/ONT.png',
+    qtum:'https://assets.coingecko.com/coins/images/684/small/qtum.png',
+    nano:'https://assets.coingecko.com/coins/images/756/small/nano-coin-logo.png',
+    zec:'https://assets.coingecko.com/coins/images/486/small/circle-zcash-color.png',
+    dash:'https://assets.coingecko.com/coins/images/19/small/dash-logo.png',
+    xtz:'https://assets.coingecko.com/coins/images/976/small/Tezos-logo.png',
+    band:'https://assets.coingecko.com/coins/images/9545/small/Band_token_blue_violet_token_detailed.png',
+    ray:'https://assets.coingecko.com/coins/images/13928/small/PSigc4ie_400x400.jpg',
+    axl:'https://assets.coingecko.com/coins/images/27277/small/V-65_xQ1_400x400.jpeg',
+    skl:'https://assets.coingecko.com/coins/images/13245/small/SKALE_token_300x300.png',
+    ctsi:'https://assets.coingecko.com/coins/images/11038/small/cartesi.png',
+    storj:'https://assets.coingecko.com/coins/images/949/small/storj.png',
+    lpt:'https://assets.coingecko.com/coins/images/7137/small/livepeer-token.png',
+    api3:'https://assets.coingecko.com/coins/images/13256/small/api3.jpg',
+    uma:'https://assets.coingecko.com/coins/images/10951/small/UMA.png',
+    trb:'https://assets.coingecko.com/coins/images/9644/small/Tellor_logo.jpg',
+    rdnt:'https://assets.coingecko.com/coins/images/26536/small/radiant.png',
+    '1inch':'https://assets.coingecko.com/coins/images/13469/small/1inch-token.png',
+  };
+  return knownImgs[s]
+    || 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/' + s + '.png';
 }
+
+// Convert one raw Binance ticker into CoinGecko-compatible shape
+function binanceTickerToCoin(t) {
+  const sym = t.symbol.replace(/USDT$/i, '').toLowerCase();
+  const price = parseFloat(t.lastPrice) || 0;
+  const p24 = parseFloat(t.priceChangePercent) || 0;
+  const vol = parseFloat(t.quoteVolume) || 0;
+  return {
+    id: 'binance_' + sym,
+    symbol: sym,
+    name: sym.toUpperCase(),
+    current_price: price,
+    price_change_percentage_24h: p24,
+    price_change_percentage_1h_in_currency: 0,
+    price_change_percentage_7d_in_currency: 0,
+    market_cap: vol * price,
+    total_volume: vol,
+    circulating_supply: 0,
+    market_cap_rank: null,
+    image: getBinanceImg(sym),
+    sparkline_in_7d: { price: [] },
+    _fromBinance: true
+  };
+}
+
+// Called after CoinGecko data loads — fetches Binance 24hr tickers,
+// filters to USDT pairs not already in cryptoData, appends them,
+// then re-renders. Completely safe — only appends, never replaces.
+async function enrichWithBinance() {
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+    if (!r.ok) return; // silently skip if Binance unavailable
+    const raw = await r.json();
+    if (!Array.isArray(raw)) return;
+
+    // Build a set of symbols already loaded from CoinGecko
+    const existing = new Set(cryptoData.map(c => c.symbol.toLowerCase()));
+
+    // Filter: USDT pairs only, meaningful volume, not already shown
+    const newCoins = raw
+      .filter(t =>
+        t.symbol.endsWith('USDT') &&
+        !t.symbol.startsWith('USDT') &&
+        parseFloat(t.quoteVolume) > 100000 &&
+        !existing.has(t.symbol.replace(/USDT$/i,'').toLowerCase())
+      )
+      .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+      .slice(0, 500)
+      .map(binanceTickerToCoin);
+
+    if (!newCoins.length) return;
+
+    // Append to the existing cryptoData — do NOT replace it
+    cryptoData = cryptoData.concat(newCoins);
+
+    // Re-render both views so new coins are visible
+    renderCryptoTable();
+    renderCryptoFull();
+
+  } catch(e) {
+    // Binance unreachable — gracefully do nothing, site still works
+    console.warn('Binance enrichment skipped:', e.message);
+  }
+}
+
+// ── Patch init to also trigger Binance enrichment ──
+// We wrap the original init without replacing it.
+const _originalInit = init;
+async function init() {
+  await _originalInit();
+  // Fire Binance fetch 10s after page load — CoinGecko will have
+  // finished by then and cryptoData will be populated
+  setTimeout(enrichWithBinance, 10000);
+  // Refresh Binance extra coins every 5 minutes
+  setInterval(enrichWithBinance, 300000);
+}
+
+init();
 </script>
 <!-- ===== CRYPTO EDUCATION SECTION ===== -->
 <section class="edu-section">
@@ -4452,7 +4286,7 @@ if(document.readyState === "loading"){
         <div class="f-brand"><div class="logo-mark" style="width:24px;height:24px;font-size:13px">⚡</div> WARYAA<span style="color:var(--blue)">MARKET</span></div>
         <div class="f-desc">Real-time crypto & AI market intelligence. Track prices, DEX pairs, NFT rankings, on-chain data, and market sentiment — all in one dashboard.</div>
         <div style="display:flex;gap:10px">
-          <a href="https://t.me/waryaamarket" target="_blank" style="font-size:11px;color:var(--text3);transition:color 0.15s" onmouseover="this.style.color='#29B6F6'" onmouseout="this.style.color='var(--text3)'">📢 Telegram ↗</a>
+          <a href="https://t.me/+ZLzpchRiIyhlMTk0" target="_blank" style="font-size:11px;color:var(--text3);transition:color 0.15s" onmouseover="this.style.color='#29B6F6'" onmouseout="this.style.color='var(--text3)'">📢 Telegram ↗</a>
           <a href="https://waryaamarket.com" style="font-size:11px;color:var(--text3)">waryaamarket.com</a>
         </div>
       </div>
@@ -4474,7 +4308,7 @@ if(document.readyState === "loading"){
       </div>
       <div>
         <div class="f-col-title">Resources</div>
-        <a class="f-link" href="https://t.me/waryaamarket" target="_blank">📢 Telegram Community ↗</a>
+        <a class="f-link" href="https://t.me/+ZLzpchRiIyhlMTk0" target="_blank">📢 Telegram Community ↗</a>
         <a class="f-link" href="https://opensea.io" target="_blank">OpenSea NFTs ↗</a>
         <a class="f-link" href="https://magiceden.io" target="_blank">Magic Eden ↗</a>
         <a class="f-link" href="https://dexscreener.com" target="_blank">DexScreener ↗</a>
@@ -4533,7 +4367,7 @@ if(document.readyState === "loading"){
       <p class="tc-p">We reserve the right to modify these Terms at any time. Continued use of the Site after changes constitutes acceptance of the new Terms.</p>
 
       <div class="tc-h3">10. Contact</div>
-      <p class="tc-p">For questions regarding these Terms, please contact us via our <a href="https://t.me/waryaamarket" target="_blank" style="color:var(--blue)">Telegram community ↗</a>.</p>
+      <p class="tc-p">For questions regarding these Terms, please contact us via our <a href="https://t.me/+ZLzpchRiIyhlMTk0" target="_blank" style="color:var(--blue)">Telegram community ↗</a>.</p>
     </div>
   </div>
 </div>
@@ -5006,7 +4840,7 @@ function shareOn(platform, link){
   const msg = encodeURIComponent('🚀 I use WaryaaMarket for real-time crypto, AI stocks & alpha signals! Check it out: ' + link);
   const urls = {
     twitter:  'https://twitter.com/intent/tweet?text=' + msg,
-    telegram: 'https://t.me/waryaamarket',
+    telegram: 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('🚀 WaryaaMarket — real-time crypto & alpha signals'),
     whatsapp: 'https://wa.me/?text=' + msg
   };
   if(urls[platform]) window.open(urls[platform], '_blank');
