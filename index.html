@@ -172,6 +172,10 @@ header{background:rgba(6,9,15,0.92);backdrop-filter:blur(24px);border-bottom:1px
 .c-sym{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:1px}
 .c-rank{font-family:var(--mono);font-size:11px;color:var(--text3);width:36px}
 .price-val{font-family:var(--mono);font-weight:600}
+.flash-up{animation:flash-green 0.6s ease-out}
+.flash-dn{animation:flash-red 0.6s ease-out}
+@keyframes flash-green{0%{background:#22c55e44;color:#22c55e}100%{background:transparent;color:inherit}}
+@keyframes flash-red{0%{background:#ef444444;color:#ef4444}100%{background:transparent;color:inherit}}
 .pct{font-family:var(--mono);font-size:11.5px;font-weight:700;padding:2px 6px;border-radius:4px}
 .pct.up{color:var(--green);background:rgba(0,255,136,0.08)}
 .pct.dn{color:var(--red);background:rgba(255,48,85,0.08)}
@@ -822,7 +826,7 @@ body.light .stats-strip{background:#fff}
       <button class="nav-btn wrc-nav-btn" onclick="openAlphaModal()">🔐 Waryaa Signals <span class="wrc-nav-badge" id="wrcNavBadge">0 WRC</span></button>
     </nav>
     <div class="h-right">
-      <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+      <div class="live-pill"><div class="live-dot"></div><span class="live-label">LIVE</span></div>
       <!-- Theme Dropdown -->
       <div class="theme-dropdown" id="themeDropdown">
         <button class="theme-btn" onclick="toggleThemeMenu()">🌙 Dark <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" style="margin-left:2px"><path d="M2 3l3 4 3-4z"/></svg></button>
@@ -1764,14 +1768,14 @@ function updateAltcoinIndex(){
 //  CRYPTO TABLE
 // ======================================================
 function renderCryptoTable(data){
-  const coins=(data||cryptoData).slice(0,20);
+  const coins=(data||cryptoData).slice(0,100);
   const tbody=document.getElementById('cryptoBody');
   if(!coins.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">No data</td></tr>';return;}
   tbody.innerHTML=coins.map(c=>{
     const p1h=c.price_change_percentage_1h_in_currency||0;
     const p24=c.price_change_percentage_24h||0;
     const p7d=c.price_change_percentage_7d_in_currency||0;
-    return`<tr onclick="openCoin('${c.id}')" data-id="${c.id}">
+    return`<tr onclick="openCoin('${c.id}')" data-id="${c.id}" data-sym="${(c.symbol||'').toUpperCase()}">
       <td class="c-rank">${c.market_cap_rank||'—'}</td>
       <td><div class="cn-cell">
         <img class="c-logo" src="${c.image||getCryptoImg(c.symbol||''||'BTC')}" onerror="this.onerror=null;var _s=this.alt||'?';this.src='https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/'+_s.toLowerCase()+'.png';this.onerror=function(){this.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;width:'+this.width+'px;height:'+this.width+'px;border-radius:50%;background:linear-gradient(135deg,#3861FB,#0EA5E9);align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#fff;flex-shrink:0';b.textContent=_s.substring(0,3).toUpperCase();if(this.parentNode)this.parentNode.insertBefore(b,this);}"   alt="${c.symbol}" >
@@ -2734,78 +2738,144 @@ function normalizeBinanceTicker(t){
   };
 }
 
-let binanceAllTickers = []; // full 1500+ list
+let binanceAllTickers = []; // full live list
 
-async function fetchCryptoWithRetry(attempt=1){
-  try{
-    // Primary: Binance — 1500+ USDT pairs, no key, no rate limit
-    // Try direct Binance API first (works in most browsers)
-    let r;
-    try {
-      r = await wmFetch('/api/markets');
-    } catch(corsErr) {
-      // CORS fallback via proxy
-      r = await wmFetch('/api/markets-fallback');
+// ─── WEBSOCKET ENGINE ────────────────────────────────────────────────────────
+const WS_URL = 'wss://stream.binance.com:9443/ws/!ticker@arr';
+let _ws = null;
+let _wsReady = false;
+let _wsRetryDelay = 2000;
+let _wsRetryTimer = null;
+let _renderThrottle = null;
+let _priceCache = {}; // sym → last price (for flash detection)
+let _sparkMap = {};   // sym → sparkline data from CoinGecko
+
+// Flash a price cell green/red when it changes
+function flashCell(sym, direction){
+  const rows = document.querySelectorAll(`tr[data-sym="${sym}"] .price-val`);
+  rows.forEach(el=>{
+    el.classList.remove('flash-up','flash-dn');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add(direction==='up'?'flash-up':'flash-dn');
+    setTimeout(()=>el.classList.remove('flash-up','flash-dn'), 600);
+  });
+}
+
+function processWsMessage(tickers){
+  const filtered = tickers
+    .filter(t => t.s.endsWith('USDT') && parseFloat(t.q) > 50000)
+    .sort((a,b) => parseFloat(b.q) - parseFloat(a.q));
+
+  binanceAllTickers = filtered;
+
+  // Detect price changes for flash effect
+  filtered.slice(0,100).forEach(t=>{
+    const sym = t.s.replace('USDT','');
+    const newPrice = parseFloat(t.c);
+    if(_priceCache[sym] !== undefined && _priceCache[sym] !== newPrice){
+      flashCell(sym, newPrice > _priceCache[sym] ? 'up' : 'dn');
     }
-    if(!r.ok) throw new Error('binance_fail');
-    const raw = await r.json();
+    _priceCache[sym] = newPrice;
+  });
 
-    // Store full list for search / browse
-    binanceAllTickers = raw
-      .filter(t => t.symbol.endsWith('USDT') && parseFloat(t.quoteVolume) > 50000)
-      .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
+  // Build cryptoData top 100
+  cryptoData = filtered.slice(0,100).map(t=>{
+    const norm = normalizeBinanceTicker({
+      symbol: t.s, lastPrice: t.c, priceChangePercent: t.P,
+      quoteVolume: t.q, priceChange: t.p
+    });
+    // Merge sparkline if available
+    norm.sparkline_in_7d = _sparkMap[norm.symbol.toUpperCase()] || {price:[]};
+    return norm;
+  });
 
-    // Top 200 by volume for cryptoData (used by existing render functions)
-    cryptoData = binanceAllTickers.slice(0,200).map(normalizeBinanceTicker);
-
-    renderCryptoTable();
-    renderCryptoFull();
-    updateTickerFromData();
-    updateAltcoinIndex();
-    renderBinanceStats();
-    renderBinancePairs();
-
-    // Fetch CoinGecko sparklines in background and merge into cryptoData
-    try {
-      const sparkRes = await wmFetch('/api/markets-fallback');
-      if (sparkRes.ok) {
-        const sparkData = await sparkRes.json();
-        if (Array.isArray(sparkData)) {
-          const sparkMap = {};
-          sparkData.forEach(c => { if(c.symbol) sparkMap[c.symbol.toUpperCase()] = c.sparkline_in_7d; });
-          cryptoData = cryptoData.map(c => ({
-            ...c,
-            sparkline_in_7d: sparkMap[c.symbol?.toUpperCase()] || c.sparkline_in_7d
-          }));
-          renderCryptoTable();
-          renderCryptoFull();
-        }
-      }
-    } catch(sparkErr) { /* sparklines optional */ }
-  }catch(e){
-    // Fallback: CoinGecko
-    try{
-      const r2 = await wmFetch('/api/markets-fallback');
-      if(r2.status===429) throw new Error('rate_limit');
-      cryptoData = await r2.json();
-      if(!Array.isArray(cryptoData)||!cryptoData.length) throw new Error('empty');
+  // Throttle renders to max once per second
+  if(!_renderThrottle){
+    _renderThrottle = setTimeout(()=>{
+      _renderThrottle = null;
       renderCryptoTable();
       renderCryptoFull();
       updateTickerFromData();
       updateAltcoinIndex();
-    }catch(e2){
-      const wait = attempt*8000;
-      const maxAttempts = 5;
-      const tbody = document.getElementById('cryptoBody');
-      if(attempt <= maxAttempts){
-        if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⏳ Loading market data... retry ${attempt}/${maxAttempts}</td></tr>`;
-        setTimeout(()=>fetchCryptoWithRetry(attempt+1), wait);
-      }else{
-        if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Unable to load data. <span onclick="fetchCryptoWithRetry()" style="color:var(--blue);cursor:pointer;text-decoration:underline">Retry</span></td></tr>`;
-      }
-    }
+      renderBinanceStats();
+      renderBinancePairs();
+      setWsStatus('live');
+    }, 1000);
   }
 }
+
+function setWsStatus(state){
+  const dot = document.querySelector('.live-dot');
+  const label = document.querySelector('.live-label');
+  if(!dot || !label) return;
+  if(state==='live'){
+    dot.style.background='#22c55e';
+    label.textContent='LIVE';
+  } else if(state==='connecting'){
+    dot.style.background='#f59e0b';
+    label.textContent='connecting...';
+  } else {
+    dot.style.background='#ef4444';
+    label.textContent='reconnecting...';
+  }
+}
+
+function connectWs(){
+  if(_wsRetryTimer){ clearTimeout(_wsRetryTimer); _wsRetryTimer=null; }
+  setWsStatus('connecting');
+
+  _ws = new WebSocket(WS_URL);
+
+  _ws.onopen = ()=>{
+    _wsReady = true;
+    _wsRetryDelay = 2000; // reset backoff
+    console.log('[WS] Connected to Binance stream');
+  };
+
+  _ws.onmessage = (e)=>{
+    try{
+      const data = JSON.parse(e.data);
+      if(Array.isArray(data)) processWsMessage(data);
+    } catch(err){ /* ignore parse errors */ }
+  };
+
+  _ws.onerror = ()=>{ _wsReady=false; };
+
+  _ws.onclose = ()=>{
+    _wsReady = false;
+    setWsStatus('reconnecting');
+    console.log(`[WS] Disconnected. Retrying in ${_wsRetryDelay/1000}s...`);
+    _wsRetryTimer = setTimeout(()=>{
+      _wsRetryDelay = Math.min(_wsRetryDelay * 1.5, 30000); // exponential backoff, max 30s
+      connectWs();
+    }, _wsRetryDelay);
+  };
+}
+
+// Fetch CoinGecko sparklines once on load (7D charts)
+async function fetchSparklines(){
+  try{
+    const r = await wmFetch('/api/markets-fallback');
+    if(!r.ok) return;
+    const data = await r.json();
+    if(!Array.isArray(data)) return;
+    data.forEach(c=>{ if(c.symbol) _sparkMap[c.symbol.toUpperCase()] = c.sparkline_in_7d; });
+    // Merge into existing cryptoData if already loaded
+    if(cryptoData.length){
+      cryptoData = cryptoData.map(c=>({
+        ...c,
+        sparkline_in_7d: _sparkMap[c.symbol?.toUpperCase()] || c.sparkline_in_7d
+      }));
+      renderCryptoTable();
+      renderCryptoFull();
+    }
+    console.log('[Sparklines] Loaded for', Object.keys(_sparkMap).length, 'coins');
+  } catch(e){ console.warn('[Sparklines] Failed:', e); }
+}
+
+// Kept for backwards compat (called from search, gainers/losers tab etc.)
+async function fetchCryptoWithRetry(){ /* no-op — WebSocket handles this now */ }
+async function fetchCrypto(){ /* no-op */ }
 
 // Binance exchange-wide stats widget
 function renderBinanceStats(){
@@ -2838,24 +2908,25 @@ async function init(){
   renderFunding();
   renderWhales();
 
-  // Stagger all API calls — 2s apart to avoid rate limit
-  fetchCryptoWithRetry();
-  setTimeout(()=>fetchGlobal(), 2000);
-  setTimeout(()=>fetchFearGreed(), 4000);
-  setTimeout(()=>fetchGas(), 5000);
-  setTimeout(()=>loadNews('ALL'), 6000);
+  // ── WebSocket: live prices (Binance, no rate limit) ──
+  connectWs();
+
+  // ── One-time fetches on load ──
+  setTimeout(()=>fetchSparklines(), 1500);   // 7D charts
+  setTimeout(()=>fetchGlobal(), 1000);
+  setTimeout(()=>fetchFearGreed(), 2000);
+  setTimeout(()=>fetchGas(), 3000);
+  setTimeout(()=>loadNews('ALL'), 4000);
   setTimeout(()=>renderNFT(), 1000);
-  setTimeout(()=>loadExchanges(), 3000);
-  setInterval(()=>loadExchanges(), 120000); // refresh every 2 min
+  setTimeout(()=>loadExchanges(), 2500);
 
-  // Timers
-  setInterval(tick,1000);
-
-  // Auto-refresh (staggered too)
-  setInterval(()=>fetchCryptoWithRetry(), 65000);
-  setInterval(()=>fetchGlobal(), 67000);
+  // ── Background refresh for slow-changing data ──
+  setInterval(tick, 1000);
+  setInterval(()=>fetchGlobal(), 300000);          // every 5 min
   setInterval(()=>{fetchFearGreed();fetchGas();}, 300000);
   setInterval(()=>loadNews('ALL'), 180000);
+  setInterval(()=>loadExchanges(), 300000);
+  setInterval(()=>fetchSparklines(), 3600000);     // sparklines once per hour
 }
 
 
