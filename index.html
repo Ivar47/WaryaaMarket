@@ -1826,30 +1826,67 @@ function setCryptoTab(tab,el){
   else renderCryptoTable();
 }
 
+// Session-level cache for categories list (avoids repeat rate-limit hits)
+let _catsCache = null;
+let _catsCacheTs = 0;
+
 async function loadCats(){
   const grid=document.getElementById('catGrid');
+
+  // Serve from memory cache if fetched in last 60 minutes
+  if(_catsCache && Date.now() - _catsCacheTs < 3600000){
+    renderCatsGrid(_catsCache, grid);
+    return;
+  }
+
+  // Try sessionStorage as persistent cache across tab refreshes
+  try{
+    const stored = sessionStorage.getItem('wm_cats');
+    if(stored){
+      const parsed = JSON.parse(stored);
+      if(Date.now() - parsed.ts < 3600000){
+        _catsCache = parsed.data;
+        _catsCacheTs = parsed.ts;
+        renderCatsGrid(_catsCache, grid);
+        return;
+      }
+    }
+  } catch(e){}
+
   grid.innerHTML='<div style="grid-column:span 3;text-align:center;padding:20px;color:var(--text2)">Loading categories...</div>';
   try{
     const r=await wmFetch('/api/categories');
     const cats=await r.json();
-    grid.innerHTML=cats.slice(0,18).map(c=>{
-      const chg=c.market_cap_change_24h||0;
-      const topCoins=c.top_3_coins||[];
-      return`<div class="cat-c" onclick="openCategory('${encodeURIComponent(c.id)}','${encodeURIComponent(c.name)}','${fmt(c.market_cap,true)}','${c.num_tokens||0}','${chg.toFixed(2)}')">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div class="cat-nm">${c.name}</div>
-          <span class="pct ${chg>=0?'up':'dn'}" style="font-size:10px">${(chg>=0?'+':'')+chg.toFixed(2)}%</span>
-        </div>
-        <div class="cat-mc">$${fmt(c.market_cap,true)}</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-          <div style="display:flex;gap:3px">${topCoins.slice(0,3).map(img=>`<img src="${img}" style="width:18px;height:18px;border-radius:50%;background:var(--card)" onerror="this.style.display='none'">`).join('')}</div>
-          <div class="cat-ct">${c.num_tokens||'?'} tokens →</div>
-        </div>
-      </div>`;
-    }).join('');
+    // Save to memory + sessionStorage
+    _catsCache = cats;
+    _catsCacheTs = Date.now();
+    try{ sessionStorage.setItem('wm_cats', JSON.stringify({data:cats, ts:_catsCacheTs})); }catch(e){}
+    renderCatsGrid(cats, grid);
   }catch(e){
-    grid.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);grid-column:span 3">Rate limited. Try again in 60s.</div>';
+    // Show cached data if available even if stale
+    if(_catsCache){ renderCatsGrid(_catsCache, grid); return; }
+    grid.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);grid-column:span 3">⚠️ Rate limited. <span onclick="loadCats()" style="color:var(--blue);cursor:pointer">Retry in 60s</span></div>';
   }
+}
+
+function renderCatsGrid(cats,grid){
+  if(!cats||!cats.length){grid.innerHTML='<div style="grid-column:span 3;text-align:center;padding:20px;color:var(--text2)">No categories found.</div>';return;}
+  grid.innerHTML=cats.slice(0,18).map(c=>{
+    const chg=c.market_cap_change_24h||0;
+    const tc=c.top_3_coins||[];
+    const imgs=tc.slice(0,3).map(img=>'<img src="'+img+'" style="width:18px;height:18px;border-radius:50%;background:var(--card)" onerror="this.style.display=\'none\'">').join('');
+    return '<div class="cat-c" onclick="openCategory(\''+encodeURIComponent(c.id)+'\',\''+encodeURIComponent(c.name)+'\',\''+fmt(c.market_cap,true)+'\',\''+(c.num_tokens||0)+'\',\''+chg.toFixed(2)+'\')">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+      +'<div class="cat-nm">'+c.name+'</div>'
+      +'<span class="pct '+(chg>=0?'up':'dn')+'" style="font-size:10px">'+(chg>=0?'+':'')+chg.toFixed(2)+'%</span>'
+      +'</div>'
+      +'<div class="cat-mc">$'+fmt(c.market_cap,true)+'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">'
+      +'<div style="display:flex;gap:3px">'+imgs+'</div>'
+      +'<div class="cat-ct">'+(c.num_tokens||'?')+' tokens →</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
 }
 
 // Cache: {catId: {data: [...], ts: timestamp}}
@@ -2741,7 +2778,7 @@ function normalizeBinanceTicker(t){
 let binanceAllTickers = []; // full live list
 
 // ─── WEBSOCKET ENGINE ────────────────────────────────────────────────────────
-const WS_URL = 'wss://stream.binance.com:9443/ws/!ticker@arr';
+const WS_URL = 'wss://stream.binance.com:9443/ws/!ticker@arr'; // Direct Binance — free, no limits
 let _ws = null;
 let _wsReady = false;
 let _wsRetryDelay = 2000;
@@ -2759,6 +2796,36 @@ function flashCell(sym, direction){
     el.classList.add(direction==='up'?'flash-up':'flash-dn');
     setTimeout(()=>el.classList.remove('flash-up','flash-dn'), 600);
   });
+}
+
+// Handle pre-normalized prices from Railway server
+function processRailwayPrices(prices){
+  cryptoData = prices.slice(0,100);
+  binanceAllTickers = prices;
+  store.lastUpdate = Date.now();
+
+  // Flash changed prices
+  prices.slice(0,100).forEach(c=>{
+    const sym = c.symbol.toUpperCase();
+    const newPrice = c.current_price;
+    if(_priceCache[sym] !== undefined && _priceCache[sym] !== newPrice){
+      flashCell(sym, newPrice > _priceCache[sym] ? 'up' : 'dn');
+    }
+    _priceCache[sym] = newPrice;
+  });
+
+  if(!_renderThrottle){
+    _renderThrottle = setTimeout(()=>{
+      _renderThrottle = null;
+      renderCryptoTable();
+      renderCryptoFull();
+      updateTickerFromData();
+      updateAltcoinIndex();
+      renderBinanceStats();
+      renderBinancePairs();
+      setWsStatus('live');
+    }, 1000);
+  }
 }
 
 function processWsMessage(tickers){
@@ -5191,14 +5258,12 @@ updateWRCUI();
 // CLOUDFLARE WORKER PROXY
 // Replace the URL below with your deployed Worker URL after setup
 // ═══════════════════════════════════════════════════════════
+// ── API config — Cloudflare Worker ──
 const WORKER_URL = 'https://waryaa-proxy.ucade2015.workers.dev';
 
 async function wmFetch(path, opts={}){
-  const url = WORKER_URL + path;
-  return fetch(url, {
-    ...opts,
-    headers:{'Content-Type':'application/json',...(opts.headers||{})}
-  });
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
+  return fetch(WORKER_URL + path, { ...opts, headers });
 }
 </script>
 </body>
