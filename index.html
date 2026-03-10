@@ -2920,15 +2920,37 @@ function connectWs(){
   };
 }
 
-// Fetch CoinGecko sparklines once on load (7D charts)
+// Fetch sparklines from Binance kline API — free, no rate limits, no API key
 async function fetchSparklines(){
   try{
-    const r = await wmFetch('/api/markets-fallback');
-    if(!r.ok) return;
-    const data = await r.json();
-    if(!Array.isArray(data)) return;
-    data.forEach(c=>{ if(c.symbol) _sparkMap[c.symbol.toUpperCase()] = c.sparkline_in_7d; });
-    // Merge into existing cryptoData if already loaded
+    // Get top 50 symbols from current cryptoData
+    const syms = cryptoData.slice(0,50).map(c=>(c.symbol||'').toUpperCase()+'USDT');
+    if(!syms.length) return;
+
+    // Fetch 7D hourly candles for each coin in parallel (batches of 10)
+    const batchSize = 10;
+    for(let i=0; i<syms.length; i+=batchSize){
+      const batch = syms.slice(i, i+batchSize);
+      await Promise.allSettled(batch.map(async sym=>{
+        try{
+          const r = await fetch(
+            `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=4h&limit=42`,
+            { signal: AbortSignal.timeout(5000) }
+          );
+          if(!r.ok) return;
+          const klines = await r.json();
+          if(!Array.isArray(klines)) return;
+          // Extract close prices to build sparkline array
+          const prices = klines.map(k=>parseFloat(k[4]));
+          const cleanSym = sym.replace('USDT','');
+          _sparkMap[cleanSym] = { price: prices };
+        } catch(e){ /* skip failed symbol */ }
+      }));
+      // Small delay between batches to be polite
+      if(i+batchSize < syms.length) await new Promise(r=>setTimeout(r,200));
+    }
+
+    // Merge sparklines into cryptoData
     if(cryptoData.length){
       cryptoData = cryptoData.map(c=>({
         ...c,
@@ -2937,7 +2959,7 @@ async function fetchSparklines(){
       renderCryptoTable();
       renderCryptoFull();
     }
-    console.log('[Sparklines] Loaded for', Object.keys(_sparkMap).length, 'coins');
+    console.log('[Sparklines] Loaded from Binance for', Object.keys(_sparkMap).length, 'coins');
   } catch(e){ console.warn('[Sparklines] Failed:', e); }
 }
 
@@ -2954,6 +2976,7 @@ async function bootstrapPrices(){
     binanceAllTickers = filtered;
     cryptoData = filtered.slice(0,100).map(normalizeBinanceTicker);
     renderCryptoTable(); renderCryptoFull(); updateTickerFromData(); updateAltcoinIndex(); renderBinanceStats(); renderBinancePairs();
+    setWsStatus('live');
   } catch(e) {
     try {
       const r2 = await wmFetch('/api/markets');
