@@ -1411,10 +1411,42 @@ body.light .stats-strip{background:#fff}
   <div id="btResults" style="display:none">
     <div id="btResultCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px"></div>
 
-    <!-- Chart canvas -->
+    <!-- Charts -->
     <div class="card card-p" style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--text2)">EQUITY CURVE</div>
-      <canvas id="btChart" style="width:100%;height:260px"></canvas>
+      <!-- Chart toggle tabs -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:1px;background:var(--bg2);padding:3px;border-radius:8px">
+          <button id="btTabCandle" onclick="btSwitchChart('candle')"
+            style="padding:5px 14px;border-radius:6px;font-size:11.5px;font-weight:700;border:none;cursor:pointer;background:var(--card2);color:var(--text);font-family:var(--display)">
+            🕯 Candlestick
+          </button>
+          <button id="btTabEquity" onclick="btSwitchChart('equity')"
+            style="padding:5px 14px;border-radius:6px;font-size:11.5px;font-weight:700;border:none;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--display)">
+            📈 Equity Curve
+          </button>
+          <button id="btTabBoth" onclick="btSwitchChart('both')"
+            style="padding:5px 14px;border-radius:6px;font-size:11.5px;font-weight:700;border:none;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--display)">
+            ⊞ Both
+          </button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)">
+          <span>🟢 Buy entry &nbsp; 🔴 Sell (loss) &nbsp; 🟡 Sell (win)</span>
+        </div>
+      </div>
+
+      <!-- Candlestick chart -->
+      <div id="btCandleWrap" style="margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px">PRICE ACTION WITH TRADE SIGNALS</div>
+        <canvas id="btCandleChart" style="width:100%;height:300px"></canvas>
+        <!-- Crosshair tooltip -->
+        <div id="btCandleTip" style="display:none;position:absolute;background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:11px;font-family:var(--mono);pointer-events:none;z-index:50;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4)"></div>
+      </div>
+
+      <!-- Equity curve chart -->
+      <div id="btEquityWrap">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;margin-bottom:6px">PORTFOLIO EQUITY CURVE</div>
+        <canvas id="btChart" style="width:100%;height:200px"></canvas>
+      </div>
     </div>
 
     <!-- Trades table -->
@@ -4687,24 +4719,235 @@ function calcStats(trades, capital, equity){
 }
 
 // ── Chart drawing ─────────────────────────────────────────────
-function drawEquityChart(candles, equity, trades){
-  const canvas = document.getElementById('btChart');
+// ═══ CHART STATE ════════════════════════════════════════════
+let _btChartMode = 'both'; // 'candle' | 'equity' | 'both'
+let _btCandles, _btEquity, _btTrades; // stored for resize redraws
+
+function btSwitchChart(mode){
+  _btChartMode = mode;
+  // Update tab button styles
+  ['candle','equity','both'].forEach(m=>{
+    const btn = document.getElementById('btTab'+m.charAt(0).toUpperCase()+m.slice(1));
+    if(btn){
+      btn.style.background  = m===mode ? 'var(--card2)' : 'transparent';
+      btn.style.color       = m===mode ? 'var(--text)'  : 'var(--text2)';
+    }
+  });
+  // Show/hide panels
+  const cw = document.getElementById('btCandleWrap');
+  const ew = document.getElementById('btEquityWrap');
+  if(cw) cw.style.display = (mode==='equity') ? 'none' : 'block';
+  if(ew) ew.style.display = (mode==='candle') ? 'none' : 'block';
+  // Redraw with current data
+  if(_btCandles && _btEquity && _btTrades){
+    setTimeout(()=>{
+      if(mode!=='equity') drawCandleChart(_btCandles, _btTrades);
+      if(mode!=='candle') drawEquityChart(_btCandles, _btEquity, _btTrades);
+    }, 30);
+  }
+}
+
+// ── Candlestick chart ─────────────────────────────────────────
+function drawCandleChart(candles, trades){
+  const canvas = document.getElementById('btCandleChart');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
-  const W = canvas.offsetWidth; const H = 260;
+  const W = canvas.offsetWidth; const H = 300;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const PAD = {top:20, right:16, bottom:36, left:72};
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+
+  // Visible candles — limit to avoid overdraw on 1000-candle datasets
+  const MAX_VISIBLE = Math.min(candles.length, 200);
+  const startIdx    = Math.max(0, candles.length - MAX_VISIBLE);
+  const visible     = candles.slice(startIdx);
+
+  const minP = Math.min(...visible.map(c=>c.low))  * 0.998;
+  const maxP = Math.max(...visible.map(c=>c.high)) * 1.002;
+  const toX  = i  => PAD.left + (i / (visible.length - 1)) * cW;
+  const toY  = v  => PAD.top  + (1 - (v - minP) / (maxP - minP)) * cH;
+
+  const candleW = Math.max(1.5, Math.min(10, cW / visible.length * 0.7));
+
+  // ── Grid ──────────────────────────────────────────────────
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for(let g = 0; g < 6; g++){
+    const y = PAD.top + g * (cH / 5);
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    const val = maxP - (g / 5) * (maxP - minP);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'right';
+    const label = val >= 1000 ? '$'+Math.round(val).toLocaleString() : '$'+val.toFixed(4);
+    ctx.fillText(label, PAD.left - 6, y + 4);
+  }
+
+  // Date labels (5 evenly spaced)
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  for(let g = 0; g <= 4; g++){
+    const idx = Math.round(g * (visible.length - 1) / 4);
+    const x   = toX(idx);
+    ctx.fillText(visible[idx].date.slice(0, 10), x, H - PAD.bottom + 14);
+    // Vertical grid line
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+  }
+
+  // ── Candlesticks ──────────────────────────────────────────
+  visible.forEach((c, i) => {
+    const x      = toX(i);
+    const isUp   = c.close >= c.open;
+    const col    = isUp ? '#22c55e' : '#ef4444';
+    const colFill= isUp ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)';
+    const yHigh  = toY(c.high);
+    const yLow   = toY(c.low);
+    const yOpen  = toY(c.open);
+    const yClose = toY(c.close);
+
+    // Wick (high-low line)
+    ctx.strokeStyle = col;
+    ctx.lineWidth   = Math.max(0.8, candleW * 0.18);
+    ctx.beginPath();
+    ctx.moveTo(x, yHigh);
+    ctx.lineTo(x, yLow);
+    ctx.stroke();
+
+    // Body
+    const bodyTop = Math.min(yOpen, yClose);
+    const bodyH   = Math.max(1.5, Math.abs(yClose - yOpen));
+    ctx.fillStyle = colFill;
+    ctx.fillRect(x - candleW / 2, bodyTop, candleW, bodyH);
+    // Body border for thin candles
+    ctx.strokeStyle = col;
+    ctx.lineWidth   = 0.5;
+    ctx.strokeRect(x - candleW / 2, bodyTop, candleW, bodyH);
+  });
+
+  // ── Trade entry/exit markers ──────────────────────────────
+  trades.forEach(t => {
+    // Remap trade indices to visible range
+    const entryVis = t.entryIdx - startIdx;
+    const exitVis  = t.exitIdx  - startIdx;
+    const inView   = (idx) => idx >= 0 && idx < visible.length;
+
+    if(inView(entryVis)){
+      const x = toX(entryVis);
+      const y = toY(candles[t.entryIdx].low) + 12;
+      // Buy arrow (▲ below candle)
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.moveTo(x, y - 8); ctx.lineTo(x - 5, y); ctx.lineTo(x + 5, y);
+      ctx.closePath(); ctx.fill();
+      // B label
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('B', x, y + 9);
+    }
+
+    if(inView(exitVis)){
+      const x   = toX(exitVis);
+      const y   = toY(candles[t.exitIdx].high) - 12;
+      const win = t.return >= 0;
+      // Sell arrow (▼ above candle)
+      ctx.fillStyle = win ? '#f59e0b' : '#ef4444';
+      ctx.beginPath();
+      ctx.moveTo(x, y + 8); ctx.lineTo(x - 5, y); ctx.lineTo(x + 5, y);
+      ctx.closePath(); ctx.fill();
+      // S label
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('S', x, y - 4);
+    }
+
+    // Shade the trade zone
+    if(inView(entryVis) && inView(exitVis)){
+      const x1 = toX(entryVis);
+      const x2 = toX(exitVis);
+      const win = t.return >= 0;
+      ctx.fillStyle = win ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)';
+      ctx.fillRect(x1, PAD.top, x2 - x1, cH);
+    }
+  });
+
+  // ── Crosshair on hover ────────────────────────────────────
+  canvas._btData = { candles: visible, startIdx, PAD, cW, cH, toX, toY, candleW, H };
+
+  canvas.onmousemove = function(e){
+    const rect = canvas.getBoundingClientRect();
+    const mx   = (e.clientX - rect.left);
+    const idx  = Math.round((mx - PAD.left) / cW * (visible.length - 1));
+    if(idx < 0 || idx >= visible.length) return;
+    const c    = visible[idx];
+    const x    = toX(idx);
+    const tip  = document.getElementById('btCandleTip');
+    if(!tip) return;
+    const change = ((c.close - c.open) / c.open * 100).toFixed(2);
+    const col    = c.close >= c.open ? '#22c55e' : '#ef4444';
+    tip.style.display = 'block';
+    tip.style.left    = (rect.left + x + 14) + 'px';
+    tip.style.top     = (rect.top + window.scrollY + 10) + 'px';
+    tip.style.position= 'fixed';
+    tip.style.left    = Math.min(e.clientX + 14, window.innerWidth - 200) + 'px';
+    tip.style.top     = Math.min(e.clientY - 10, window.innerHeight - 120) + 'px';
+    tip.innerHTML =
+      '<div style="font-weight:700;color:var(--text);margin-bottom:5px">'+c.date.slice(0,16)+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 12px">'+
+      '<span style="color:var(--text2)">O</span><span>$'+c.open.toFixed(2)+'</span>'+
+      '<span style="color:var(--text2)">H</span><span style="color:#22c55e">$'+c.high.toFixed(2)+'</span>'+
+      '<span style="color:var(--text2)">L</span><span style="color:#ef4444">$'+c.low.toFixed(2)+'</span>'+
+      '<span style="color:var(--text2)">C</span><span style="color:'+col+'">$'+c.close.toFixed(2)+'</span>'+
+      '<span style="color:var(--text2)">Chg</span><span style="color:'+col+'">'+(c.close>=c.open?'+':'')+change+'%</span>'+
+      '<span style="color:var(--text2)">Vol</span><span>'+fmt(c.volume)+'</span>'+
+      '</div>';
+    // Draw crosshair
+    drawCandleChart(candles, trades);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top+cH); ctx.stroke();
+    const cy = toY(c.close);
+    ctx.beginPath(); ctx.moveTo(PAD.left, cy); ctx.lineTo(PAD.left+cW, cy); ctx.stroke();
+    ctx.restore();
+  };
+  canvas.onmouseleave = function(){
+    const tip = document.getElementById('btCandleTip');
+    if(tip) tip.style.display = 'none';
+  };
+}
+
+// ── Equity curve chart ────────────────────────────────────────
+function drawEquityChart(candles, equity, trades){
+  const canvas = document.getElementById('btChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const H   = _btChartMode === 'both' ? 200 : 260;
+  const W   = canvas.offsetWidth;
   canvas.width = W*dpr; canvas.height = H*dpr;
   canvas.style.width = W+'px'; canvas.style.height = H+'px';
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
 
-  const PAD = {top:16,right:16,bottom:32,left:64};
-  const cW = W-PAD.left-PAD.right;
-  const cH = H-PAD.top-PAD.bottom;
+  const PAD = {top:16,right:16,bottom:32,left:72};
+  const cW  = W-PAD.left-PAD.right;
+  const cH  = H-PAD.top-PAD.bottom;
 
   const minE = Math.min(...equity)*0.99;
   const maxE = Math.max(...equity)*1.01;
-  const toX = i => PAD.left + (i/(equity.length-1))*cW;
-  const toY = v => PAD.top + (1-(v-minE)/(maxE-minE))*cH;
+  const toX  = i => PAD.left + (i/(equity.length-1))*cW;
+  const toY  = v => PAD.top  + (1-(v-minE)/(maxE-minE))*cH;
 
   // Grid lines
   ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
@@ -4716,37 +4959,31 @@ function drawEquityChart(candles, equity, trades){
     ctx.fillText('$'+Math.round(val).toLocaleString(), PAD.left-6, y+4);
   }
 
-  // Date labels (5 evenly spaced)
+  // Date labels
   ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='9px monospace'; ctx.textAlign='center';
   for(let g=0;g<=4;g++){
     const idx=Math.round(g*(candles.length-1)/4);
-    const x=toX(idx);
-    ctx.fillText(candles[idx].date.slice(0,10), x, H-PAD.bottom+14);
+    ctx.fillText(candles[idx].date.slice(0,10), toX(idx), H-PAD.bottom+14);
   }
 
-  // Trade markers (buy/sell dots)
+  // Trade dots
   trades.forEach(t=>{
-    // Buy dot
     ctx.fillStyle='#22c55e';
-    ctx.beginPath(); ctx.arc(toX(t.entryIdx), toY(equity[t.entryIdx]), 4, 0, Math.PI*2); ctx.fill();
-    // Sell dot
-    ctx.fillStyle = t.return>=0?'#22c55e':'#ef4444';
-    ctx.beginPath(); ctx.arc(toX(t.exitIdx), toY(equity[t.exitIdx]), 4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(toX(t.entryIdx),toY(equity[t.entryIdx]),4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=t.return>=0?'#f59e0b':'#ef4444';
+    ctx.beginPath(); ctx.arc(toX(t.exitIdx),toY(equity[t.exitIdx]),4,0,Math.PI*2); ctx.fill();
   });
 
-  // Equity line (drawn last, on top)
-  const grad = ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
+  // Equity line + fill
+  const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
   grad.addColorStop(0,'rgba(56,97,251,0.8)');
-  grad.addColorStop(1,'rgba(56,97,251,0.1)');
-
+  grad.addColorStop(1,'rgba(56,97,251,0.05)');
   ctx.beginPath();
   equity.forEach((v,i)=>{ i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v)); });
   ctx.strokeStyle='#3861FB'; ctx.lineWidth=2; ctx.stroke();
-
-  // Fill under curve
-  ctx.lineTo(toX(equity.length-1), PAD.top+cH);
-  ctx.lineTo(PAD.left, PAD.top+cH);
-  ctx.closePath(); ctx.fillStyle=grad; ctx.globalAlpha=0.3; ctx.fill(); ctx.globalAlpha=1;
+  ctx.lineTo(toX(equity.length-1),PAD.top+cH);
+  ctx.lineTo(PAD.left,PAD.top+cH);
+  ctx.closePath(); ctx.fillStyle=grad; ctx.globalAlpha=0.25; ctx.fill(); ctx.globalAlpha=1;
 }
 
 // ── Render results UI ─────────────────────────────────────────
@@ -4793,8 +5030,13 @@ function btRenderResults(stats, trades, equity, candles){
       +'</tr>';
   }).join('');
 
-  // Draw chart after DOM settles
-  setTimeout(()=>drawEquityChart(candles, equity, trades), 50);
+  // Store data globally for tab switching + resize
+  _btCandles = candles;
+  _btEquity  = equity;
+  _btTrades  = trades;
+
+  // Default to 'both' view on first run
+  btSwitchChart('both');
 }
 
 // ── Main run function ─────────────────────────────────────────
@@ -4971,6 +5213,17 @@ function syncMobDrawer(){
   },{passive:true});
 })();
 // ═══════════════════════════════════════════════════════
+
+// Redraw charts on resize
+window.addEventListener('resize', ()=>{
+  if(_btCandles && _btEquity && _btTrades){
+    clearTimeout(window._btResizeTimer);
+    window._btResizeTimer = setTimeout(()=>{
+      if(_btChartMode!=='equity') drawCandleChart(_btCandles, _btTrades);
+      if(_btChartMode!=='candle') drawEquityChart(_btCandles, _btEquity, _btTrades);
+    }, 150);
+  }
+});
 
 // Wait for DOM to be ready before initializing
 if(document.readyState === "loading"){
