@@ -14,7 +14,8 @@
 <!-- Preconnect to Binance API for faster price loads -->
 <link rel="preconnect" href="https://api.binance.com">
 <link rel="preconnect" href="https://stream.binance.com">
-<link rel="dns-prefetch" href="https://waryaa-proxy.ucade2015.workers.dev">
+<link rel="dns-prefetch" href="https://modern-sabrina-waryaa-82ce1914.koyeb.app">
+<link rel="preconnect" href="https://modern-sabrina-waryaa-82ce1914.koyeb.app">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; connect-src 'self' https:; frame-src https://s.tradingview.com https://www.tradingview.com;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -3031,7 +3032,10 @@ function normalizeBinanceTicker(t){
 let binanceAllTickers = []; // full live list
 
 // ─── WEBSOCKET ENGINE ────────────────────────────────────────────────────────
-const WS_URL = 'wss://stream.binance.com:9443/ws/!ticker@arr'; // Direct Binance — free, no limits
+// WebSocket config — server WS first (shared connection), Binance direct as fallback
+const WS_URL        = 'wss://modern-sabrina-waryaa-82ce1914.koyeb.app';  // Koyeb server WS
+const WS_URL_DIRECT = 'wss://stream.binance.com:9443/ws/!ticker@arr'; // Binance direct fallback
+let _wsUsingServer  = true; // track which connection is active
 let _ws = null;
 let _wsReady = false;
 let _wsRetryDelay = 2000;
@@ -3144,18 +3148,30 @@ function connectWs(){
   if(_wsRetryTimer){ clearTimeout(_wsRetryTimer); _wsRetryTimer=null; }
   setWsStatus('connecting');
 
-  _ws = new WebSocket(WS_URL);
+  // Try server WebSocket first (shared connection — production grade)
+  // Falls back to direct Binance if server WS unavailable
+  const url = _wsUsingServer ? WS_URL : WS_URL_DIRECT;
+  _ws = new WebSocket(url);
 
   _ws.onopen = ()=>{
     _wsReady = true;
-    _wsRetryDelay = 2000; // reset backoff
+    _wsRetryDelay = 2000;
     setWsStatus('live');
+    console.log('[WS] Connected via', _wsUsingServer ? 'Koyeb server' : 'Binance direct');
   };
 
   _ws.onmessage = (e)=>{
     try{
-      const data = JSON.parse(e.data);
-      if(Array.isArray(data)) processWsMessage(data);
+      const msg = JSON.parse(e.data);
+      // Server sends: { type:'prices', data:[...] }
+      // Binance direct sends: [...tickers]
+      if(_wsUsingServer && msg.type === 'prices' && Array.isArray(msg.data)){
+        // Server pre-normalizes prices — feed directly
+        processRailwayPrices(msg.data);
+      } else if(Array.isArray(msg)){
+        // Direct Binance ticker array
+        processWsMessage(msg);
+      }
     } catch(err){ /* ignore parse errors */ }
   };
 
@@ -3164,8 +3180,13 @@ function connectWs(){
   _ws.onclose = ()=>{
     _wsReady = false;
     setWsStatus('reconnecting');
+    // If server WS failed, switch to direct Binance
+    if(_wsUsingServer){
+      console.warn('[WS] Server WS failed — falling back to direct Binance');
+      _wsUsingServer = false;
+    }
     _wsRetryTimer = setTimeout(()=>{
-      _wsRetryDelay = Math.min(_wsRetryDelay * 1.5, 30000); // exponential backoff, max 30s
+      _wsRetryDelay = Math.min(_wsRetryDelay * 1.5, 30000);
       connectWs();
     }, _wsRetryDelay);
   };
@@ -3213,37 +3234,59 @@ async function fetchSparklines(){
   } catch(e){ console.warn('[Sparklines] Failed:', e); }
 }
 
-// ── Bootstrap: fetch REST snapshot immediately so table fills BEFORE WS connects
+// ── Bootstrap: server REST first (cached, fast), then Binance direct fallback
 async function bootstrapPrices(){
   const tbody = document.getElementById('cryptoBody');
+
+  // ── Try 1: Koyeb server /api/prices (pre-cached, <50ms) ──
   try {
-    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr', {signal: AbortSignal.timeout(5000)});
-    if(!r.ok) throw new Error('fail');
+    const r = await fetch('https://modern-sabrina-waryaa-82ce1914.koyeb.app/api/prices', {signal: AbortSignal.timeout(6000)});
+    if(!r.ok) throw new Error('server unavailable');
+    const prices = await r.json();
+    if(Array.isArray(prices) && prices.length > 10){
+      processRailwayPrices(prices);
+      setWsStatus('live');
+      console.log('[Bootstrap] Loaded', prices.length, 'coins from Koyeb server');
+      return; // done — server data loaded
+    }
+  } catch(e1){
+    console.warn('[Bootstrap] Server REST failed:', e1.message, '— trying Binance direct');
+  }
+
+  // ── Try 2: Direct Binance REST (no server needed) ──
+  try {
+    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr', {signal: AbortSignal.timeout(8000)});
+    if(!r.ok) throw new Error('binance fail');
     const raw = await r.json();
     const filtered = raw
       .filter(t => t.symbol.endsWith('USDT') && parseFloat(t.quoteVolume) > 50000)
       .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
     binanceAllTickers = filtered;
     cryptoData = filtered.slice(0,100).map(normalizeBinanceTicker);
-    renderCryptoTable(); renderCryptoFull(); updateTickerFromData(); updateAltcoinIndex(); renderBinanceStats(); renderBinancePairs();
+    renderCryptoTable(); renderCryptoFull(); updateTickerFromData();
+    updateAltcoinIndex(); renderBinanceStats(); renderBinancePairs();
     setWsStatus('live');
-  } catch(e) {
-    try {
-      const r2 = await wmFetch('/api/markets');
-      if(!r2.ok) throw new Error();
-      const raw2 = await r2.json();
-      const f2 = raw2.filter(t=>t.symbol.endsWith('USDT')&&parseFloat(t.quoteVolume)>50000).sort((a,b)=>parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume));
-      binanceAllTickers = f2; cryptoData = f2.slice(0,100).map(normalizeBinanceTicker);
-      renderCryptoTable(); renderCryptoFull(); updateTickerFromData(); updateAltcoinIndex();
-    } catch(e2) {
-      try {
-        const r3 = await wmFetch('/api/markets-fallback');
-        if(r3.ok){ cryptoData = await r3.json(); renderCryptoTable(); renderCryptoFull(); }
-      } catch(e3) {
-        if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Unable to load. <span onclick="bootstrapPrices()" style="color:var(--blue);cursor:pointer">Retry</span></td></tr>`;
-      }
-    }
+    console.log('[Bootstrap] Loaded from Binance direct');
+    return;
+  } catch(e2){
+    console.warn('[Bootstrap] Binance direct failed:', e2.message);
   }
+
+  // ── Try 3: Worker fallback endpoints ──
+  try {
+    const r3 = await wmFetch('/api/markets');
+    if(r3.ok){
+      const raw3 = await r3.json();
+      const f3 = raw3.filter(t=>t.symbol.endsWith('USDT')&&parseFloat(t.quoteVolume)>50000)
+                     .sort((a,b)=>parseFloat(b.quoteVolume)-parseFloat(a.quoteVolume));
+      binanceAllTickers = f3; cryptoData = f3.slice(0,100).map(normalizeBinanceTicker);
+      renderCryptoTable(); renderCryptoFull(); updateTickerFromData(); updateAltcoinIndex();
+      return;
+    }
+  } catch(e3){}
+
+  // ── All failed ──
+  if(tbody) tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text2)">⚠️ Unable to load prices. <span onclick="bootstrapPrices()" style="color:var(--blue);cursor:pointer">Retry</span></td></tr>`;
 }
 
 async function fetchCrypto(){ await bootstrapPrices(); }
@@ -6182,8 +6225,8 @@ updateWRCUI();
 // CLOUDFLARE WORKER PROXY
 // Replace the URL below with your deployed Worker URL after setup
 // ═══════════════════════════════════════════════════════════
-// ── API config — Cloudflare Worker ──
-const WORKER_URL = 'https://waryaa-proxy.ucade2015.workers.dev';
+// ── API config — Koyeb Production Server ──
+const WORKER_URL = 'https://modern-sabrina-waryaa-82ce1914.koyeb.app'; // Koyeb production server
 
 async function wmFetch(path, opts={}){
   const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
