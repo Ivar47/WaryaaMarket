@@ -2585,10 +2585,28 @@ async function loadNews(cats){
   if(!grid) return;
   grid.innerHTML='<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--text2)">Loading news...</div>';
   try{
-    // Primary: CryptoCompare via Worker
+    // Primary: Koyeb server /api/news (tries CryptoPanic → CryptoCompare)
     const catParam = cats!=='ALL' ? '?categories='+encodeURIComponent(cats) : '';
     const r=await wmFetch(`/api/news${catParam}`);
-    const articles=(await r.json()).Data||[];
+    const json=await r.json();
+    let articles=json.Data||[];
+
+    // Fallback: if server returned empty, try CryptoPanic directly
+    if(!articles.length){
+      try{
+        const cp=await fetch(`https://cryptopanic.com/api/free/v1/posts/?auth_token=free&public=true&kind=news`,{signal:AbortSignal.timeout(5000)});
+        const cpd=await cp.json();
+        if(cpd.results?.length){
+          articles=cpd.results.map(i=>({
+            title:i.title, url:i.url,
+            source:i.source?.title||'News',
+            source_info:{name:i.source?.title||'Crypto News'},
+            published_on:Math.floor(new Date(i.published_at).getTime()/1000),
+            imageurl:''
+          }));
+        }
+      }catch{}
+    }
 
     // Secondary world news via Worker RSS proxy
     let worldArticles=[];
